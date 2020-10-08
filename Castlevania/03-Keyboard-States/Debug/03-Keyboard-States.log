@@ -1,9 +1,2 @@
-﻿  debug.cpp
-  Game.cpp
-  GameObject.cpp
-  main.cpp
-  Mario.cpp
-  Sprites.cpp
-  Textures.cpp
-  Generating Code...
-  03-Keyboard-States.vcxproj -> C:\Users\Edward Lauv\Downloads\Castlevania\Castlevania\Debug\03-Keyboard-States.exe
+﻿  Simon.cpp
+  03-Keyboard-States.vcxproj -> D:\Clone\Game\Castlevania\Debug\03-Keyboard-States.exe

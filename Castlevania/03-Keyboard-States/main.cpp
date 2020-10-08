@@ -18,7 +18,7 @@
 #include "GameObject.h"
 #include "Textures.h"
 
-#include "Mario.h"
+#include "Simon.h"
 
 #define WINDOW_CLASS_NAME L"SampleWindow"
 #define MAIN_WINDOW_TITLE L"02 - Sprite animation"
@@ -29,12 +29,12 @@
 
 #define MAX_FRAME_RATE 90
 
-#define ID_TEX_MARIO 0
+#define ID_TEX_SIMON 0
 #define ID_TEX_ENEMY 10
 #define ID_TEX_MISC 20
 
 CGame *game;
-CMario *mario;
+Simon *simon;
 
 class CSampleKeyHander: public CKeyEventHandler
 {
@@ -51,7 +51,7 @@ void CSampleKeyHander::OnKeyDown(int KeyCode)
 	switch (KeyCode)
 	{
 	case DIK_SPACE:
-		mario->SetState(MARIO_STATE_JUMP);
+		simon->SetState(SIMON_STATE_JUMP);
 		break;
 	}
 }
@@ -64,10 +64,12 @@ void CSampleKeyHander::OnKeyUp(int KeyCode)
 void CSampleKeyHander::KeyState(BYTE *states)
 {
 	if (game->IsKeyDown(DIK_RIGHT))
-		mario->SetState(MARIO_STATE_WALKING_RIGHT);
+		simon->SetState(SIMON_STATE_WALKING_RIGHT);
 	else if (game->IsKeyDown(DIK_LEFT))
-		mario->SetState(MARIO_STATE_WALKING_LEFT);
-	else mario->SetState(MARIO_STATE_IDLE);
+		simon->SetState(SIMON_STATE_WALKING_LEFT);
+	else if (game->IsKeyDown(DIK_DOWN))
+		simon->SetState(SIMON_STATE_SIT);
+	else simon->SetState(SIMON_STATE_IDLE);
 }
 
 LRESULT CALLBACK WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -91,23 +93,21 @@ void LoadResources()
 {
 	CTextures * textures = CTextures::GetInstance();
 
-	textures->Add(ID_TEX_MARIO, L"textures\\mario.png",D3DCOLOR_XRGB(176, 224, 248));
+	textures->Add(ID_TEX_SIMON, L"textures\\Simon.png",D3DCOLOR_XRGB(176, 224, 248));
 
 	CSprites * sprites = CSprites::GetInstance();
 	CAnimations * animations = CAnimations::GetInstance();
 	
-	LPDIRECT3DTEXTURE9 texMario = textures->Get(ID_TEX_MARIO);
+	LPDIRECT3DTEXTURE9 texSimon = textures->Get(ID_TEX_SIMON);
 
 
-	sprites->Add(10001, 246, 154, 260, 181, texMario);
+	sprites->Add(10001, 16, 3, 50, 60, texSimon);
 
-	sprites->Add(10002, 275, 154, 290, 181, texMario);
-	sprites->Add(10003, 304, 154, 321, 181, texMario);
+	sprites->Add(10002, 75, 3, 110, 60, texSimon);
+	sprites->Add(10003, 193, 3, 230, 60, texSimon);
+	
+	sprites->Add(10004, 252, 10, 290, 52, texSimon);
 
-	sprites->Add(10011, 186, 154, 200, 181, texMario);
-
-	sprites->Add(10012, 155, 154, 170, 181, texMario);
-	sprites->Add(10013, 125, 154, 140, 181, texMario);
 
 
 	LPANIMATION ani;
@@ -117,7 +117,7 @@ void LoadResources()
 	animations->Add(400, ani);
 
 	ani = new CAnimation(100);
-	ani->Add(10011);
+	ani->Add(10001);
 	animations->Add(401, ani);
 
 
@@ -128,18 +128,22 @@ void LoadResources()
 	animations->Add(500, ani);
 
 	ani = new CAnimation(100);
-	ani->Add(10011);
-	ani->Add(10012);
-	ani->Add(10013);
+	ani->Add(10001);
+	ani->Add(10002);
+	ani->Add(10003);
 	animations->Add(501, ani);
 
-	mario = new CMario();
-	CMario::AddAnimation(400);		// idle right
-	CMario::AddAnimation(401);		// idle left
-	CMario::AddAnimation(500);		// walk right
-	CMario::AddAnimation(501);		// walk left
+	ani = new CAnimation(100);
+	ani->Add(10004);
+	animations->Add(601, ani);
 
-	mario->SetPosition(0.0f, 100.0f);
+	simon = new Simon();
+	Simon::AddAnimation(400);		// idle right
+	Simon::AddAnimation(401);		// idle left
+	Simon::AddAnimation(500);		// walk right
+	Simon::AddAnimation(501);		// walk left
+	Simon::AddAnimation(601);       // sit
+	simon->SetPosition(0.0f, 100.0f);
 }
 
 /*
@@ -148,7 +152,7 @@ void LoadResources()
 */
 void Update(DWORD dt)
 {
-	mario->Update(dt);
+	simon->Update(dt);
 }
 
 /*
@@ -167,7 +171,7 @@ void Render()
 
 		spriteHandler->Begin(D3DXSPRITE_ALPHABLEND);
 
-		mario->Render();
+		simon->Render();
 
 		spriteHandler->End();
 		d3ddv->EndScene();
