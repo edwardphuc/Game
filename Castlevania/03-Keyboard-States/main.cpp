@@ -30,7 +30,7 @@
 #define MAX_FRAME_RATE 90
 
 #define ID_TEX_SIMON 0
-#define ID_TEX_ENEMY 10
+#define ID_TEX_WHIP 10
 #define ID_TEX_MISC 20
 
 CGame *game;
@@ -52,6 +52,9 @@ void CSampleKeyHander::OnKeyDown(int KeyCode)
 	{
 	case DIK_SPACE:
 		simon->SetState(SIMON_STATE_JUMP);
+		break;
+	case DIK_A:
+		simon->SetState(SIMON_STATE_ATTACK);
 		break;
 	}
 }
@@ -93,14 +96,18 @@ void LoadResources()
 {
 	CTextures * textures = CTextures::GetInstance();
 
-	textures->Add(ID_TEX_SIMON, L"textures\\Simon.png",D3DCOLOR_XRGB(176, 224, 248));
+	textures->Add(ID_TEX_SIMON, L"textures\\Simon.png", D3DCOLOR_XRGB(176, 224, 248));
 
 	CSprites * sprites = CSprites::GetInstance();
 	CAnimations * animations = CAnimations::GetInstance();
 	
 	LPDIRECT3DTEXTURE9 texSimon = textures->Get(ID_TEX_SIMON);
 
+	LPDIRECT3DTEXTURE9 texWhip = textures->Get(ID_TEX_WHIP);
 
+	textures->Add(ID_TEX_WHIP, L"textures\\Whip.png", D3DCOLOR_XRGB(176, 224, 248));
+
+	//Sprite Simon
 	sprites->Add(10001, 16, 3, 50, 60, texSimon);
 
 	sprites->Add(10002, 75, 3, 110, 60, texSimon);
@@ -108,7 +115,14 @@ void LoadResources()
 	
 	sprites->Add(10004, 252, 10, 290, 52, texSimon);
 
+	sprites->Add(10005, 298, 70, 348, 127, texSimon);
+	sprites->Add(10006, 373, 70, 410, 127, texSimon);
+	sprites->Add(10007, 435, 70, 479, 127, texSimon);
 
+	//Sprite whip
+	sprites->Add(10008, 0, 8, 18, 53, texWhip);
+	sprites->Add(10009, 39, 0, 73, 36, texWhip);
+	sprites->Add(10010, 93, 5, 143, 19, texWhip);
 
 	LPANIMATION ani;
 
@@ -137,12 +151,27 @@ void LoadResources()
 	ani->Add(10004);
 	animations->Add(601, ani);
 
+	ani = new CAnimation(100);
+	ani->Add(10005);
+	ani->Add(10006);
+	ani->Add(10007);
+	animations->Add(701, ani);
+
+	ani = new CAnimation(100);
+	ani->Add(10008);
+	ani->Add(10009);
+	ani->Add(100010);
+	animations->Add(801, ani);
+
 	simon = new Simon();
 	Simon::AddAnimation(400);		// idle right
 	Simon::AddAnimation(401);		// idle left
 	Simon::AddAnimation(500);		// walk right
 	Simon::AddAnimation(501);		// walk left
 	Simon::AddAnimation(601);       // sit
+	Simon::AddAnimation(701);       // attack
+
+
 	simon->SetPosition(0.0f, 100.0f);
 }
 

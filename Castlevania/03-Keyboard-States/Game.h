@@ -37,11 +37,13 @@ class CGame
 	DIDEVICEOBJECTDATA keyEvents[KEYBOARD_BUFFER_SIZE];		// Buffered keyboard data
 
 	LPKEYEVENTHANDLER keyHandler;
+	float cam_x = 0.0f;
+	float cam_y = 0.0f;
 
 public:
 	void InitKeyboard(LPKEYEVENTHANDLER handler);
 	void Init(HWND hWnd);
-	void Draw(float x, float y, LPDIRECT3DTEXTURE9 texture, int left, int top, int right, int bottom);
+	void Draw(float x, float y, LPDIRECT3DTEXTURE9 texture, int left, int top, int right, int bottom, int alpha, double Scale);
 
 	int IsKeyDown(int KeyCode);
 	void ProcessKeyboard();

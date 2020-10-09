@@ -21,7 +21,9 @@ protected:
 
 	int nx;	 
 
-	int state;									
+	int state;	
+
+	double scale = 1;
 
 	static vector<LPANIMATION> animations;
 

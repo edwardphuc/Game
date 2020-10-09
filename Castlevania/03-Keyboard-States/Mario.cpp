@@ -28,7 +28,7 @@ void CMario::Render()
 		ani = MARIO_ANI_WALKING_RIGHT; 
 	else ani = MARIO_ANI_WALKING_LEFT;
 
-	animations[ani]->Render(x, y);
+	animations[ani]->Render(x, y, -1);
 }
 
 void CMario::SetState(int state)
