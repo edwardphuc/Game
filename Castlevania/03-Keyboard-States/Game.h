@@ -44,14 +44,13 @@ public:
 	void InitKeyboard(LPKEYEVENTHANDLER handler);
 	void Init(HWND hWnd);
 	void Draw(float x, float y, LPDIRECT3DTEXTURE9 texture, int left, int top, int right, int bottom, int alpha, double Scale);
-
 	int IsKeyDown(int KeyCode);
 	void ProcessKeyboard();
 
 	LPDIRECT3DDEVICE9 GetDirect3DDevice() { return this->d3ddv; }
 	LPDIRECT3DSURFACE9 GetBackBuffer() { return backBuffer; }
 	LPD3DXSPRITE GetSpriteHandler() { return this->spriteHandler; }
-
+	void SetCamPos(float x, float y) { cam_x = x; cam_y = y; }
 	static CGame * GetInstance();
 
 	~CGame();

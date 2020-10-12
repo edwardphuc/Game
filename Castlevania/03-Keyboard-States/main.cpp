@@ -24,8 +24,8 @@
 #define MAIN_WINDOW_TITLE L"Catslevania"
 
 #define BACKGROUND_COLOR D3DCOLOR_XRGB(200, 200, 255)
-#define SCREEN_WIDTH 1280	
-#define SCREEN_HEIGHT 720
+#define SCREEN_WIDTH 640
+#define SCREEN_HEIGHT 360
 
 #define MAX_FRAME_RATE 90
 
@@ -177,7 +177,8 @@ void LoadResources()
 	Simon::AddAnimation(701);       // attack
 	Simon::AddAnimation(901);		// jump
 
-	simon->SetPosition(0.0f, 100.0f);
+	
+	simon->SetPosition(0.0f, 400.0f);
 }
 
 /*
@@ -187,6 +188,14 @@ void LoadResources()
 void Update(DWORD dt)
 {
 	simon->Update(dt);
+	
+	float cx, cy;
+	simon->GetPosition(cx, cy);
+
+	cx -= SCREEN_WIDTH / 3;
+	cy -= SCREEN_HEIGHT / 3;
+
+	CGame::GetInstance()->SetCamPos(cx, cy);
 }
 
 /*
@@ -206,7 +215,6 @@ void Render()
 		spriteHandler->Begin(D3DXSPRITE_ALPHABLEND);
 
 		simon->Render();
-
 		spriteHandler->End();
 		d3ddv->EndScene();
 	}
