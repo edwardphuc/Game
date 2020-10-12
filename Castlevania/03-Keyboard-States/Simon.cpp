@@ -20,7 +20,7 @@ void Simon::Update(DWORD dt)
 	}
 	
 	// simple screen edge collision!!!
-	if (vx > 0 && x > 610) x = 610;
+	if (vx > 0 && x > 1050) x = 1050;
 	if (vx < 0 && x < 0) x = 0;
 	if (issitting == true)
 	{

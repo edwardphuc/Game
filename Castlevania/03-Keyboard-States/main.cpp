@@ -19,6 +19,7 @@
 #include "Textures.h"
 
 #include "Simon.h"
+#include "Map.h"
 
 #define WINDOW_CLASS_NAME L"SampleWindow"
 #define MAIN_WINDOW_TITLE L"Catslevania"
@@ -32,10 +33,11 @@
 #define ID_TEX_SIMON 0
 #define ID_TEX_WHIP 10
 #define ID_TEX_MISC 20
+#define ID_TEX_MAP	30
 
 CGame *game;
 Simon *simon;
-
+Map  *map;
 class CSampleKeyHander: public CKeyEventHandler
 {
 	virtual void KeyState(BYTE *states);
@@ -98,12 +100,13 @@ void LoadResources()
 	CTextures * textures = CTextures::GetInstance();
 
 	textures->Add(ID_TEX_SIMON, L"textures\\Simon.png", D3DCOLOR_XRGB(176, 224, 248));
+	textures->Add(ID_TEX_MAP, L"textures\\Courtyard.png", D3DCOLOR_XRGB(255, 255, 255));
 
 	CSprites * sprites = CSprites::GetInstance();
 	CAnimations * animations = CAnimations::GetInstance();
 	
 	LPDIRECT3DTEXTURE9 texSimon = textures->Get(ID_TEX_SIMON);
-
+	LPDIRECT3DTEXTURE9 texMap = textures->Get(ID_TEX_MAP);
 	LPDIRECT3DTEXTURE9 texWhip = textures->Get(ID_TEX_WHIP);
 
 	textures->Add(ID_TEX_WHIP, L"textures\\Whip.png", D3DCOLOR_XRGB(176, 224, 248));
@@ -124,6 +127,9 @@ void LoadResources()
 	sprites->Add(10008, 0, 8, 18, 53, texWhip);
 	sprites->Add(10009, 39, 0, 73, 36, texWhip);
 	sprites->Add(10010, 93, 5, 143, 19, texWhip);
+
+	//Map
+	sprites->Add(10101, 0, 0, 760, 202, texMap);
 
 	LPANIMATION ani;
 
@@ -168,6 +174,10 @@ void LoadResources()
 	ani->Add(10001);
 	animations->Add(901, ani);
 
+	ani = new CAnimation(100);
+	ani->Add(10101);
+	animations->Add(1000, ani);
+
 	simon = new Simon();
 	Simon::AddAnimation(400);		// idle right
 	Simon::AddAnimation(401);		// idle left
@@ -177,8 +187,11 @@ void LoadResources()
 	Simon::AddAnimation(701);       // attack
 	Simon::AddAnimation(901);		// jump
 
-	
-	simon->SetPosition(0.0f, 400.0f);
+	map = new Map();
+	Map::AddAnimation(1000);
+
+	simon->SetPosition(0.0f, 240.0f);
+	map->SetPosition(0.0f, 0.0f);
 }
 
 /*
@@ -191,11 +204,21 @@ void Update(DWORD dt)
 	
 	float cx, cy;
 	simon->GetPosition(cx, cy);
-
-	cx -= SCREEN_WIDTH / 3;
-	cy -= SCREEN_HEIGHT / 3;
-
-	CGame::GetInstance()->SetCamPos(cx, cy);
+	cx -= SCREEN_WIDTH / 10 ;
+	cy -= SCREEN_HEIGHT/ 10 ;
+	float x, y;
+	simon->GetPosition(x, y);
+	if (x == 0 || x < SCREEN_WIDTH/10)
+	{
+		CGame::GetInstance()->SetCamPos(0.0f, 0.0f);
+	}
+	else if (x > SCREEN_WIDTH)
+	{
+		CGame::GetInstance()->SetCamPos(SCREEN_WIDTH - SCREEN_WIDTH/10, 0.0f);
+	}
+	else CGame::GetInstance()->SetCamPos(cx, 0.0f);
+	
+	
 }
 
 /*
@@ -213,8 +236,9 @@ void Render()
 		d3ddv->ColorFill(bb, NULL, BACKGROUND_COLOR);
 
 		spriteHandler->Begin(D3DXSPRITE_ALPHABLEND);
-
+		map->Render();
 		simon->Render();
+		
 		spriteHandler->End();
 		d3ddv->EndScene();
 	}

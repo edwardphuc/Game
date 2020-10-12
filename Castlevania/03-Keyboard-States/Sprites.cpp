@@ -19,7 +19,7 @@ CSprites *CSprites::GetInstance()
 	if (__instance == NULL) __instance = new CSprites();
 	return __instance;
 }
-
+ 
 void CSprite::Draw(float x, float y, double scale)
 {
 	CGame * game = CGame::GetInstance();

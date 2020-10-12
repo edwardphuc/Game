@@ -1,13 +1,13 @@
 #pragma once
 #pragma once
 #include "GameObject.h"
-#define SIMON_WALKING_SPEED		0.5f
+#define SIMON_WALKING_SPEED		0.2f
 #define SIMON_JUMP_SPEED_Y		0.5f
 #define SIMON_GRAVITY			0.002f
 #define PULL_UP_SITTING			18.0f
 #define PULL_UP_JUMPING			5.0f
-#define GROUND					100.0f
-#define AIR						50.0f
+#define GROUND					240.0f
+#define AIR						190.0f
 
 #define SIMON_STATE_IDLE			0
 #define SIMON_STATE_WALKING_RIGHT	100
