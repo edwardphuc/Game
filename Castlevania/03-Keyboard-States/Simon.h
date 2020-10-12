@@ -6,6 +6,8 @@
 #define SIMON_GRAVITY			0.002f
 #define PULL_UP_SITTING			18.0f
 #define PULL_UP_JUMPING			5.0f
+#define GROUND					100.0f
+#define AIR						50.0f
 
 #define SIMON_STATE_IDLE			0
 #define SIMON_STATE_WALKING_RIGHT	100
@@ -20,6 +22,8 @@
 #define SIMON_ANI_WALKING_LEFT		3
 #define SIMON_ANI_SIT				4
 #define SIMON_ANI_ATTACK			5
+#define SIMON_ANI_JUMP				6
+
 
 class Simon : public CGameObject
 {
@@ -27,11 +31,13 @@ private:
 	bool issitting = false;
 	bool isattacking = false;
 	bool isjumping = false;
-	bool  onground = true;
+	DWORD waitingtime = 0;
 public:
 
 	void Update(DWORD dt);
 	void Render();
 	void SetState(int state);
+	DWORD Getwaitingtime() { return this->waitingtime;}
+	bool Getsittingstate() { return this->issitting; }
 };
 

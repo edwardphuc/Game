@@ -1,5 +1,5 @@
 #include "Simon.h"
-D3DXMATRIX scale;
+
 
 void Simon::Update(DWORD dt)
 {
@@ -8,23 +8,24 @@ void Simon::Update(DWORD dt)
 	// simple fall down
 	vy = vy + SIMON_GRAVITY * dt;
 	
-	if (y > 100)
+	if (y < AIR)
+	{
+		waitingtime = 1;
+	}
+	if (y > GROUND)
 	{
 		vy = 0;
-		y = 100.0f;
-		
+		y = GROUND;
+		waitingtime = 0;
 	}
 	
 	// simple screen edge collision!!!
-	if (vx > 0 && x > 290) x = 290;
+	if (vx > 0 && x > 1230) x = 1230;
 	if (vx < 0 && x < 0) x = 0;
 	if (issitting == true)
 	{
 		y = y + PULL_UP_SITTING;
 	}
-	
-	
-	
 }
 
 void Simon::Render()
@@ -37,10 +38,10 @@ void Simon::Render()
 			ani = SIMON_ANI_SIT;
 			issitting = false;
 		}
-		else if (isattacking == true)
+		else if (isjumping == true)
 		{
-			ani = SIMON_ANI_ATTACK;
-			isattacking = false;
+			ani = SIMON_ANI_JUMP;
+			isjumping = false;
 		}
 		else if (nx > 0) ani = SIMON_ANI_IDLE_RIGHT;
 		else ani = SIMON_ANI_IDLE_LEFT;
@@ -72,20 +73,13 @@ void Simon::SetState(int state)
 	case SIMON_STATE_JUMP:
 			vy = -SIMON_JUMP_SPEED_Y;
 			isjumping = true;
-			onground = false;
 			break;
 	case SIMON_STATE_SIT:
 		issitting = true;
 		vx = 0;
 		break;
-	case SIMON_STATE_ATTACK:
-		isattacking = true;
-		vx = 0;
-		vy = 0;
-		break;
 	case SIMON_STATE_IDLE:
 		vx = 0;
-		onground = true;
 		break;
 	}
 }

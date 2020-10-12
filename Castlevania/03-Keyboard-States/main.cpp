@@ -21,11 +21,11 @@
 #include "Simon.h"
 
 #define WINDOW_CLASS_NAME L"SampleWindow"
-#define MAIN_WINDOW_TITLE L"02 - Sprite animation"
+#define MAIN_WINDOW_TITLE L"Catslevania"
 
 #define BACKGROUND_COLOR D3DCOLOR_XRGB(200, 200, 255)
-#define SCREEN_WIDTH 320
-#define SCREEN_HEIGHT 240
+#define SCREEN_WIDTH 1280	
+#define SCREEN_HEIGHT 720
 
 #define MAX_FRAME_RATE 90
 
@@ -51,8 +51,9 @@ void CSampleKeyHander::OnKeyDown(int KeyCode)
 	switch (KeyCode)
 	{
 	case DIK_SPACE:
-		simon->SetState(SIMON_STATE_JUMP);
-		break;
+		if (simon->Getwaitingtime() == 0)
+			simon->SetState(SIMON_STATE_JUMP);
+		else simon->SetState(SIMON_STATE_IDLE);
 	case DIK_A:
 		simon->SetState(SIMON_STATE_ATTACK);
 		break;
@@ -66,9 +67,9 @@ void CSampleKeyHander::OnKeyUp(int KeyCode)
 
 void CSampleKeyHander::KeyState(BYTE *states)
 {
-	if (game->IsKeyDown(DIK_RIGHT))
+	if (game->IsKeyDown(DIK_RIGHT) && simon->Getsittingstate() == false)
 		simon->SetState(SIMON_STATE_WALKING_RIGHT);
-	else if (game->IsKeyDown(DIK_LEFT))
+	else if (game->IsKeyDown(DIK_LEFT) && simon->Getsittingstate() == false)
 		simon->SetState(SIMON_STATE_WALKING_LEFT);
 	else if (game->IsKeyDown(DIK_DOWN))
 		simon->SetState(SIMON_STATE_SIT);
@@ -163,6 +164,10 @@ void LoadResources()
 	ani->Add(100010);
 	animations->Add(801, ani);
 
+	ani = new CAnimation(100);
+	ani->Add(10001);
+	animations->Add(901, ani);
+
 	simon = new Simon();
 	Simon::AddAnimation(400);		// idle right
 	Simon::AddAnimation(401);		// idle left
@@ -170,7 +175,7 @@ void LoadResources()
 	Simon::AddAnimation(501);		// walk left
 	Simon::AddAnimation(601);       // sit
 	Simon::AddAnimation(701);       // attack
-
+	Simon::AddAnimation(901);		// jump
 
 	simon->SetPosition(0.0f, 100.0f);
 }
