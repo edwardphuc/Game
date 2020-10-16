@@ -4,5 +4,5 @@ void Map:: Render()
 {
 	int ani;
 	ani = MAP;
-	animations[ani]->Render(x, y, 2.2);
+	animations[ani]->Render(x, y, 0.95);
 }	

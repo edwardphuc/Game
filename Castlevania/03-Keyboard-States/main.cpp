@@ -20,6 +20,7 @@
 
 #include "Simon.h"
 #include "Map.h"
+#include "Whip.h"
 
 #define WINDOW_CLASS_NAME L"SampleWindow"
 #define MAIN_WINDOW_TITLE L"Catslevania"
@@ -38,6 +39,7 @@
 CGame *game;
 Simon *simon;
 Map  *map;
+Whip* whip;
 class CSampleKeyHander: public CKeyEventHandler
 {
 	virtual void KeyState(BYTE *states);
@@ -53,13 +55,16 @@ void CSampleKeyHander::OnKeyDown(int KeyCode)
 	switch (KeyCode)
 	{
 	case DIK_SPACE:
-		if (simon->Getwaitingtime() == 0)
+ 		if (simon->Getwaitingtime() == 0)
 			simon->SetState(SIMON_STATE_JUMP);
 		else simon->SetState(SIMON_STATE_IDLE);
-	case DIK_A:
-		simon->SetState(SIMON_STATE_ATTACK);
+
+		break;
+	case DIK_Z:
+		whip->setstate(WHIP_IDLE);
 		break;
 	}
+	
 }
 
 void CSampleKeyHander::OnKeyUp(int KeyCode)
@@ -75,6 +80,8 @@ void CSampleKeyHander::KeyState(BYTE *states)
 		simon->SetState(SIMON_STATE_WALKING_LEFT);
 	else if (game->IsKeyDown(DIK_DOWN))
 		simon->SetState(SIMON_STATE_SIT);
+	else if (game->IsKeyDown(DIK_A))
+		simon->SetState(SIMON_STATE_ATTACK);
 	else simon->SetState(SIMON_STATE_IDLE);
 }
 
@@ -101,7 +108,7 @@ void LoadResources()
 
 	textures->Add(ID_TEX_SIMON, L"textures\\Simon.png", D3DCOLOR_XRGB(176, 224, 248));
 	textures->Add(ID_TEX_MAP, L"textures\\Courtyard.png", D3DCOLOR_XRGB(255, 255, 255));
-
+	textures->Add(ID_TEX_WHIP, L"textures\\Whip.png", D3DCOLOR_XRGB(176, 224, 248));
 	CSprites * sprites = CSprites::GetInstance();
 	CAnimations * animations = CAnimations::GetInstance();
 	
@@ -109,17 +116,16 @@ void LoadResources()
 	LPDIRECT3DTEXTURE9 texMap = textures->Get(ID_TEX_MAP);
 	LPDIRECT3DTEXTURE9 texWhip = textures->Get(ID_TEX_WHIP);
 
-	textures->Add(ID_TEX_WHIP, L"textures\\Whip.png", D3DCOLOR_XRGB(176, 224, 248));
 
 	//Sprite Simon
-	sprites->Add(10001, 16, 3, 50, 60, texSimon);
+	sprites->Add(10001, 16, 3, 50, 60, texSimon); //idle
 
-	sprites->Add(10002, 75, 3, 110, 60, texSimon);
+	sprites->Add(10002, 75, 3, 110, 60, texSimon); //walk
 	sprites->Add(10003, 193, 3, 230, 60, texSimon);
 	
-	sprites->Add(10004, 252, 10, 290, 52, texSimon);
+	sprites->Add(10004, 252, 10, 290, 52, texSimon); //sit
 
-	sprites->Add(10005, 298, 70, 348, 127, texSimon);
+	sprites->Add(10005, 298, 70, 348, 127, texSimon); //attack
 	sprites->Add(10006, 373, 70, 410, 127, texSimon);
 	sprites->Add(10007, 435, 70, 479, 127, texSimon);
 
@@ -129,7 +135,7 @@ void LoadResources()
 	sprites->Add(10010, 93, 5, 143, 19, texWhip);
 
 	//Map
-	sprites->Add(10101, 0, 0, 760, 202, texMap);
+	sprites->Add(10101, 0, 0, 1534, 350, texMap);
 
 	LPANIMATION ani;
 
@@ -146,33 +152,33 @@ void LoadResources()
 	ani->Add(10001);
 	ani->Add(10002);
 	ani->Add(10003);
-	animations->Add(500, ani);
+	animations->Add(402, ani);
 
 	ani = new CAnimation(100);
 	ani->Add(10001);
 	ani->Add(10002);
 	ani->Add(10003);
-	animations->Add(501, ani);
+	animations->Add(403, ani);
 
 	ani = new CAnimation(100);
 	ani->Add(10004);
-	animations->Add(601, ani);
+	animations->Add(404, ani);
 
 	ani = new CAnimation(100);
 	ani->Add(10005);
 	ani->Add(10006);
 	ani->Add(10007);
-	animations->Add(701, ani);
+	animations->Add(405, ani);
 
 	ani = new CAnimation(100);
 	ani->Add(10008);
 	ani->Add(10009);
-	ani->Add(100010);
+	ani->Add(10010);
 	animations->Add(801, ani);
 
 	ani = new CAnimation(100);
 	ani->Add(10001);
-	animations->Add(901, ani);
+	animations->Add(406, ani);
 
 	ani = new CAnimation(100);
 	ani->Add(10101);
@@ -181,17 +187,21 @@ void LoadResources()
 	simon = new Simon();
 	Simon::AddAnimation(400);		// idle right
 	Simon::AddAnimation(401);		// idle left
-	Simon::AddAnimation(500);		// walk right
-	Simon::AddAnimation(501);		// walk left
-	Simon::AddAnimation(601);       // sit
-	Simon::AddAnimation(701);       // attack
-	Simon::AddAnimation(901);		// jump
+	Simon::AddAnimation(402);		// walk right
+	Simon::AddAnimation(403);		// walk left
+	Simon::AddAnimation(404);       // sit
+	Simon::AddAnimation(405);       // attack
+	Simon::AddAnimation(406);		// jump
 
 	map = new Map();
 	Map::AddAnimation(1000);
 
+	whip = new Whip();
+	Whip::AddAnimation(801);
+
 	simon->SetPosition(0.0f, 240.0f);
-	map->SetPosition(0.0f, 0.0f);
+	map->SetPosition(-40.0f, -20.0f);
+	whip->SetPosition(0.0f, 240.0f);
 }
 
 /*
@@ -201,20 +211,21 @@ void LoadResources()
 void Update(DWORD dt)
 {
 	simon->Update(dt);
-	
 	float cx, cy;
 	simon->GetPosition(cx, cy);
+	
 	cx -= SCREEN_WIDTH / 10 ;
 	cy -= SCREEN_HEIGHT/ 10 ;
 	float x, y;
 	simon->GetPosition(x, y);
+	
 	if (x == 0 || x < SCREEN_WIDTH/10)
 	{
 		CGame::GetInstance()->SetCamPos(0.0f, 0.0f);
 	}
-	else if (x > SCREEN_WIDTH)
+	else if (x > 1533-640-64)
 	{
-		CGame::GetInstance()->SetCamPos(SCREEN_WIDTH - SCREEN_WIDTH/10, 0.0f);
+		CGame::GetInstance()->SetCamPos(1533-640-64-64, 0.0f);
 	}
 	else CGame::GetInstance()->SetCamPos(cx, 0.0f);
 	
@@ -238,6 +249,7 @@ void Render()
 		spriteHandler->Begin(D3DXSPRITE_ALPHABLEND);
 		map->Render();
 		simon->Render();
+		whip->Render();
 		
 		spriteHandler->End();
 		d3ddv->EndScene();

@@ -1,11 +1,13 @@
 #pragma once
 #include "GameObject.h"
+
+#define WHIP 8
+
+#define WHIP_IDLE 1100
 class Whip : public CGameObject
 {
 public:
-	Whip();
-	void update();
-	void render();
-	void setstate(int state) { this->state = state; }
+	void Render();
+	void setstate(int state);
 };
 

@@ -20,7 +20,7 @@ void Simon::Update(DWORD dt)
 	}
 	
 	// simple screen edge collision!!!
-	if (vx > 0 && x > 1050) x = 1050;
+	if (vx > 0 && x > 1300) x = 1300;
 	if (vx < 0 && x < 0) x = 0;
 	if (issitting == true)
 	{
@@ -42,6 +42,11 @@ void Simon::Render()
 		{
 			ani = SIMON_ANI_JUMP;
 			isjumping = false;
+		}
+		else if(isattacking == true)
+		{
+			ani = SIMON_ANI_ATTACK;
+			isattacking = false;
 		}
 		else if (nx > 0) ani = SIMON_ANI_IDLE_RIGHT;
 		else ani = SIMON_ANI_IDLE_LEFT;
@@ -77,6 +82,11 @@ void Simon::SetState(int state)
 	case SIMON_STATE_SIT:
 		issitting = true;
 		vx = 0;
+		break;
+	case SIMON_STATE_ATTACK:
+		isattacking = true;
+		vx = 0;
+		vy = 0;
 		break;
 	case SIMON_STATE_IDLE:
 		vx = 0;
