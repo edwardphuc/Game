@@ -1,6 +1,9 @@
 #include "Simon.h"
 
-
+Simon::Simon()
+{
+	state = SIMON_STATE_IDLE;
+}
 void Simon::Update(DWORD dt)
 {
 	CGameObject::Update(dt);
@@ -20,7 +23,7 @@ void Simon::Update(DWORD dt)
 	}
 	
 	// simple screen edge collision!!!
-	if (vx > 0 && x > 1300) x = 1300;
+	if (vx > 0 && x > 1280) x = 1280;
 	if (vx < 0 && x < 0) x = 0;
 	if (issitting == true)
 	{

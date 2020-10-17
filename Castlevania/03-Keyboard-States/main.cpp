@@ -21,6 +21,7 @@
 #include "Simon.h"
 #include "Map.h"
 #include "Whip.h"
+#include "Brazier.h"
 
 #define WINDOW_CLASS_NAME L"SampleWindow"
 #define MAIN_WINDOW_TITLE L"Catslevania"
@@ -35,11 +36,19 @@
 #define ID_TEX_WHIP 10
 #define ID_TEX_MISC 20
 #define ID_TEX_MAP	30
+#define ID_TEX_BRAZIER 40
 
 CGame *game;
 Simon *simon;
 Map  *map;
 Whip* whip;
+//Brazier* brazier1;
+//Brazier* brazier2;
+//Brazier* brazier3;
+//Brazier* brazier4;
+//Brazier* brazier5;
+vector<LPGAMEOBJECT> oj; //brazier ob
+
 class CSampleKeyHander: public CKeyEventHandler
 {
 	virtual void KeyState(BYTE *states);
@@ -60,9 +69,9 @@ void CSampleKeyHander::OnKeyDown(int KeyCode)
 		else simon->SetState(SIMON_STATE_IDLE);
 
 		break;
-	case DIK_Z:
-		whip->setstate(WHIP_IDLE);
-		break;
+	case DIK_A:
+		simon->SetState(SIMON_STATE_ATTACK);
+		whip->SetState(WHIP_STATE_ACTIVE);
 	}
 	
 }
@@ -80,8 +89,11 @@ void CSampleKeyHander::KeyState(BYTE *states)
 		simon->SetState(SIMON_STATE_WALKING_LEFT);
 	else if (game->IsKeyDown(DIK_DOWN))
 		simon->SetState(SIMON_STATE_SIT);
-	else if (game->IsKeyDown(DIK_A))
+	/*else if (game->IsKeyDown(DIK_A))
+	{
 		simon->SetState(SIMON_STATE_ATTACK);
+		whip->SetState(WHIP_STATE_ACTIVE);
+	}*/
 	else simon->SetState(SIMON_STATE_IDLE);
 }
 
@@ -109,54 +121,60 @@ void LoadResources()
 	textures->Add(ID_TEX_SIMON, L"textures\\Simon.png", D3DCOLOR_XRGB(176, 224, 248));
 	textures->Add(ID_TEX_MAP, L"textures\\Courtyard.png", D3DCOLOR_XRGB(255, 255, 255));
 	textures->Add(ID_TEX_WHIP, L"textures\\Whip.png", D3DCOLOR_XRGB(176, 224, 248));
+	textures->Add(ID_TEX_BRAZIER, L"textures\\Brazier.png", D3DCOLOR_XRGB(176, 224, 248));
 	CSprites * sprites = CSprites::GetInstance();
 	CAnimations * animations = CAnimations::GetInstance();
 	
 	LPDIRECT3DTEXTURE9 texSimon = textures->Get(ID_TEX_SIMON);
 	LPDIRECT3DTEXTURE9 texMap = textures->Get(ID_TEX_MAP);
 	LPDIRECT3DTEXTURE9 texWhip = textures->Get(ID_TEX_WHIP);
+	LPDIRECT3DTEXTURE9 texBrazier = textures->Get(ID_TEX_BRAZIER);
 
 
 	//Sprite Simon
-	sprites->Add(10001, 16, 3, 50, 60, texSimon); //idle
+	sprites->Add(10001, 0, 3, 50, 60, texSimon); //idle
 
-	sprites->Add(10002, 75, 3, 110, 60, texSimon); //walk
-	sprites->Add(10003, 193, 3, 230, 60, texSimon);
+	sprites->Add(10002, 57, 3, 110, 60, texSimon); //walk
+	sprites->Add(10003, 175, 3, 230, 60, texSimon);
 	
-	sprites->Add(10004, 252, 10, 290, 52, texSimon); //sit
+	sprites->Add(10004, 234, 10, 290, 52, texSimon); //sit
 
-	sprites->Add(10005, 298, 70, 348, 127, texSimon); //attack
-	sprites->Add(10006, 373, 70, 410, 127, texSimon);
-	sprites->Add(10007, 435, 70, 479, 127, texSimon);
+	sprites->Add(10005, 295, 70, 348, 127, texSimon); //attack
+	sprites->Add(10006, 355, 70, 410, 127, texSimon);
+	sprites->Add(10007, 415, 70, 479, 127, texSimon);
 
 	//Sprite whip
-	sprites->Add(10008, 0, 8, 18, 53, texWhip);
+	sprites->Add(10008, 0, 0, 18, 53, texWhip);
 	sprites->Add(10009, 39, 0, 73, 36, texWhip);
 	sprites->Add(10010, 93, 5, 143, 19, texWhip);
 
 	//Map
 	sprites->Add(10101, 0, 0, 1534, 350, texMap);
 
+	//Brazier
+	sprites->Add(10200, 0, 0, 30, 60, texBrazier);
+	sprites->Add(10201, 32, 0, 60, 60, texBrazier);
+
 	LPANIMATION ani;
 
 	ani = new CAnimation(100);	
-	ani->Add(10001);
+	ani->Add(10002);
 	animations->Add(400, ani);
 
 	ani = new CAnimation(100);
-	ani->Add(10001);
+	ani->Add(10002);
 	animations->Add(401, ani);
 
 
 	ani = new CAnimation(100);
-	ani->Add(10001);
 	ani->Add(10002);
+	ani->Add(10001);
 	ani->Add(10003);
 	animations->Add(402, ani);
 
 	ani = new CAnimation(100);
-	ani->Add(10001);
 	ani->Add(10002);
+	ani->Add(10001);
 	ani->Add(10003);
 	animations->Add(403, ani);
 
@@ -184,6 +202,11 @@ void LoadResources()
 	ani->Add(10101);
 	animations->Add(1000, ani);
 
+	ani = new CAnimation(100);
+	ani->Add(10200);
+	ani->Add(10201);
+	animations->Add(1100, ani);
+
 	simon = new Simon();
 	Simon::AddAnimation(400);		// idle right
 	Simon::AddAnimation(401);		// idle left
@@ -196,12 +219,35 @@ void LoadResources()
 	map = new Map();
 	Map::AddAnimation(1000);
 
-	whip = new Whip();
+	whip = new Whip(simon);
 	Whip::AddAnimation(801);
+
+	Brazier *brazier1 = new Brazier();
+	Brazier *brazier2 = new Brazier();
+	Brazier *brazier3 = new Brazier();
+	Brazier *brazier4 = new Brazier();
+	Brazier *brazier5 = new Brazier();
+	Brazier::AddAnimation(1100);
 
 	simon->SetPosition(0.0f, 240.0f);
 	map->SetPosition(-40.0f, -20.0f);
-	whip->SetPosition(0.0f, 240.0f);
+	float x, y;
+	simon->GetPosition(x, y);
+	whip->SetPosition(x, y);
+
+	brazier1->SetPosition(253.0f, 235.0f);
+    brazier2->SetPosition(375.0f, 235.0f);
+	brazier3->SetPosition(506.0f, 235.0f);
+	brazier4->SetPosition(700.0f, 235.0f);
+	brazier5->SetPosition(870.0f, 235.0f);
+
+	oj.push_back(brazier1);
+	oj.push_back(brazier2);
+	oj.push_back(brazier3);
+	oj.push_back(brazier4);
+	oj.push_back(brazier5);
+	oj.push_back(whip);
+	oj.push_back(simon);
 }
 
 /*
@@ -218,6 +264,7 @@ void Update(DWORD dt)
 	cy -= SCREEN_HEIGHT/ 10 ;
 	float x, y;
 	simon->GetPosition(x, y);
+	whip->Update(dt);
 	
 	if (x == 0 || x < SCREEN_WIDTH/10)
 	{
@@ -248,8 +295,10 @@ void Render()
 
 		spriteHandler->Begin(D3DXSPRITE_ALPHABLEND);
 		map->Render();
-		simon->Render();
-		whip->Render();
+		for (int i = 0; i < oj.size(); i++)
+		{
+			oj[i]->Render();
+		}
 		
 		spriteHandler->End();
 		d3ddv->EndScene();
@@ -311,7 +360,7 @@ int Run()
 	MSG msg;
 	int done = 0;
 	DWORD frameStart = GetTickCount();
-	DWORD tickPerFrame = 1000 / MAX_FRAME_RATE;
+	DWORD tickPerFrame = 1000/ MAX_FRAME_RATE;
 
 	while (!done)
 	{

@@ -8,6 +8,8 @@
 
 
 using namespace std;
+class CGameObject;
+typedef CGameObject* LPGAMEOBJECT;
 
 class CGameObject
 {
@@ -31,7 +33,7 @@ public:
 	void GetPosition(float& x, float& y) { x = this->x; y = this->y; }
 	void SetPosition(float x, float y) { this->x = x, this->y = y; }
 	void SetSpeed(float vx, float vy) { this->vx = vx, this->vy = vy; }
-
+	void GetDirect(int& nx) { nx = this->nx; }
 	void SetState(int state) { this->state = state; }
 	int GetState() { return this->state; }
 
@@ -41,6 +43,6 @@ public:
 	CGameObject();
 
 	void Update(DWORD dt);
-	void Render();
+	virtual void Render() = 0;
 	~CGameObject();
 };

@@ -1,7 +1,7 @@
 #pragma once
 #pragma once
 #include "GameObject.h"
-#define SIMON_WALKING_SPEED		0.2f
+#define SIMON_WALKING_SPEED		0.15f
 #define SIMON_JUMP_SPEED_Y		0.5f
 #define SIMON_GRAVITY			0.002f
 #define PULL_UP_SITTING			18.0f
@@ -24,6 +24,7 @@
 #define SIMON_ANI_ATTACK			5
 #define SIMON_ANI_JUMP				6
 
+#define SIMON_ATTACK_TIME			300
 
 class Simon : public CGameObject
 {
@@ -33,11 +34,13 @@ private:
 	bool isjumping = false;
 	DWORD waitingtime = 0;
 public:
-
+	Simon();
 	void Update(DWORD dt);
 	void Render();
 	void SetState(int state);
+	//void GetState(int x) { x = this->state; }
 	DWORD Getwaitingtime() { return this->waitingtime;}
 	bool Getsittingstate() { return this->issitting; }
+	bool Getattackingstate() { return this->isattacking; }
 };
 
