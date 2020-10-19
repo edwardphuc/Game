@@ -47,7 +47,7 @@ Whip* whip;
 //Brazier* brazier3;
 //Brazier* brazier4;
 //Brazier* brazier5;
-vector<LPGAMEOBJECT> oj; //brazier ob
+vector<LPGAMEOBJECT> oj; //brazier oj
 
 class CSampleKeyHander: public CKeyEventHandler
 {
@@ -69,9 +69,9 @@ void CSampleKeyHander::OnKeyDown(int KeyCode)
 		else simon->SetState(SIMON_STATE_IDLE);
 
 		break;
-	case DIK_A:
+	/*case DIK_A:
 		simon->SetState(SIMON_STATE_ATTACK);
-		whip->SetState(WHIP_STATE_ACTIVE);
+		whip->SetState(WHIP_STATE_ACTIVE);*/
 	}
 	
 }
@@ -89,11 +89,11 @@ void CSampleKeyHander::KeyState(BYTE *states)
 		simon->SetState(SIMON_STATE_WALKING_LEFT);
 	else if (game->IsKeyDown(DIK_DOWN))
 		simon->SetState(SIMON_STATE_SIT);
-	/*else if (game->IsKeyDown(DIK_A))
+	else if (game->IsKeyDown(DIK_A))
 	{
 		simon->SetState(SIMON_STATE_ATTACK);
 		whip->SetState(WHIP_STATE_ACTIVE);
-	}*/
+	}
 	else simon->SetState(SIMON_STATE_IDLE);
 }
 
@@ -224,9 +224,10 @@ void LoadResources()
 
 	Brazier *brazier1 = new Brazier();
 	Brazier *brazier2 = new Brazier();
-	Brazier *brazier3 = new Brazier();
+	Brazier *brazier3 = new Brazier();	
 	Brazier *brazier4 = new Brazier();
 	Brazier *brazier5 = new Brazier();
+
 	Brazier::AddAnimation(1100);
 
 	simon->SetPosition(0.0f, 240.0f);
@@ -248,6 +249,7 @@ void LoadResources()
 	oj.push_back(brazier5);
 	oj.push_back(whip);
 	oj.push_back(simon);
+	
 }
 
 /*
@@ -256,7 +258,11 @@ void LoadResources()
 */
 void Update(DWORD dt)
 {
-	simon->Update(dt);
+	vector<LPGAMEOBJECT> coObjects;
+	for (int i = 0; i < oj.size(); i++)
+	{
+		coObjects.push_back(oj[i]);
+	}
 	float cx, cy;
 	simon->GetPosition(cx, cy);
 	
@@ -264,7 +270,7 @@ void Update(DWORD dt)
 	cy -= SCREEN_HEIGHT/ 10 ;
 	float x, y;
 	simon->GetPosition(x, y);
-	whip->Update(dt);
+	
 	
 	if (x == 0 || x < SCREEN_WIDTH/10)
 	{
@@ -276,7 +282,10 @@ void Update(DWORD dt)
 	}
 	else CGame::GetInstance()->SetCamPos(cx, 0.0f);
 	
-	
+	for (int i = 0; i < oj.size(); i++)
+	{
+		oj[i]->Update(dt, &coObjects);
+	}
 }
 
 /*

@@ -26,6 +26,12 @@
 
 #define SIMON_ATTACK_TIME			300
 
+//BBox
+#define SIMON_STAND_BBOX_WIDTH		55
+#define SIMON_STAND_BBOX_HEIGHT		60
+#define SIMON_SIT_BBOX_WIDTH		56
+#define SIMON_SIT_BBOX_HEIGHT		42
+
 class Simon : public CGameObject
 {
 private:
@@ -35,12 +41,13 @@ private:
 	DWORD waitingtime = 0;
 public:
 	Simon();
-	void Update(DWORD dt);
+	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void Render();
 	void SetState(int state);
 	//void GetState(int x) { x = this->state; }
 	DWORD Getwaitingtime() { return this->waitingtime;}
 	bool Getsittingstate() { return this->issitting; }
 	bool Getattackingstate() { return this->isattacking; }
+	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 };
 

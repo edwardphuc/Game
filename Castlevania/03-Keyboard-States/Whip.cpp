@@ -1,4 +1,6 @@
 #include "Whip.h"
+#include <algorithm>
+#include "Brazier.h"
 
 Whip::Whip(Simon *sm)
 {
@@ -8,9 +10,18 @@ Whip::Whip(Simon *sm)
 	isactive = false;
 }
 
-void Whip::Update(DWORD dt)
+void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
+	CGameObject::Update(dt);
+	vector<LPCOLLISIONEVENT> coEvents;
+	vector<LPCOLLISIONEVENT> coEventsResult;
 
+	coEvents.clear();
+	if (state != WHIP_STATE_UNACTIVE)
+	{
+		CalcPotentialCollisions(coObjects, coEvents);
+	}
+	
 	int stt = simon->GetState();
 	float x, y;
 	int z;
@@ -79,6 +90,42 @@ void Whip::Update(DWORD dt)
 			}
 		}
 	}
+
+	if (coEvents.size() == 0)
+	{
+		x += dx;
+		y += dy;
+		
+	}
+	else 
+	{
+		float min_tx, min_ty, nx = 0, ny;
+
+		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny);
+
+		// block 
+		x += min_tx * dx + nx * 0.4f;		// nx*0.4f : need to push out a bit to avoid overlapping next frame
+		y += min_ty * dy + ny * 0.4f;
+
+		if (nx != 0) vx = 0;
+		if (ny != 0) vy = 0;
+		for (UINT i = 0; i < coEventsResult.size(); i++)
+		{
+			LPCOLLISIONEVENT e = coEventsResult[i];
+			if (dynamic_cast<Brazier*>(e->obj)) // if e->obj is Goomba 
+			{
+				Brazier* brazier = dynamic_cast<Brazier*>(e->obj);
+
+				if (brazier->GetState() != BRAZIER_STATE_UNACTIVE)
+				{
+					brazier->SetState(BRAZIER_STATE_UNACTIVE);
+					//simon->SetPosition(0, 0);
+				}
+			}
+		}
+		for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
+	}
+	
 }
 void Whip::Render()
 {
@@ -106,7 +153,40 @@ void Whip::setstate(int state)
 		isactive = true;
 		break;
 	case WHIP_STATE_UNACTIVE:
+		isactive = false;
 		break;
+	}
+	RenderBoundingBox();
+}
+void Whip::GetBoundingBox(float& left, float& top, float& right, float& bottom)
+{
+	if (state == WHIP_STATE_ACTIVE)
+	{
+		int frame = animations[8]->GetCurrentFrame();
+		left = x;
+		top = y;
+		switch (frame)
+		{
+		case 0:
+		{
+			right = left + WHIP_F1_BBOX_WIDTH;
+			bottom = top + WHIP_F1_BBOX_HEIGHT;
+			break;
+		}
+		case 1:
+		{
+			right = left + WHIP_F2_BBOX_WIDTH;
+			bottom = top + WHIP_F2_BBOX_HEIGHT;
+			break;
+		}
+		case 2:
+		{
+			right = left + WHIP_F3_BBOX_WIDTH;
+			bottom = top + WHIP_F3_BBOX_HEIGHT;
+			break;
+		}
+		}
+
 	}
 }
 

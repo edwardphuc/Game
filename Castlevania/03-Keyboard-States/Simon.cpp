@@ -1,34 +1,40 @@
 #include "Simon.h"
+#include <algorithm>
+#include "Brazier.h"
 
 Simon::Simon()
 {
 	state = SIMON_STATE_IDLE;
 }
-void Simon::Update(DWORD dt)
+void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CGameObject::Update(dt);
-
 	// simple fall down
 	vy = vy + SIMON_GRAVITY * dt;
+
+
+		x += dx;
+		y += dy;
+		if (y < AIR)
+		{
+			waitingtime = 1;
+		}
+		if (y > GROUND)
+		{
+			vy = 0;
+			y = GROUND;
+			waitingtime = 0;
+		}
+
+		// simple screen edge collision!!!
+		if (vx > 0 && x > 1280) x = 1280;
+		if (vx < 0 && x < 0) x = 0;
+		if (issitting == true)
+		{
+			y = y + PULL_UP_SITTING;
+		}
 	
-	if (y < AIR)
-	{
-		waitingtime = 1;
-	}
-	if (y > GROUND)
-	{
-		vy = 0;
-		y = GROUND;
-		waitingtime = 0;
-	}
 	
-	// simple screen edge collision!!!
-	if (vx > 0 && x > 1280) x = 1280;
-	if (vx < 0 && x < 0) x = 0;
-	if (issitting == true)
-	{
-		y = y + PULL_UP_SITTING;
-	}
 }
 
 void Simon::Render()
@@ -60,7 +66,7 @@ void Simon::Render()
 	else ani = SIMON_ANI_WALKING_LEFT;
 	
 	animations[ani]->Render(x, y, scale);
-	
+	RenderBoundingBox();
 }
 
 void Simon::SetState(int state)
@@ -94,6 +100,23 @@ void Simon::SetState(int state)
 	case SIMON_STATE_IDLE:
 		vx = 0;
 		break;
+	}
+}
+
+void Simon::GetBoundingBox(float& left, float& top, float& right, float& bottom)
+{
+	left = x;
+	top = y;
+
+	if (state == SIMON_STATE_SIT)
+	{
+		right = x + SIMON_SIT_BBOX_WIDTH;
+		bottom = y + SIMON_SIT_BBOX_HEIGHT;
+	}
+	else
+	{
+		right = x + SIMON_STAND_BBOX_WIDTH;
+		bottom = y + SIMON_STAND_BBOX_HEIGHT;
 	}
 }
 
