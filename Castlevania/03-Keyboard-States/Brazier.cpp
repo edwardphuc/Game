@@ -1,8 +1,13 @@
 #include "Brazier.h"
+Brazier::Brazier()
+{
+	state = BRAZIER_STATE_ACTIVE;
+	
+}
 void Brazier::Render()
 {
 	int ani;
-	if (isappearing == true)
+	if (state == BRAZIER_STATE_ACTIVE)
 	{
 		ani = BRAZIER;
 		animations[ani]->Render(x, y, 1);
@@ -25,7 +30,9 @@ void Brazier::SetState(int state)
 	{
 	case BRAZIER_STATE_ACTIVE:
 		isappearing = true;
+		break;
 	case BRAZIER_STATE_UNACTIVE:
 		isappearing = false;
+		break;
 	}
 }

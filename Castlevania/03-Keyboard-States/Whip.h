@@ -23,7 +23,7 @@ public:
 	Whip(Simon *sm);
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void Render();
-	void setstate(int state);
+	void SetState(int state);
 	bool Getactivestate() { return this->isactive; }
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 };

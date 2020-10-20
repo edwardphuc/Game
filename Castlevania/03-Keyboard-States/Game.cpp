@@ -1,4 +1,4 @@
-#include "Game.h"
+﻿#include "Game.h"
 #include "debug.h"
 
 CGame * CGame::__instance = NULL;
@@ -273,7 +273,7 @@ void CGame::SweptAABB(
 	}
 	else
 	{
-		tx_entry = dx_entry / dx;
+		tx_entry = dx_entry / dx; // thời gian = quãng đg cần đi / quãng đg đi đc trong 1 đơn vị time
 		tx_exit = dx_exit / dx;
 	}
 
@@ -289,7 +289,7 @@ void CGame::SweptAABB(
 	}
 
 
-	if ((tx_entry < 0.0f && ty_entry < 0.0f) || tx_entry > 1.0f || ty_entry > 1.0f) return;
+	if ((tx_entry < 0.0f && ty_entry < 0.0f) || tx_entry > 1.0f || ty_entry > 1.0f) return; // không va chạm
 
 	t_entry = max(tx_entry, ty_entry);
 	t_exit = min(tx_exit, ty_exit);

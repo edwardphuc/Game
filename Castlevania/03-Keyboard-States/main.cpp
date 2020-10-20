@@ -35,12 +35,18 @@
 #define ID_TEX_SIMON 0
 #define ID_TEX_WHIP 10
 #define ID_TEX_MISC 20
-#define ID_TEX_MAP	30
+#define ID_TEX_MAP1	30
 #define ID_TEX_BRAZIER 40
+#define ID_TEX_MAP2 50
+
 
 CGame *game;
 Simon *simon;
-Map  *map;
+Map  *map1;
+Map  *map2;
+Map* map3;
+Map* map4;
+Map* map5;
 Whip* whip;
 //Brazier* brazier1;
 //Brazier* brazier2;
@@ -119,16 +125,18 @@ void LoadResources()
 	CTextures * textures = CTextures::GetInstance();
 
 	textures->Add(ID_TEX_SIMON, L"textures\\Simon.png", D3DCOLOR_XRGB(176, 224, 248));
-	textures->Add(ID_TEX_MAP, L"textures\\Courtyard.png", D3DCOLOR_XRGB(255, 255, 255));
+	textures->Add(ID_TEX_MAP1, L"textures\\Courtyard.png", D3DCOLOR_XRGB(255, 255, 255));
 	textures->Add(ID_TEX_WHIP, L"textures\\Whip.png", D3DCOLOR_XRGB(176, 224, 248));
 	textures->Add(ID_TEX_BRAZIER, L"textures\\Brazier.png", D3DCOLOR_XRGB(176, 224, 248));
+	textures->Add(ID_TEX_MAP2, L"textures\\lv2.png", D3DCOLOR_XRGB(255, 255, 255));
 	CSprites * sprites = CSprites::GetInstance();
 	CAnimations * animations = CAnimations::GetInstance();
 	
 	LPDIRECT3DTEXTURE9 texSimon = textures->Get(ID_TEX_SIMON);
-	LPDIRECT3DTEXTURE9 texMap = textures->Get(ID_TEX_MAP);
+	LPDIRECT3DTEXTURE9 texMap1 = textures->Get(ID_TEX_MAP1);
 	LPDIRECT3DTEXTURE9 texWhip = textures->Get(ID_TEX_WHIP);
 	LPDIRECT3DTEXTURE9 texBrazier = textures->Get(ID_TEX_BRAZIER);
+	LPDIRECT3DTEXTURE9 texMap2 = textures->Get(ID_TEX_MAP2);
 
 
 	//Sprite Simon
@@ -149,7 +157,12 @@ void LoadResources()
 	sprites->Add(10010, 93, 5, 143, 19, texWhip);
 
 	//Map
-	sprites->Add(10101, 0, 0, 1534, 350, texMap);
+	sprites->Add(10101, 0, 0, 1534, 350, texMap1);
+	sprites->Add(10102, 0, 0, 3078, 376, texMap2);
+	sprites->Add(10103, 3078, 0, 4094, 376, texMap2);
+	sprites->Add(10104, 4094, 0, 5630, 376, texMap2);
+	sprites->Add(10105, 3078, 376, 4094, 767, texMap2);
+
 
 	//Brazier
 	sprites->Add(10200, 0, 0, 30, 60, texBrazier);
@@ -203,6 +216,22 @@ void LoadResources()
 	animations->Add(1000, ani);
 
 	ani = new CAnimation(100);
+	ani->Add(10102);
+	animations->Add(1001, ani);
+
+	ani = new CAnimation(100);
+	ani->Add(10103);
+	animations->Add(1002, ani);
+
+	ani = new CAnimation(100);
+	ani->Add(10104);
+	animations->Add(1003, ani);
+
+	ani = new CAnimation(100);
+	ani->Add(10105);
+	animations->Add(1004, ani);
+
+	ani = new CAnimation(100);
 	ani->Add(10200);
 	ani->Add(10201);
 	animations->Add(1100, ani);
@@ -216,9 +245,12 @@ void LoadResources()
 	Simon::AddAnimation(405);       // attack
 	Simon::AddAnimation(406);		// jump
 
-	map = new Map();
+	map1 = new Map();
 	Map::AddAnimation(1000);
-
+	map2 = new Map();
+	map3 = new Map();
+	map4 = new Map();
+	map5 = new Map();
 	whip = new Whip(simon);
 	Whip::AddAnimation(801);
 
@@ -229,9 +261,17 @@ void LoadResources()
 	Brazier *brazier5 = new Brazier();
 
 	Brazier::AddAnimation(1100);
+	Map::AddAnimation(1001);
+	Map::AddAnimation(1002);
+	Map::AddAnimation(1003);
+	Map::AddAnimation(1004);
 
 	simon->SetPosition(0.0f, 240.0f);
-	map->SetPosition(-40.0f, -20.0f);
+	map1->SetPosition(-40.0f, -20.0f);
+	map2->SetPosition(1215.0f, -28.0f);
+	map3->SetPosition(3980.0f, -28.0f);
+	map4->SetPosition(4804.0f, -28.0f);
+	map5->SetPosition(3980.0f, 280.0f);
 	float x, y;
 	simon->GetPosition(x, y);
 	whip->SetPosition(x, y);
@@ -276,10 +316,18 @@ void Update(DWORD dt)
 	{
 		CGame::GetInstance()->SetCamPos(0.0f, 0.0f);
 	}
-	else if (x > 1533-640-64)
+	else if (x > 1533-640-64 && x < 1280)
 	{
 		CGame::GetInstance()->SetCamPos(1533-640-64-64, 0.0f);
 	}
+	else if (x == 1280)
+	{
+		CGame::GetInstance()->SetCamPos(1500, 0.0f);
+	}
+	/*else if (x > 4200 - 640 - 64)
+	{
+		CGame::GetInstance()->SetCamPos(4200 - 640 - 64 - 64, 0.0f);
+	}*/
 	else CGame::GetInstance()->SetCamPos(cx, 0.0f);
 	
 	for (int i = 0; i < oj.size(); i++)
@@ -303,7 +351,11 @@ void Render()
 		d3ddv->ColorFill(bb, NULL, BACKGROUND_COLOR);
 
 		spriteHandler->Begin(D3DXSPRITE_ALPHABLEND);
-		map->Render();
+		map1->render(1000);
+		map2->render(1001);
+		map3->render(1002);
+		map4->render(1003);
+		map5->render(1004);
 		for (int i = 0; i < oj.size(); i++)
 		{
 			oj[i]->Render();

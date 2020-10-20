@@ -2,10 +2,37 @@
 
 void Map:: Render()
 {
-	int ani;
-	ani = MAP;
-	animations[ani]->Render(x, y, 0.95);
 }	
+void Map::render(int id)
+{
+	int ani;
+	if (id == 1000)
+	{
+		ani = MAP1;
+		animations[ani]->Render(x, y, 0.95);
+	}
+	else if (id == 1001)
+	{
+		ani = MAP2;
+		animations[ani]->Render(x, y, 0.85);
+	}
+	else if (id == 1002)
+	{
+		ani = MAP3;
+		animations[ani]->Render(x, y, 0.85);
+	}
+	else if (id == 1003)
+	{
+		ani = MAP4;
+		animations[ani]->Render(x, y, 0.85);
+	}
+	else if (id == 1004)
+	{
+		ani = MAP5;
+		animations[ani]->Render(x, y, 0.85);
+	}
+	
+}
 void Map::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
 

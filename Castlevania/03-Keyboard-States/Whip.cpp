@@ -17,7 +17,7 @@ void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	vector<LPCOLLISIONEVENT> coEventsResult;
 
 	coEvents.clear();
-	if (state != WHIP_STATE_UNACTIVE)
+	if (state == WHIP_STATE_ACTIVE)
 	{
 		CalcPotentialCollisions(coObjects, coEvents);
 	}
@@ -28,21 +28,16 @@ void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	simon->GetPosition(x, y);
 	simon->GetDirect(z);
 	attack_start = GetTickCount();
-	if (stt != SIMON_STATE_ATTACK)
-	{
-		CGameObject::SetPosition(x, y);
-		attack_start = 0;
-		state = WHIP_STATE_UNACTIVE;
-	}
+
 	if (stt == SIMON_STATE_ATTACK)
 	{
-		//int frame = animations[8]->GetCurrentFrame();
+		int frame = animations[8]->GetCurrentFrame();
 		unsigned int t1 = animations[8]->GetFrame(0)->GetTime();
 		unsigned int t2 = animations[8]->GetFrame(1)->GetTime() + t1;
 		unsigned int t3 = animations[8]->GetFrame(2)->GetTime() + t2;
 		if (z == 1)
 		{
-			switch (animations[8]->GetCurrentFrame())
+			switch (frame)
 			{
 			case 0:
 				if (GetTickCount() - attack_start <= t1)
@@ -72,13 +67,13 @@ void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			case 0:
 				if (GetTickCount() - attack_start <= t1)
 				{
-					CGameObject::SetPosition(x + 30, y + 13);
+					CGameObject::SetPosition(x + 30, y + 10);
 				}
 				break;
 			case 1:
 				if (GetTickCount() - attack_start <= t2)
 				{
-					CGameObject::SetPosition(x + 30, y + 13);
+					CGameObject::SetPosition(x + 30, y + 10);
 				}
 				break;
 			case 2:
@@ -89,17 +84,18 @@ void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				break;
 			}
 		}
-	}
-
-	if (coEvents.size() == 0)
-	{
-		x += dx;
-		y += dy;
 		
 	}
-	else 
+	else
 	{
-		float min_tx, min_ty, nx = 0, ny;
+		SetPosition(x, y);
+		attack_start = 0;
+		state = WHIP_STATE_UNACTIVE;
+	}
+	
+	if(coEvents.size() != 0)
+	{
+		float min_tx, min_ty, nx = 0, ny=0;
 
 		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny);
 
@@ -123,9 +119,9 @@ void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				}
 			}
 		}
-		for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
+		
 	}
-	
+	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 }
 void Whip::Render()
 {
@@ -142,11 +138,13 @@ void Whip::Render()
 		else scale = -1;
 		animations[ani1]->Render(x, y, scale);
 	}
-
+	RenderBoundingBox();
 }
-void Whip::setstate(int state)
+void Whip::SetState(int state)
 {
 	CGameObject::SetState(state);
+	int z;
+	simon->GetDirect(z);
 	switch (state)
 	{
 	case WHIP_STATE_ACTIVE:
@@ -162,14 +160,14 @@ void Whip::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
 	if (state == WHIP_STATE_ACTIVE)
 	{
-		int frame = animations[8]->GetCurrentFrame();
+		int frame = animations[WHIP]->GetCurrentFrame();
 		left = x;
 		top = y;
 		switch (frame)
 		{
 		case 0:
 		{
-			right = left + WHIP_F1_BBOX_WIDTH;
+			right = left - WHIP_F1_BBOX_WIDTH;
 			bottom = top + WHIP_F1_BBOX_HEIGHT;
 			break;
 		}
@@ -185,6 +183,10 @@ void Whip::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 			bottom = top + WHIP_F3_BBOX_HEIGHT;
 			break;
 		}
+		default:
+			right = left;
+			bottom = top;
+			break;
 		}
 
 	}

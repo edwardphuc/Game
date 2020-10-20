@@ -27,7 +27,11 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		}
 
 		// simple screen edge collision!!!
-		if (vx > 0 && x > 1280) x = 1280;
+		if (vx > 0 && x > 1280 && x < 1510) x = 1510;
+		if (x > 1280 && x < 1510) x = 1510;
+		if (vx > 0 && x >= 1510) x += dx;
+
+
 		if (vx < 0 && x < 0) x = 0;
 		if (issitting == true)
 		{

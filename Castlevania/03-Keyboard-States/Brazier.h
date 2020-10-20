@@ -12,6 +12,7 @@ class Brazier: public CGameObject
 private:
 	bool isappearing = true;
 public:
+	    Brazier();
 	    void Render();
 		void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 		void SetState(int state);
