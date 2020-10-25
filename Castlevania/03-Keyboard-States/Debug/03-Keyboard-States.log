@@ -1,8 +1,5 @@
-﻿  Simon.cpp
-  Whip.cpp
-  main.cpp
-D:\Clone\Game\Castlevania\03-Keyboard-States\main.cpp(302,20): warning C4018: '<': signed/unsigned mismatch
-D:\Clone\Game\Castlevania\03-Keyboard-States\main.cpp(333,20): warning C4018: '<': signed/unsigned mismatch
-D:\Clone\Game\Castlevania\03-Keyboard-States\main.cpp(359,21): warning C4018: '<': signed/unsigned mismatch
-  Generating Code...
+﻿  main.cpp
+D:\Clone\Game\Castlevania\03-Keyboard-States\main.cpp(318,20): warning C4018: '<': signed/unsigned mismatch
+D:\Clone\Game\Castlevania\03-Keyboard-States\main.cpp(353,20): warning C4018: '<': signed/unsigned mismatch
+D:\Clone\Game\Castlevania\03-Keyboard-States\main.cpp(379,21): warning C4018: '<': signed/unsigned mismatch
   03-Keyboard-States.vcxproj -> D:\Clone\Game\Castlevania\Debug\03-Keyboard-States.exe

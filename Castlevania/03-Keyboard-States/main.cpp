@@ -22,6 +22,7 @@
 #include "Map.h"
 #include "Whip.h"
 #include "Brazier.h"
+#include "Heart.h"
 
 #define WINDOW_CLASS_NAME L"SampleWindow"
 #define MAIN_WINDOW_TITLE L"Catslevania"
@@ -38,6 +39,7 @@
 #define ID_TEX_MAP1	30
 #define ID_TEX_BRAZIER 40
 #define ID_TEX_MAP2 50
+#define ID_TEX_ITEM 60
 
 
 CGame *game;
@@ -125,6 +127,7 @@ void LoadResources()
 	CTextures * textures = CTextures::GetInstance();
 
 	textures->Add(ID_TEX_SIMON, L"textures\\Simon.png", D3DCOLOR_XRGB(176, 224, 248));
+	textures->Add(ID_TEX_ITEM, L"textures\\All_small_item.png", D3DCOLOR_XRGB(255, 255, 255));
 	textures->Add(ID_TEX_MAP1, L"textures\\Courtyard.png", D3DCOLOR_XRGB(255, 255, 255));
 	textures->Add(ID_TEX_WHIP, L"textures\\Whip.png", D3DCOLOR_XRGB(176, 224, 248));
 	textures->Add(ID_TEX_BRAZIER, L"textures\\Brazier.png", D3DCOLOR_XRGB(176, 224, 248));
@@ -137,7 +140,7 @@ void LoadResources()
 	LPDIRECT3DTEXTURE9 texWhip = textures->Get(ID_TEX_WHIP);
 	LPDIRECT3DTEXTURE9 texBrazier = textures->Get(ID_TEX_BRAZIER);
 	LPDIRECT3DTEXTURE9 texMap2 = textures->Get(ID_TEX_MAP2);
-
+	LPDIRECT3DTEXTURE9 texItem = textures->Get(ID_TEX_ITEM);
 
 	//Sprite Simon
 	sprites->Add(10001, 0, 3, 50, 60, texSimon); //idle
@@ -167,6 +170,11 @@ void LoadResources()
 	//Brazier
 	sprites->Add(10200, 0, 0, 30, 60, texBrazier);
 	sprites->Add(10201, 32, 0, 60, 60, texBrazier);
+
+	//Small item
+	sprites->Add(10300, 0, 0, 15, 15, texItem); //heart
+	sprites->Add(10301, 2, 40, 37, 55, texItem); //dagger
+	sprites->Add(10302, 51, 0, 82, 32, texItem); //whip upgrade
 
 	LPANIMATION ani;
 
@@ -236,6 +244,10 @@ void LoadResources()
 	ani->Add(10201);
 	animations->Add(1100, ani);
 
+	ani = new CAnimation(100);
+	ani->Add(10300);
+	animations->Add(1300, ani);
+
 	simon = new Simon();
 	Simon::AddAnimation(400);		// idle right
 	Simon::AddAnimation(401);		// idle left
@@ -260,12 +272,15 @@ void LoadResources()
 	Brazier *brazier4 = new Brazier();
 	Brazier *brazier5 = new Brazier();
 
+	Heart* heart1 = new Heart();
+
 	Brazier::AddAnimation(1100);
 	Map::AddAnimation(1001);
 	Map::AddAnimation(1002);
 	Map::AddAnimation(1003);
 	Map::AddAnimation(1004);
 
+	Heart::AddAnimation(1300);
 	simon->SetPosition(0.0f, 240.0f);
 	map1->SetPosition(-40.0f, -20.0f);
 	map2->SetPosition(1215.0f, -28.0f);
@@ -281,7 +296,7 @@ void LoadResources()
 	brazier3->SetPosition(506.0f, 235.0f);
 	brazier4->SetPosition(700.0f, 235.0f);
 	brazier5->SetPosition(870.0f, 235.0f);
-
+	
 	oj.push_back(brazier1);
 	oj.push_back(brazier2);
 	oj.push_back(brazier3);
@@ -320,14 +335,18 @@ void Update(DWORD dt)
 	{
 		CGame::GetInstance()->SetCamPos(1533-640-64-64, 0.0f);
 	}
-	else if (x == 1280)
+	else if (x == 1280 || (x<1445 + 64 && x > 1280))
 	{
-		CGame::GetInstance()->SetCamPos(1500, 0.0f);
+		CGame::GetInstance()->SetCamPos(1445, 0.0f);
 	}
-	/*else if (x > 4200 - 640 - 64)
+	else if (x > 4200 - 640 - 64 && x < 4000)
 	{
 		CGame::GetInstance()->SetCamPos(4200 - 640 - 64 - 64, 0.0f);
-	}*/
+	}
+	else if (x == 4050 || (x>4050 && x < 4050 + 64))
+	{
+		CGame::GetInstance()->SetCamPos(4050, 0.0f);
+	}
 	else CGame::GetInstance()->SetCamPos(cx, 0.0f);
 	
 	for (int i = 0; i < oj.size(); i++)

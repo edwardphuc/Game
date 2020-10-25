@@ -13,8 +13,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	vy = vy + SIMON_GRAVITY * dt;
 
 
-		x += dx;
-		y += dy;
+	    y += dy;
 		if (y < AIR)
 		{
 			waitingtime = 1;
@@ -27,17 +26,19 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		}
 
 		// simple screen edge collision!!!
-		if (vx > 0 && x > 1280 && x < 1510) x = 1510;
-		if (x > 1280 && x < 1510) x = 1510;
-		if (vx > 0 && x >= 1510) x += dx;
-
+		
+		if (vx > 0 && x > 1280 && x < 1420 ) x = 1420;
+		if (x > 1280 && x < 1420) x = 1440;
+		if (x > 4000 && x< 4050) x = 4050;
+		if (vx !=0  && (x < 1280 || x >= 1420 || x>= 4050)) x += dx;
+		
 
 		if (vx < 0 && x < 0) x = 0;
 		if (issitting == true)
 		{
 			y = y + PULL_UP_SITTING;
 		}
-	
+
 	
 }
 

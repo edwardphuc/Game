@@ -154,7 +154,6 @@ void Whip::SetState(int state)
 		isactive = false;
 		break;
 	}
-	RenderBoundingBox();
 }
 void Whip::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
