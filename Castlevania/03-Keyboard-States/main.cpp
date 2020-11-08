@@ -23,6 +23,8 @@
 #include "Whip.h"
 #include "Brazier.h"
 #include "Heart.h"
+#include "Ghost.h"
+#include "Brick.h"
 
 #define WINDOW_CLASS_NAME L"SampleWindow"
 #define MAIN_WINDOW_TITLE L"Catslevania"
@@ -40,6 +42,8 @@
 #define ID_TEX_BRAZIER 40
 #define ID_TEX_MAP2 50
 #define ID_TEX_ITEM 60
+#define ID_TEX_GHOST 70
+#define ID_TEX_BRICK 80
 
 
 CGame *game;
@@ -77,9 +81,10 @@ void CSampleKeyHander::OnKeyDown(int KeyCode)
 		else simon->SetState(SIMON_STATE_IDLE);
 
 		break;
-	/*case DIK_A:
+	case DIK_A:
 		simon->SetState(SIMON_STATE_ATTACK);
-		whip->SetState(WHIP_STATE_ACTIVE);*/
+		whip->SetState(WHIP_STATE_ACTIVE);
+		break;
 	}
 	
 }
@@ -87,6 +92,13 @@ void CSampleKeyHander::OnKeyDown(int KeyCode)
 void CSampleKeyHander::OnKeyUp(int KeyCode)
 {
 	DebugOut(L"[INFO] KeyUp: %d\n", KeyCode);
+	/*switch (KeyCode)
+	{
+	case DIK_A:
+		simon->SetState(SIMON_STATE_IDLE);
+		whip->SetState(WHIP_STATE_UNACTIVE);
+		break;
+	}*/
 }
 
 void CSampleKeyHander::KeyState(BYTE *states)
@@ -97,11 +109,13 @@ void CSampleKeyHander::KeyState(BYTE *states)
 		simon->SetState(SIMON_STATE_WALKING_LEFT);
 	else if (game->IsKeyDown(DIK_DOWN))
 		simon->SetState(SIMON_STATE_SIT);
-	else if (game->IsKeyDown(DIK_A))
+	/*else if (game->IsKeyDown(DIK_A))
 	{
 		simon->SetState(SIMON_STATE_ATTACK);
 		whip->SetState(WHIP_STATE_ACTIVE);
-	}
+	}*/
+	/*else if (game->IsKeyDown(DIK_UP) && simon->GetState() == SIMON_STATE_SIT)
+		simon->SetState(SIMON_STATE_STANDUP);*/
 	else simon->SetState(SIMON_STATE_IDLE);
 }
 
@@ -132,6 +146,8 @@ void LoadResources()
 	textures->Add(ID_TEX_WHIP, L"textures\\Whip.png", D3DCOLOR_XRGB(176, 224, 248));
 	textures->Add(ID_TEX_BRAZIER, L"textures\\Brazier.png", D3DCOLOR_XRGB(176, 224, 248));
 	textures->Add(ID_TEX_MAP2, L"textures\\lv2.png", D3DCOLOR_XRGB(255, 255, 255));
+	textures->Add(ID_TEX_GHOST, L"textures\\Ghost.png", D3DCOLOR_XRGB(176, 224, 248));
+	textures->Add(ID_TEX_BRICK, L"textures\\Block.png", D3DCOLOR_XRGB(176, 224, 248));
 	CSprites * sprites = CSprites::GetInstance();
 	CAnimations * animations = CAnimations::GetInstance();
 	
@@ -141,6 +157,8 @@ void LoadResources()
 	LPDIRECT3DTEXTURE9 texBrazier = textures->Get(ID_TEX_BRAZIER);
 	LPDIRECT3DTEXTURE9 texMap2 = textures->Get(ID_TEX_MAP2);
 	LPDIRECT3DTEXTURE9 texItem = textures->Get(ID_TEX_ITEM);
+	LPDIRECT3DTEXTURE9 texGhost = textures->Get(ID_TEX_GHOST);
+	LPDIRECT3DTEXTURE9 texBrick = textures->Get(ID_TEX_BRICK);
 
 	//Sprite Simon
 	sprites->Add(10001, 0, 3, 50, 60, texSimon); //idle
@@ -175,6 +193,10 @@ void LoadResources()
 	sprites->Add(10300, 0, 0, 15, 15, texItem); //heart
 	sprites->Add(10301, 2, 40, 37, 55, texItem); //dagger
 	sprites->Add(10302, 51, 0, 82, 32, texItem); //whip upgrade
+
+	//Ghost
+	sprites->Add(10400, 0, 0, 30, 62, texGhost);
+	sprites->Add(10401, 32, 0, 60, 60, texGhost);
 
 	LPANIMATION ani;
 
@@ -248,6 +270,16 @@ void LoadResources()
 	ani->Add(10300);
 	animations->Add(1300, ani);
 
+	ani = new CAnimation(100);
+	ani->Add(10400);
+	ani->Add(10301);
+	animations->Add(1400, ani);
+
+	ani = new CAnimation(100);
+	ani->Add(10400);
+	ani->Add(10301);
+	animations->Add(1401, ani);
+
 	simon = new Simon();
 	Simon::AddAnimation(400);		// idle right
 	Simon::AddAnimation(401);		// idle left
@@ -281,6 +313,32 @@ void LoadResources()
 	Map::AddAnimation(1004);
 
 	Heart::AddAnimation(1300);
+
+	Ghost::AddAnimation(1400);
+	Ghost::AddAnimation(1401);
+
+	/*for (int i = 0; i < 6; i++)
+	{
+		Ghost* ghost = new Ghost();
+		if (i < 3)
+		{
+			ghost->SetPosition(i * 10.0f, 240.0f);
+			ghost->Setstate(GHOST_STATE_WALKING_RIGHT);
+			oj.push_back(ghost);
+		}
+		else if (i >= 3 && i < 6)
+		{
+			ghost->SetPosition(1270 - i * 10.0f, 240.0f);
+			ghost->Setstate(GHOST_STATE_WALKING_LEFT);
+			oj.push_back(ghost);
+		}
+	}*/
+	for (int i = 0; i < 48; i++)
+	{
+		Brick* brick = new Brick();
+		brick->SetPosition(i * 29.0f, 301.0f);
+		oj.push_back(brick);
+	}
 	simon->SetPosition(0.0f, 240.0f);
 	map1->SetPosition(-40.0f, -20.0f);
 	map2->SetPosition(1215.0f, -28.0f);

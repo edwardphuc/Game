@@ -56,6 +56,12 @@ LPCOLLISIONEVENT CGameObject::SweptAABBEx(LPGAMEOBJECT coO)
 	return e;
 }
 
+/*
+	Calculate potential collisions with the list of colliable objects
+
+	coObjects: the list of colliable objects
+	coEvents: list of potential collisions
+*/
 void CGameObject::CalcPotentialCollisions(
 	vector<LPGAMEOBJECT>* coObjects,
 	vector<LPCOLLISIONEVENT>& coEvents)
@@ -64,7 +70,7 @@ void CGameObject::CalcPotentialCollisions(
 	{
 		LPCOLLISIONEVENT e = SweptAABBEx(coObjects->at(i));
 
-		if ( e->t <= 1.0f)
+		if (e->t > 0 && e->t <= 1.0f)
 			coEvents.push_back(e);
 		else
 			delete e;

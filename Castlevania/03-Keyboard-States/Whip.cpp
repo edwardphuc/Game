@@ -56,6 +56,7 @@ void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				{
 					CGameObject::SetPosition(x + 60, y + 15);
 				}
+				animations[8]->reset();
 				break;
 			}
 		}
@@ -81,6 +82,7 @@ void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				{
 					CGameObject::SetPosition(x - 40, y + 15);
 				}
+				animations[8]->reset();
 				break;
 			}
 		}

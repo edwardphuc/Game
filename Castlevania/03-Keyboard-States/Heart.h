@@ -6,8 +6,8 @@
 #define BBOX_HEART_WIDTH   15
 #define BBOX_HEART_HEIGHT  15
 
-#define HEART_STATE_ACTIVE 1000
-#define HEART_STATE_UNACTIVE 1001
+#define HEART_STATE_ACTIVE 1001
+#define HEART_STATE_UNACTIVE 1002
 class Heart : public CGameObject
 {
 private:

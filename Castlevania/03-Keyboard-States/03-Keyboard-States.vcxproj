@@ -128,6 +128,7 @@
     <ClCompile Include="debug.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="Ghost.cpp" />
     <ClCompile Include="Heart.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />
@@ -141,6 +142,7 @@
     <ClInclude Include="Brazier.h" />
     <ClInclude Include="Brick.h" />
     <ClInclude Include="Dagger.h" />
+    <ClInclude Include="Ghost.h" />
     <ClInclude Include="Heart.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="Mario.h" />

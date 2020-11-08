@@ -1,6 +1,8 @@
 #include "Simon.h"
 #include <algorithm>
 #include "Brazier.h"
+#include <iostream>
+using namespace std;
 
 Simon::Simon()
 {
@@ -12,34 +14,84 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// simple fall down
 	vy = vy + SIMON_GRAVITY * dt;
 
+	vector<LPCOLLISIONEVENT> coEvents;
+	vector<LPCOLLISIONEVENT> coEventsResult;
 
-	    y += dy;
-		if (y < AIR)
-		{
-			waitingtime = 1;
-		}
-		if (y > GROUND)
-		{
-			vy = 0;
-			y = GROUND;
-			waitingtime = 0;
-		}
+	coEvents.clear();
+    CalcPotentialCollisions(coObjects, coEvents);
+	if (coEvents.size() == 0)
+	{
+		x += dx;
+		y += dy;
+	}
+	else
+	{
+		float min_tx, min_ty, nx = 0, ny;
+		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny);
 
-		// simple screen edge collision!!!
+		// block 
+		x += min_tx * dx + nx * 0.4f;		// nx*0.4f : need to push out a bit to avoid overlapping next frame
+		y += min_ty * dy + ny * 0.4f;
+
 		
-		if (vx > 0 && x > 1280 && x < 1420 ) x = 1420;
-		if (x > 1280 && x < 1420) x = 1440;
-		if (x > 4000 && x< 4050) x = 4050;
-		if (vx !=0  && (x < 1280 || x >= 1420 || x>= 4050)) x += dx;
+
 		
 
-		if (vx < 0 && x < 0) x = 0;
-		if (issitting == true)
-		{
-			y = y + PULL_UP_SITTING;
-		}
 
+
+		//Brazier
+		//for (UINT i = 0; i < coEventsResult.size(); i++)
+		//{
+		//	LPCOLLISIONEVENT e = coEventsResult[i];
+
+		//	if (dynamic_cast<Brazier*>(e->obj)) // if e->obj is Goomba 
+		//	{
+		//		Brazier* brazier = dynamic_cast<Brazier*>(e->obj);
+		//		// jump on top >> kill Goomba and deflect a bit 
+		//		if (e->ny > 0)
+		//		{
+		//			x += dx;
+		//			y += dy;
+		//		}
+		//		else if (e->nx != 0)
+		//		{
+		//			x += dx;
+		//			y += dy;
+		//		}
+		//	}
+		//}
+		
+	}
+
+	if ((y >= AIR && y <= GROUND))
+	{
+		waitingtime = 1;
+		
+	}
+	if (y > GROUND)
+	{
+		waitingtime = 0;
+	}
+	if (y > 258 && issitting == false)
+	{
+		y = 240.0f;
+	}
+	// simple screen edge collision!!!
+
+	if (vx > 0 && x > 1280 && x < 1420) x = 1420;
+	if (x > 1280 && x < 1420) x = 1440;
+	if (x > 4000 && x < 4050) x = 4050;
+	if (vx != 0 && (x < 1280 || x >= 1420 || x >= 4050)) x += dx;
+
+
+	if (vx < 0 && x < 0) x = 0;
+	/*if (issitting == true)
+	{
+		y = y + PULL_UP_SITTING;
+	}*/
 	
+
+	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 }
 
 void Simon::Render()
@@ -60,7 +112,6 @@ void Simon::Render()
 		else if(isattacking == true)
 		{
 			ani = SIMON_ANI_ATTACK;
-			isattacking = false;
 		}
 		else if (nx > 0) ani = SIMON_ANI_IDLE_RIGHT;
 		else ani = SIMON_ANI_IDLE_LEFT;
@@ -90,9 +141,9 @@ void Simon::SetState(int state)
 		scale = -1;
 		break;
 	case SIMON_STATE_JUMP:
-			vy = -SIMON_JUMP_SPEED_Y;
-			isjumping = true;
-			break;
+		vy = -SIMON_JUMP_SPEED_Y;
+		isjumping = true;
+		break;
 	case SIMON_STATE_SIT:
 		issitting = true;
 		vx = 0;
@@ -117,6 +168,7 @@ void Simon::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 	{
 		right = x + SIMON_SIT_BBOX_WIDTH;
 		bottom = y + SIMON_SIT_BBOX_HEIGHT;
+
 	}
 	else
 	{

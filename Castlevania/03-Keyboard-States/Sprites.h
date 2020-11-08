@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <Windows.h>
 #include <d3dx9.h>
 #include <unordered_map>
@@ -13,12 +13,15 @@ class CSprite
 	int top;
 	int right;
 	int bottom;
-
+	int currentFrame;
+	int totalFrames;
 	LPDIRECT3DTEXTURE9 texture;
 public: 
 	CSprite(int id, int left, int top, int right, int bottom, LPDIRECT3DTEXTURE9 tex);
-
+	DWORD timeAccumulated;	 // thời gian chờ đã tích lũy
+	DWORD timeAnimation; // thời gian phải chờ giữa các frame
 	void Draw(float x, float y, double scale);
+	void Next();
 };
 
 typedef CSprite * LPSPRITE;

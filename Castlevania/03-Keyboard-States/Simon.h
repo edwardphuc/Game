@@ -1,13 +1,14 @@
 #pragma once
 #pragma once
 #include "GameObject.h"
-#define SIMON_WALKING_SPEED		0.35f
+#include "Brazier.h"
+#define SIMON_WALKING_SPEED		0.15f
 #define SIMON_JUMP_SPEED_Y		0.5f
 #define SIMON_GRAVITY			0.002f
 #define PULL_UP_SITTING			18.0f
 #define PULL_UP_JUMPING			5.0f
 #define GROUND					240.0f
-#define AIR						190.0f
+#define AIR						170.0f
 
 #define SIMON_STATE_IDLE			0
 #define SIMON_STATE_WALKING_RIGHT	100
@@ -24,7 +25,6 @@
 #define SIMON_ANI_ATTACK			5
 #define SIMON_ANI_JUMP				6
 
-#define SIMON_ATTACK_TIME			300
 
 //BBox
 #define SIMON_STAND_BBOX_WIDTH		55
@@ -39,6 +39,7 @@ private:
 	bool isattacking = false;
 	bool isjumping = false;
 	DWORD waitingtime = 0;
+	DWORD attacktime = 0;
 public:
 	Simon();
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);

@@ -90,3 +90,9 @@ LPANIMATION CAnimations::Get(int id)
 {
 	return animations[id];
 }
+void CSprite::Next()
+{
+	currentFrame++;
+	if (currentFrame > totalFrames)
+		currentFrame = 0;
+}

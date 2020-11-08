@@ -1,8 +1,8 @@
 #pragma once
 #include "GameObject.h"
 #include "Simon.h"
-#define WHIP_STATE_ACTIVE 1100
-#define WHIP_STATE_UNACTIVE 1200
+#define WHIP_STATE_ACTIVE 4000
+#define WHIP_STATE_UNACTIVE 4100
 #define WHIP 8
 
 

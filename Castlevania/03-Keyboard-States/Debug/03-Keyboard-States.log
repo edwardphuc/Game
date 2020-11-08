@@ -1,5 +1,2 @@
-﻿  main.cpp
-D:\Clone\Game\Castlevania\03-Keyboard-States\main.cpp(318,20): warning C4018: '<': signed/unsigned mismatch
-D:\Clone\Game\Castlevania\03-Keyboard-States\main.cpp(353,20): warning C4018: '<': signed/unsigned mismatch
-D:\Clone\Game\Castlevania\03-Keyboard-States\main.cpp(379,21): warning C4018: '<': signed/unsigned mismatch
+﻿  Brazier.cpp
   03-Keyboard-States.vcxproj -> D:\Clone\Game\Castlevania\Debug\03-Keyboard-States.exe

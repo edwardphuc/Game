@@ -13,7 +13,7 @@ void Brazier::Render()
 		animations[ani]->Render(x, y, 1);
 	}
 	
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 void Brazier::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {

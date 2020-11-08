@@ -1,7 +1,7 @@
 #pragma once
 #include "GameObject.h"
 
-#define ANI_DAGGER 15
+#define ANI_DAGGER 17
 
 #define BBOX_DAGGER_WIDTH   38
 #define BBOX_DAGGER_HEIGHT  18
