@@ -40,26 +40,25 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 
 		//Brazier
-		//for (UINT i = 0; i < coEventsResult.size(); i++)
-		//{
-		//	LPCOLLISIONEVENT e = coEventsResult[i];
+		for (UINT i = 0; i < coEventsResult.size(); i++)
+		{
+			LPCOLLISIONEVENT e = coEventsResult[i];
 
-		//	if (dynamic_cast<Brazier*>(e->obj)) // if e->obj is Goomba 
-		//	{
-		//		Brazier* brazier = dynamic_cast<Brazier*>(e->obj);
-		//		// jump on top >> kill Goomba and deflect a bit 
-		//		if (e->ny > 0)
-		//		{
-		//			x += dx;
-		//			y += dy;
-		//		}
-		//		else if (e->nx != 0)
-		//		{
-		//			x += dx;
-		//			y += dy;
-		//		}
-		//	}
-		//}
+			if (dynamic_cast<Brazier*>(e->obj)) 
+			{
+				
+				if (e->ny != 0)
+				{
+					x += dx;
+					y += dy;
+				}
+				else if (e->nx != 0)
+				{
+					x += dx;
+					y += dy;
+				}
+			}
+		}
 		
 	}
 
@@ -112,6 +111,11 @@ void Simon::Render()
 		else if(isattacking == true)
 		{
 			ani = SIMON_ANI_ATTACK;
+			if (animations[SIMON_ANI_ATTACK]->GetCurrentFrame() == 2)
+			{
+				isattacking = false;
+				animations[SIMON_ANI_ATTACK]->reset();
+			}
 		}
 		else if (nx > 0) ani = SIMON_ANI_IDLE_RIGHT;
 		else ani = SIMON_ANI_IDLE_LEFT;

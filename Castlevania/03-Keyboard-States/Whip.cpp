@@ -31,10 +31,10 @@ void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	if (stt == SIMON_STATE_ATTACK)
 	{
-		int frame = animations[8]->GetCurrentFrame();
-		unsigned int t1 = animations[8]->GetFrame(0)->GetTime();
-		unsigned int t2 = animations[8]->GetFrame(1)->GetTime() + t1;
-		unsigned int t3 = animations[8]->GetFrame(2)->GetTime() + t2;
+		int frame = animations[WHIP]->GetCurrentFrame();
+		unsigned int t1 = animations[WHIP]->GetFrame(0)->GetTime();
+		unsigned int t2 = animations[WHIP]->GetFrame(1)->GetTime() + t1;
+		unsigned int t3 = animations[WHIP]->GetFrame(2)->GetTime() + t2;
 		if (z == 1)
 		{
 			switch (frame)
@@ -101,12 +101,7 @@ void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny);
 
-		// block 
-		x += min_tx * dx + nx * 0.4f;		// nx*0.4f : need to push out a bit to avoid overlapping next frame
-		y += min_ty * dy + ny * 0.4f;
 
-		if (nx != 0) vx = 0;
-		if (ny != 0) vy = 0;
 		for (UINT i = 0; i < coEventsResult.size(); i++)
 		{
 			LPCOLLISIONEVENT e = coEventsResult[i];
