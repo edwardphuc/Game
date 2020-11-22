@@ -6,15 +6,20 @@
 #define WHIP_STATE_ACTIVE 4000
 #define WHIP_STATE_UNACTIVE 4100
 #define WHIP 8
+#define WHIP_LV2 20
+#define WHIP_LV3 21
 
 
 //BBOX
 #define WHIP_F1_BBOX_WIDTH			18
-#define WHIP_F1_BBOX_HEIGHT			53
-#define WHIP_F2_BBOX_WIDTH			34
-#define WHIP_F2_BBOX_HEIGHT			36
-#define WHIP_F3_BBOX_WIDTH			50
+#define WHIP_F1_BBOX_HEIGHT			49
+#define WHIP_F2_BBOX_WIDTH			30
+#define WHIP_F2_BBOX_HEIGHT			37
+#define WHIP_F3_BBOX_WIDTH			47
 #define WHIP_F3_BBOX_HEIGHT			14
+
+#define WHIP_LV2_F2_BBOX_WIDTH		33
+#define WHIP_LV3_F3_BBOX_WIDTH		80
 
 class Whip : public CGameObject
 {
@@ -22,6 +27,7 @@ class Whip : public CGameObject
 	bool isactive;
 	Simon* simon;
 	vector<LPGAMEOBJECT> oj;
+	int lv;
 public:
 	Whip(Simon *sm, vector<LPGAMEOBJECT> oj);
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);

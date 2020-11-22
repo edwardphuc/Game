@@ -6,6 +6,7 @@ using namespace std;
 
 Simon::Simon(vector<LPGAMEOBJECT> oj)
 {
+	whiplv = 1;
 	for (int i = 0; i < oj.size(); i++)
 	{
 		if (i >= 53 && i <= 57)
@@ -78,10 +79,12 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			{
 				if (i >= 0 && i <= 4)
 				{
-					
 					this->oj[i]->SetVisible(false);
 				}
-
+				if (i == 2 || i == 4)
+				{
+					whiplv++;
+				}
 			}
 	}
 

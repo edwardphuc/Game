@@ -49,6 +49,7 @@ private:
 	DWORD attack_start;
 	DWORD sitattack_start;
 	vector<LPGAMEOBJECT> oj;
+	int whiplv;
 public:
 	Simon(vector<LPGAMEOBJECT> oj);
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
@@ -60,6 +61,7 @@ public:
 	bool Getmovingallow() { return this->movingallow; };
 	bool Getsittingstate() { return this->issitting; }
 	bool Getattackingstate() { return this->isattacking; }
+	void GetWhiplv(int& x) { x = this->whiplv; }
 	void StartAttack();
 	void StartSitAttack();
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);

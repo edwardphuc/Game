@@ -6,6 +6,7 @@ using namespace std;
 Whip::Whip(Simon *sm, vector<LPGAMEOBJECT> oj)
 {
 	this->simon = sm;
+	lv = 1;
 	for (int i = 0; i < oj.size(); i++)
 	{
 		if (i >= 48 && i <= 57)
@@ -31,6 +32,9 @@ void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	int stt = simon->GetState();
 	float x1, y1;
 	int z;
+	int wp;
+	this->simon->GetWhiplv(wp);
+	lv = wp;
 	simon->GetPosition(x1, y1);
 	simon->GetDirect(z);
 	if (GetTickCount() - attack_start > SIMON_ATTACK_TIME)
@@ -134,16 +138,30 @@ void Whip::StartAttack()
 void Whip::Render()
 {
 	int ani1;
-	ani1 = WHIP;
 	if (isactive == true)
 	{
 		int z;
 		simon->GetDirect(z);
+		int wp;
+		this->simon->GetWhiplv(wp);
+		lv = wp;
 		if (z == 1)
 		{
 			scale = 1;
 		}
 		else scale = -1;
+		if (lv == 1)
+		{
+			ani1 = WHIP;
+		}
+		if (lv == 2)
+		{
+			ani1 = WHIP_LV2;
+		}
+		if (lv == 3)
+		{
+			ani1 = WHIP_LV3;
+		}
 		animations[ani1]->Render(x, y, scale);
 		RenderBoundingBox();
 	}
@@ -166,33 +184,98 @@ void Whip::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
 	if (isactive == true)
 	{
-		int frame = animations[WHIP]->GetCurrentFrame();
-		left = x;
-		top = y;
-		switch (frame)
+		if (lv == 1)
 		{
-		case 0:
-		{
-			right = left + WHIP_F1_BBOX_WIDTH;
-			bottom = top + WHIP_F1_BBOX_HEIGHT;
-			break;
+			int frame = animations[WHIP]->GetCurrentFrame();
+			left = x;
+			top = y;
+			switch (frame)
+			{
+			case 0:
+			{
+				right = left + WHIP_F1_BBOX_WIDTH;
+				bottom = top + WHIP_F1_BBOX_HEIGHT;
+				break;
+			}
+			case 1:
+			{
+				right = left + WHIP_F2_BBOX_WIDTH;
+				bottom = top + WHIP_F2_BBOX_HEIGHT;
+				break;
+			}
+			case 2:
+			{
+				right = left + WHIP_F3_BBOX_WIDTH;
+				bottom = top + WHIP_F3_BBOX_HEIGHT;
+				break;
+			}
+			default:
+				right = left;
+				bottom = top;
+				break;
+			}
 		}
-		case 1:
+		if (lv == 2)
 		{
-			right = left + WHIP_F2_BBOX_WIDTH;
-			bottom = top + WHIP_F2_BBOX_HEIGHT;
-			break;
+			int frame = animations[WHIP_LV2]->GetCurrentFrame();
+			left = x;
+			top = y;
+			switch (frame)
+			{
+			case 0:
+			{
+				right = left + WHIP_F1_BBOX_WIDTH;
+				bottom = top + WHIP_F1_BBOX_HEIGHT;
+				break;
+			}
+			case 1:
+			{
+				right = left + WHIP_LV2_F2_BBOX_WIDTH;
+				bottom = top + WHIP_F2_BBOX_HEIGHT;
+				break;
+			}
+			case 2:
+			{
+				right = left + WHIP_F3_BBOX_WIDTH;
+				bottom = top + WHIP_F3_BBOX_HEIGHT;
+				break;
+			}
+			default:
+				right = left;
+				bottom = top;
+				break;
+			}
 		}
-		case 2:
+		if (lv == 3)
 		{
-			right = left + WHIP_F3_BBOX_WIDTH;
-			bottom = top + WHIP_F3_BBOX_HEIGHT;
-			break;
-		}
-		default:
-			right = left;
-			bottom = top;
-			break;
+			int frame = animations[WHIP_LV3]->GetCurrentFrame();
+			left = x;
+			top = y;
+			switch (frame)
+			{
+			case 0:
+			{
+				right = left + WHIP_F1_BBOX_WIDTH;
+				bottom = top + WHIP_F1_BBOX_HEIGHT;
+				break;
+			}
+			case 1:
+			{
+				right = left + WHIP_LV2_F2_BBOX_WIDTH;
+				bottom = top + WHIP_F2_BBOX_HEIGHT;
+				break;
+			}
+			case 2:
+			{
+				right = left + WHIP_LV3_F3_BBOX_WIDTH;
+				bottom = top + WHIP_F3_BBOX_HEIGHT;
+				break;
+			}
+			default:
+				right = left;
+				bottom = top;
+				break;
+			}
 		}
 
 	}

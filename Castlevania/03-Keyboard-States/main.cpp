@@ -201,6 +201,12 @@ void LoadResources()
 	sprites->Add(10009, 40, 2, 72, 38, texWhip);
 	sprites->Add(10010, 94, 5, 142, 20, texWhip);
 
+	//Sprite whip lv2
+	sprites->Add(10011, 0, 66, 18, 114, texWhip);
+	sprites->Add(10012, 40, 60, 72, 98, texWhip);
+	sprites->Add(10013, 94, 70, 142, 82, texWhip);
+	//Sprite whip lv3
+	sprites->Add(10014, 94, 131, 173, 143, texWhip);
 	//Map
 	sprites->Add(10101, 0, 0, 1534, 350, texMap1);
 	sprites->Add(10102, 0, 0, 3078, 376, texMap2);
@@ -261,6 +267,8 @@ void LoadResources()
 	ani->Add(10010);
 	animations->Add(801, ani);
 
+
+
 	ani = new CAnimation(100);
 	ani->Add(10001);
 	animations->Add(406, ani);
@@ -318,6 +326,20 @@ void LoadResources()
 	ani->Add(10302);
 	animations->Add(2200, ani);
 
+
+	ani = new CAnimation(100);
+	ani->Add(10011);
+	ani->Add(10012);
+	ani->Add(10013);
+	animations->Add(802, ani);
+
+
+	ani = new CAnimation(100);
+	ani->Add(10011);
+	ani->Add(10012);
+	ani->Add(10014);
+	animations->Add(803, ani);
+
 	Simon::AddAnimation(400);		// idle right
 	Simon::AddAnimation(401);		// idle left
 	Simon::AddAnimation(402);		// walk right
@@ -362,6 +384,8 @@ void LoadResources()
 	Simon::AddAnimation(2000);
 	Dagger::AddAnimation(2100);
 	WhipUpgrade::AddAnimation(2200);
+	Whip::AddAnimation(802);
+	Whip::AddAnimation(803);
 	for (int i = 0; i < 48; i++)
 	{
 		Brick* brick = new Brick();
