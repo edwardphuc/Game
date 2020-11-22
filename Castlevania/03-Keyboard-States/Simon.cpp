@@ -4,8 +4,15 @@
 #include <iostream>
 using namespace std;
 
-Simon::Simon()
+Simon::Simon(vector<LPGAMEOBJECT> oj)
 {
+	for (int i = 0; i < oj.size(); i++)
+	{
+		if (i >= 53 && i <= 57)
+		{
+			this->oj.push_back(oj[i]);
+		}
+	}
 	state = SIMON_STATE_IDLE;
 }
 void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -19,6 +26,8 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	coEvents.clear();
     CalcPotentialCollisions(coObjects, coEvents);
+
+
 	if (coEvents.size() == 0)
 	{
 		x += dx;
@@ -62,6 +71,20 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		
 	}
 
+	for (int i = 0; i < this->oj.size(); i++)
+	{
+		if (this->oj[i]->GetInvisible() == true)  // xet va cham cho cac vat the hien ra tren man hinh
+			if (this->CheckCollision(this->oj[i]))
+			{
+				if (i >= 0 && i <= 4)
+				{
+					
+					this->oj[i]->SetVisible(false);
+				}
+
+			}
+	}
+
 	if ((y >= AIR && y <= GROUND))
 	{
 		waitingtime = 1;
@@ -84,11 +107,32 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 
 	if (vx < 0 && x < 0) x = 0;
-	/*if (issitting == true)
+	if (issitting == true)
 	{
-		y = y + PULL_UP_SITTING;
+		y = y - 2;
+	}
+	/*if (animations[SIMON_ANI_ATTACK]->GetCurrentFrame() == 0)
+	{
+		waitingtimeatt = 1;
+		movingallow = true;
+	}
+	if (animations[SIMON_ANI_ATTACK]->GetCurrentFrame() == 2)
+	{
+		isattacking = false;
+		waitingtimeatt = 0;
+		movingallow = false;
+		animations[SIMON_ANI_ATTACK]->reset();
 	}*/
-	
+	if (GetTickCount() - attack_start > SIMON_ATTACK_TIME)
+	{
+		attack_start = 0;
+		isattacking = false;
+	}
+	if (GetTickCount() - sitattack_start > SIMON_ATTACK_TIME)
+	{
+		sitattack_start = 0;
+		issitattack = false;
+	}
 
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 }
@@ -100,8 +144,15 @@ void Simon::Render()
 	{
 		if (issitting == true)
 		{
-			ani = SIMON_ANI_SIT;
-			issitting = false;
+			if (issitattack == true)
+			{
+				ani = SIMON_ANI_SIT_ATTACK;
+			}
+			else
+			{
+				ani = SIMON_ANI_SIT;
+				issitting = false;
+			}
 		}
 		else if (isjumping == true)
 		{
@@ -111,11 +162,6 @@ void Simon::Render()
 		else if(isattacking == true)
 		{
 			ani = SIMON_ANI_ATTACK;
-			if (animations[SIMON_ANI_ATTACK]->GetCurrentFrame() == 2)
-			{
-				isattacking = false;
-				animations[SIMON_ANI_ATTACK]->reset();
-			}
 		}
 		else if (nx > 0) ani = SIMON_ANI_IDLE_RIGHT;
 		else ani = SIMON_ANI_IDLE_LEFT;
@@ -153,16 +199,25 @@ void Simon::SetState(int state)
 		vx = 0;
 		break;
 	case SIMON_STATE_ATTACK:
-		isattacking = true;
 		vx = 0;
-		vy = 0;
 		break;
 	case SIMON_STATE_IDLE:
 		vx = 0;
 		break;
 	}
 }
-
+void Simon::StartAttack()
+{
+	isattacking = true;
+	attack_start = GetTickCount();
+	animations[SIMON_ANI_ATTACK]->reset();
+}
+void Simon::StartSitAttack()
+{
+	issitattack = true;
+	sitattack_start = GetTickCount();
+	animations[SIMON_ANI_SIT_ATTACK]->reset();
+}
 void Simon::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
 	left = x;

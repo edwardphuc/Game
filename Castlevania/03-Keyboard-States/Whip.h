@@ -1,6 +1,8 @@
 #pragma once
 #include "GameObject.h"
 #include "Simon.h"
+#include "Game.h"
+#include "Brazier.h"
 #define WHIP_STATE_ACTIVE 4000
 #define WHIP_STATE_UNACTIVE 4100
 #define WHIP 8
@@ -19,11 +21,13 @@ class Whip : public CGameObject
 	DWORD attack_start;
 	bool isactive;
 	Simon* simon;
+	vector<LPGAMEOBJECT> oj;
 public:
-	Whip(Simon *sm);
+	Whip(Simon *sm, vector<LPGAMEOBJECT> oj);
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void Render();
 	void SetState(int state);
+	void StartAttack();
 	bool Getactivestate() { return this->isactive; }
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 };

@@ -9,6 +9,8 @@
 #define GHOST_STATE_WALKING_RIGHT 3000
 #define GHOST_STATE_WALKING_LEFT 3100
 #define GHOST_WALKING_SPEED		0.2f
+
+
 class Ghost :public CGameObject
 {
 public:

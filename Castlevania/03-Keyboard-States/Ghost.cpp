@@ -1,4 +1,5 @@
 #include "Ghost.h"
+#include "Brazier.h"
 Ghost::Ghost()
 {
 	
@@ -6,6 +7,45 @@ Ghost::Ghost()
 void Ghost::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CGameObject::Update(dt);
+	vector<LPCOLLISIONEVENT> coEvents;
+	vector<LPCOLLISIONEVENT> coEventsResult;
+
+	coEvents.clear();
+	CalcPotentialCollisions(coObjects, coEvents);
+	if (coEvents.size() == 0)
+	{
+		x += dx;
+		y += dy;
+	}
+	else
+	{
+		float min_tx, min_ty, nx = 0, ny;
+		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny);
+
+		// block 
+		x += min_tx * dx + nx * 0.4f;		// nx*0.4f : need to push out a bit to avoid overlapping next frame
+		y += min_ty * dy + ny * 0.4f;
+
+		for (UINT i = 0; i < coEventsResult.size(); i++)
+		{
+			LPCOLLISIONEVENT e = coEventsResult[i];
+
+			if (dynamic_cast<Brazier*>(e->obj) || dynamic_cast<Ghost*>(e->obj))
+			{
+
+				if (e->ny != 0)
+				{
+					x += dx;
+					
+				}
+				else if (e->nx != 0)
+				{
+					x += dx;
+
+				}
+			}
+		}
+	}
 	if (x < 0)
 	{
 		x = 10;
@@ -18,7 +58,7 @@ void Ghost::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		vx = -vx;
 		scale = -1;
 	}
-	x = x + dx;
+	
 }
 void Ghost::Render()
 {

@@ -12,6 +12,7 @@ vector<LPANIMATION> CGameObject::animations;
 
 CGameObject::CGameObject()
 {
+	visible = true;
 	x = y = 0;
 	vx = vy = 0;
 	nx = 1;	
@@ -68,6 +69,7 @@ void CGameObject::CalcPotentialCollisions(
 {
 	for (UINT i = 0; i < coObjects->size(); i++)
 	{
+
 		LPCOLLISIONEVENT e = SweptAABBEx(coObjects->at(i));
 
 		if (e->t > 0 && e->t <= 1.0f)
@@ -132,13 +134,28 @@ void CGameObject::RenderBoundingBox()
 void CGameObject::Render()
 {
 }
+bool CGameObject::CheckCollision(CGameObject* object)
+{
+	if (CGame::GetInstance()->CheckAABB(this->GetBound(), object->GetBound()))
+	{
 
+		return true;
+	}
+
+	LPCOLLISIONEVENT e = SweptAABBEx(object);
+	if (e->t > 0 && e->t <= 1.0f)
+	{
+
+
+		return true;
+	}
+	delete e;
+}
 void CGameObject::AddAnimation(int aniId)
 {
 	LPANIMATION ani = CAnimations::GetInstance()->Get(aniId);
 	animations.push_back(ani);
 }
-
 
 
 CGameObject::~CGameObject()

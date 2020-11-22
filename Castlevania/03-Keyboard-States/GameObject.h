@@ -42,6 +42,7 @@ protected:
 	int nx;	 
 
 	int state;	
+	bool visible;
 
 	double scale = 1;
 
@@ -57,8 +58,20 @@ public:
 	void GetDirect(int& nx) { nx = this->nx; }
 	void SetState(int state) { this->state = state; }
 	int GetState() { return this->state; }
-
-
+	bool GetInvisible() { return this->visible; }
+	void SetVisible(bool vs) { this->visible = vs; }
+	bool CheckCollision(CGameObject* object);
+	RECT CGameObject::GetBound()
+	{
+		RECT rect;
+		float l, t, r, b;
+		GetBoundingBox(l, t, r, b);
+		rect.left = l;
+		rect.top = t;
+		rect.right = r;
+		rect.bottom = b;
+		return rect;
+	}
 	void RenderBoundingBox();
 
 	LPCOLLISIONEVENT SweptAABBEx(LPGAMEOBJECT coO);

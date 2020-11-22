@@ -1,101 +1,104 @@
 #include "Whip.h"
 #include <algorithm>
 #include "Brazier.h"
-
-Whip::Whip(Simon *sm)
+#include <iostream>
+using namespace std;
+Whip::Whip(Simon *sm, vector<LPGAMEOBJECT> oj)
 {
 	this->simon = sm;
+	for (int i = 0; i < oj.size(); i++)
+	{
+		if (i >= 48 && i <= 57)
+		{
+			this->oj.push_back(oj[i]);
+		}
+	}
 	state = WHIP_STATE_UNACTIVE;
 	scale = 1;
-	isactive = false;
 }
 
 void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
-	CGameObject::Update(dt);
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
 
 	coEvents.clear();
-	if (state == WHIP_STATE_ACTIVE)
+	if (isactive == true)
 	{
 		CalcPotentialCollisions(coObjects, coEvents);
 	}
 	
 	int stt = simon->GetState();
-	float x, y;
+	float x1, y1;
 	int z;
-	simon->GetPosition(x, y);
+	simon->GetPosition(x1, y1);
 	simon->GetDirect(z);
-	attack_start = GetTickCount();
-
-	if (stt == SIMON_STATE_ATTACK)
+	if (GetTickCount() - attack_start > SIMON_ATTACK_TIME)
 	{
-		int frame = animations[WHIP]->GetCurrentFrame();
-		unsigned int t1 = animations[WHIP]->GetFrame(0)->GetTime();
-		unsigned int t2 = animations[WHIP]->GetFrame(1)->GetTime() + t1;
-		unsigned int t3 = animations[WHIP]->GetFrame(2)->GetTime() + t2;
+			this->attack_start = 0;
+			isactive = false;
+	}
+	if (isactive != false)
+	{
 		if (z == 1)
 		{
-			switch (frame)
+			
+			if (GetTickCount() - attack_start <= 120)
 			{
-			case 0:
-				if (GetTickCount() - attack_start <= t1)
-				{
-					CGameObject::SetPosition(x - 13, y + 13);
-				}
-				break;
-			case 1:
-				if (GetTickCount() - attack_start <= t2)
-				{
-					CGameObject::SetPosition(x - 13, y + 13);
-				}
-				break;
-			case 2:
-				if (GetTickCount() - attack_start <= t3)
-				{
-					CGameObject::SetPosition(x + 60, y + 15);
-				}
-				animations[8]->reset();
-				break;
+				this->SetPosition(x1 - 13, y1 + 13);
 			}
-		}
+			else if (GetTickCount() -  attack_start <= 240)
+			{
+				this->SetPosition(x1 - 10, y1 + 10);
+			}
+			else if (GetTickCount() - attack_start <= 360)
+			{
+				this->SetPosition(x1 + 60, y1 + 15);
+			}
 
-		else
+		}
+		else if (z == -1)
 		{
-			switch (animations[8]->GetCurrentFrame())
+
+			if (GetTickCount() - attack_start <= 120)
 			{
-			case 0:
-				if (GetTickCount() - attack_start <= t1)
-				{
-					CGameObject::SetPosition(x + 30, y + 10);
-				}
-				break;
-			case 1:
-				if (GetTickCount() - attack_start <= t2)
-				{
-					CGameObject::SetPosition(x + 30, y + 10);
-				}
-				break;
-			case 2:
-				if (GetTickCount() - attack_start <= t3)
-				{
-					CGameObject::SetPosition(x - 40, y + 15);
-				}
-				animations[8]->reset();
-				break;
+				this->SetPosition(x1 + 35, y1 + 12);
+			}
+			else if (GetTickCount() - attack_start <= 240)
+			{
+				this->SetPosition(x1 + 30, y1 + 12);
+			}
+			else if (GetTickCount() - attack_start <= 360)
+			{
+				this->SetPosition(x1 - 45, y1 + 15);
 			}
 		}
-		
 	}
-	else
+	else if(isactive == false)
 	{
-		SetPosition(x, y);
-		attack_start = 0;
-		state = WHIP_STATE_UNACTIVE;
+		this->SetPosition(x1, y1);
 	}
 	
-	if(coEvents.size() != 0)
+	for (int i = 0; i < this->oj.size(); i++)
+	{
+		if(this->oj[i]->GetInvisible() == true)  // xet va cham cho cac vat the hien ra tren man hinh
+		if (this->CheckCollision(this->oj[i]))
+		{
+			if (i >= 0 && i <= 4)
+			{
+				float x2, y2;
+				this->oj[i]->GetPosition(x2, y2);           // danh vao den thi den mat item hien ra
+				this->oj[i + 5]->SetPosition(x2, y2);
+				this->oj[i]->SetVisible(false);
+				this->oj[i + 5]->SetVisible(true);
+			}
+			
+		}
+	}
+
+		
+	
+	/*if(coEvents.size() != 0)
 	{
 		float min_tx, min_ty, nx = 0, ny=0;
 
@@ -105,26 +108,34 @@ void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		for (UINT i = 0; i < coEventsResult.size(); i++)
 		{
 			LPCOLLISIONEVENT e = coEventsResult[i];
-			if (dynamic_cast<Brazier*>(e->obj)) // if e->obj is Goomba 
+			if (dynamic_cast<Brazier*>(e->obj))
 			{
 				Brazier* brazier = dynamic_cast<Brazier*>(e->obj);
 
+				
 				if (brazier->GetState() != BRAZIER_STATE_UNACTIVE)
 				{
 					brazier->SetState(BRAZIER_STATE_UNACTIVE);
-					//simon->SetPosition(0, 0);
+	
 				}
 			}
 		}
 		
-	}
+	}*/
+	
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
+}
+void Whip::StartAttack()
+{
+	this->attack_start = GetTickCount();
+	isactive = true;
+	animations[WHIP]->reset();
 }
 void Whip::Render()
 {
 	int ani1;
 	ani1 = WHIP;
-	if (state == WHIP_STATE_ACTIVE)
+	if (isactive == true)
 	{
 		int z;
 		simon->GetDirect(z);
@@ -134,18 +145,17 @@ void Whip::Render()
 		}
 		else scale = -1;
 		animations[ani1]->Render(x, y, scale);
+		RenderBoundingBox();
 	}
-	RenderBoundingBox();
+	
 }
 void Whip::SetState(int state)
 {
 	CGameObject::SetState(state);
 	int z;
-	simon->GetDirect(z);
 	switch (state)
 	{
 	case WHIP_STATE_ACTIVE:
-		isactive = true;
 		break;
 	case WHIP_STATE_UNACTIVE:
 		isactive = false;
@@ -154,7 +164,7 @@ void Whip::SetState(int state)
 }
 void Whip::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
-	if (state == WHIP_STATE_ACTIVE)
+	if (isactive == true)
 	{
 		int frame = animations[WHIP]->GetCurrentFrame();
 		left = x;
@@ -163,7 +173,7 @@ void Whip::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 		{
 		case 0:
 		{
-			right = left - WHIP_F1_BBOX_WIDTH;
+			right = left + WHIP_F1_BBOX_WIDTH;
 			bottom = top + WHIP_F1_BBOX_HEIGHT;
 			break;
 		}

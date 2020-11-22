@@ -1,10 +1,10 @@
 #pragma once
 #include "GameObject.h"
+#define GRAVITY   0.000035f
+#define ANI_DAGGER 18
 
-#define ANI_DAGGER 17
-
-#define BBOX_DAGGER_WIDTH   38
-#define BBOX_DAGGER_HEIGHT  18
+#define BBOX_DAGGER_WIDTH   47
+#define BBOX_DAGGER_HEIGHT  23
 
 #define DAGGER_STATE_ACTIVE   1000
 #define DAGGER_STATE_UNACTIVE 1100

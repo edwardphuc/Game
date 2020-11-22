@@ -26,6 +26,10 @@
 #include "Ghost.h"
 #include "Brick.h"
 
+#include "Dagger.h";
+
+#include "WhipUpgrade.h";
+
 #define WINDOW_CLASS_NAME L"SampleWindow"
 #define MAIN_WINDOW_TITLE L"Catslevania"
 
@@ -76,14 +80,30 @@ void CSampleKeyHander::OnKeyDown(int KeyCode)
 	switch (KeyCode)
 	{
 	case DIK_SPACE:
- 		if (simon->Getwaitingtime() == 0)
+ 		if (simon->Getwaitingtime() == 0 && simon->Getattackingstate() == false)
 			simon->SetState(SIMON_STATE_JUMP);
 		else simon->SetState(SIMON_STATE_IDLE);
 
 		break;
 	case DIK_A:
-		simon->SetState(SIMON_STATE_ATTACK);
-		whip->SetState(WHIP_STATE_ACTIVE);
+		if (simon->Getattackingstate() == false)
+		{
+			if (game->IsKeyDown(DIK_DOWN))
+			{
+				simon->SetState(SIMON_STATE_SIT);
+				simon->StartSitAttack();
+				whip->SetState(WHIP_STATE_ACTIVE);
+				whip->StartAttack();
+
+			}
+			else
+			{
+				simon->SetState(SIMON_STATE_ATTACK);
+			    whip->SetState(WHIP_STATE_ACTIVE);
+			    simon->StartAttack();
+			    whip->StartAttack();
+			}
+		}
 		break;
 	}
 	
@@ -103,9 +123,9 @@ void CSampleKeyHander::OnKeyUp(int KeyCode)
 
 void CSampleKeyHander::KeyState(BYTE *states)
 {
-	if (game->IsKeyDown(DIK_RIGHT) && simon->Getsittingstate() == false)
+	if (game->IsKeyDown(DIK_RIGHT) && simon->Getsittingstate() == false && simon->Getwaitingtimeatt()==0 && simon->Getattackingstate() == false)
 		simon->SetState(SIMON_STATE_WALKING_RIGHT);
-	else if (game->IsKeyDown(DIK_LEFT) && simon->Getsittingstate() == false)
+	else if (game->IsKeyDown(DIK_LEFT) && simon->Getsittingstate() == false && simon->Getwaitingtimeatt() == 0 && simon->Getattackingstate() == false)
 		simon->SetState(SIMON_STATE_WALKING_LEFT);
 	else if (game->IsKeyDown(DIK_DOWN))
 		simon->SetState(SIMON_STATE_SIT);
@@ -172,10 +192,14 @@ void LoadResources()
 	sprites->Add(10006, 355, 70, 410, 127, texSimon);
 	sprites->Add(10007, 415, 70, 479, 127, texSimon);
 
+	sprites->Add(20001, 298, 10, 346, 52, texSimon); // sit attack
+	sprites->Add(20002, 353, 10, 405, 52, texSimon);
+	sprites->Add(20003, 412, 10, 477, 52, texSimon);
+
 	//Sprite whip
-	sprites->Add(10008, 0, 0, 18, 53, texWhip);
-	sprites->Add(10009, 39, 0, 73, 36, texWhip);
-	sprites->Add(10010, 93, 5, 143, 19, texWhip);
+	sprites->Add(10008, 0, 8, 18, 53, texWhip);
+	sprites->Add(10009, 40, 2, 72, 38, texWhip);
+	sprites->Add(10010, 94, 5, 142, 20, texWhip);
 
 	//Map
 	sprites->Add(10101, 0, 0, 1534, 350, texMap1);
@@ -196,16 +220,16 @@ void LoadResources()
 
 	//Ghost
 	sprites->Add(10400, 0, 0, 30, 62, texGhost);
-	sprites->Add(10401, 32, 0, 60, 60, texGhost);
+	sprites->Add(10401, 32, 0, 60, 62, texGhost);
 
 	LPANIMATION ani;
 
 	ani = new CAnimation(100);	
-	ani->Add(10002);
+	ani->Add(10001);
 	animations->Add(400, ani);
 
 	ani = new CAnimation(100);
-	ani->Add(10002);
+	ani->Add(10001);
 	animations->Add(401, ani);
 
 
@@ -272,15 +296,28 @@ void LoadResources()
 
 	ani = new CAnimation(100);
 	ani->Add(10400);
-	ani->Add(10301);
+	ani->Add(10401);
 	animations->Add(1400, ani);
 
 	ani = new CAnimation(100);
 	ani->Add(10400);
-	ani->Add(10301);
+	ani->Add(10401);
 	animations->Add(1401, ani);
 
-	simon = new Simon();
+	ani = new CAnimation(100);
+	ani->Add(20001);
+	ani->Add(20002);
+	ani->Add(20003);
+	animations->Add(2000, ani);
+
+	ani = new CAnimation(100);
+	ani->Add(10301);
+	animations->Add(2100, ani);
+
+	ani = new CAnimation(100);
+	ani->Add(10302);
+	animations->Add(2200, ani);
+
 	Simon::AddAnimation(400);		// idle right
 	Simon::AddAnimation(401);		// idle left
 	Simon::AddAnimation(402);		// walk right
@@ -295,16 +332,21 @@ void LoadResources()
 	map3 = new Map();
 	map4 = new Map();
 	map5 = new Map();
-	whip = new Whip(simon);
 	Whip::AddAnimation(801);
 
-	Brazier *brazier1 = new Brazier();
+	Brazier *brazier1 = new Brazier(); // Khoi tao brazier
 	Brazier *brazier2 = new Brazier();
 	Brazier *brazier3 = new Brazier();	
 	Brazier *brazier4 = new Brazier();
 	Brazier *brazier5 = new Brazier();
 
 	Heart* heart1 = new Heart();
+	Heart* heart2 = new Heart();
+	
+	Dagger* dagger = new Dagger();
+
+	WhipUpgrade* upgrade1 = new WhipUpgrade();
+	WhipUpgrade* upgrade2 = new WhipUpgrade();
 
 	Brazier::AddAnimation(1100);
 	Map::AddAnimation(1001);
@@ -317,37 +359,21 @@ void LoadResources()
 	Ghost::AddAnimation(1400);
 	Ghost::AddAnimation(1401);
 
-	/*for (int i = 0; i < 6; i++)
-	{
-		Ghost* ghost = new Ghost();
-		if (i < 3)
-		{
-			ghost->SetPosition(i * 10.0f, 240.0f);
-			ghost->Setstate(GHOST_STATE_WALKING_RIGHT);
-			oj.push_back(ghost);
-		}
-		else if (i >= 3 && i < 6)
-		{
-			ghost->SetPosition(1270 - i * 10.0f, 240.0f);
-			ghost->Setstate(GHOST_STATE_WALKING_LEFT);
-			oj.push_back(ghost);
-		}
-	}*/
+	Simon::AddAnimation(2000);
+	Dagger::AddAnimation(2100);
+	WhipUpgrade::AddAnimation(2200);
 	for (int i = 0; i < 48; i++)
 	{
 		Brick* brick = new Brick();
 		brick->SetPosition(i * 29.0f, 301.0f);
 		oj.push_back(brick);
 	}
-	simon->SetPosition(0.0f, 240.0f);
 	map1->SetPosition(-40.0f, -20.0f);
 	map2->SetPosition(1215.0f, -28.0f);
 	map3->SetPosition(3980.0f, -28.0f);
 	map4->SetPosition(4804.0f, -28.0f);
 	map5->SetPosition(3980.0f, 280.0f);
-	float x, y;
-	simon->GetPosition(x, y);
-	whip->SetPosition(x, y);
+	
 
 	brazier1->SetPosition(253.0f, 235.0f);
     brazier2->SetPosition(375.0f, 235.0f);
@@ -360,8 +386,35 @@ void LoadResources()
 	oj.push_back(brazier3);
 	oj.push_back(brazier4);
 	oj.push_back(brazier5);
-	oj.push_back(whip);
-	oj.push_back(simon);
+	oj.push_back(heart1);
+	oj.push_back(dagger);
+	oj.push_back(upgrade1);
+	oj.push_back(heart2);
+	oj.push_back(upgrade2);
+	
+	simon = new Simon(oj);
+	simon->SetPosition(0.0f, 240.0f);
+	float x, y;
+	simon->GetPosition(x, y);
+	whip = new Whip(simon, oj);
+	whip->SetPosition(x, y);
+	
+	/*for (int i = 0; i < 6; i++)
+	{
+		Ghost* ghost = new Ghost();
+		if (i < 3)
+		{
+			ghost->SetPosition(i * 30.0f, 230.0f);
+			ghost->Setstate(GHOST_STATE_WALKING_RIGHT);
+			oj.push_back(ghost);
+		}
+		else if (i >= 3 && i < 6)
+		{
+			ghost->SetPosition(1270 - i * 30.0f, 230.0f);
+			ghost->Setstate(GHOST_STATE_WALKING_LEFT);
+			oj.push_back(ghost);
+		}
+	}*/
 	
 }
 
@@ -411,6 +464,8 @@ void Update(DWORD dt)
 	{
 		oj[i]->Update(dt, &coObjects);
 	}
+	simon->Update(dt, &coObjects);
+	whip->Update(dt, &coObjects);
 }
 
 /*
@@ -433,11 +488,13 @@ void Render()
 		map3->render(1002);
 		map4->render(1003);
 		map5->render(1004);
+
 		for (int i = 0; i < oj.size(); i++)
 		{
 			oj[i]->Render();
 		}
-		
+		simon->Render();
+		whip->Render();
 		spriteHandler->End();
 		d3ddv->EndScene();
 	}

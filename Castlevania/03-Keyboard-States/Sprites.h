@@ -68,6 +68,7 @@ public:
 	CAnimation(int defaultTime) { this->defaultTime = defaultTime; lastFrameTime = -1; currentFrame = -1; }
 	void Add(int spriteId, DWORD time = 0);
 	int GetCurrentFrame() { return currentFrame; };
+	void SetCurrentFrame(int frame) { currentFrame = frame; };
 	void Render(float x, float y, double scale);
 	void reset() { currentFrame = -1; };
 	LPANIMATION_FRAME GetFrame(int i) { return frames[i]; };

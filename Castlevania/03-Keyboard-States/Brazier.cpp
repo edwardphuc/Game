@@ -2,18 +2,17 @@
 Brazier::Brazier()
 {
 	state = BRAZIER_STATE_ACTIVE;
-	
 }
 void Brazier::Render()
 {
 	int ani;
-	if (state == BRAZIER_STATE_ACTIVE)
+	if (visible == true)
 	{
 		ani = BRAZIER;
 		animations[ani]->Render(x, y, 1);
+		RenderBoundingBox();
 	}
 	
-	//RenderBoundingBox();
 }
 void Brazier::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
