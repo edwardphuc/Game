@@ -3,6 +3,7 @@
 #include "Simon.h"
 #include "Game.h"
 #include "Brazier.h"
+
 #define WHIP_STATE_ACTIVE 4000
 #define WHIP_STATE_UNACTIVE 4100
 #define WHIP 8
@@ -30,7 +31,7 @@ class Whip : public CGameObject
 	int lv;
 public:
 	Whip(Simon *sm, vector<LPGAMEOBJECT> oj);
-	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
+	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT> enemy, int &countGhost);
 	void Render();
 	void SetState(int state);
 	void StartAttack();

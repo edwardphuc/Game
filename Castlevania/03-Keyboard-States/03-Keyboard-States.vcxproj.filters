@@ -63,6 +63,9 @@
     <ClCompile Include="WhipUpgrade.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Panther.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="debug.h">
@@ -108,6 +111,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="WhipUpgrade.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Panther.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

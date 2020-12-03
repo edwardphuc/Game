@@ -20,6 +20,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CGameObject::Update(dt);
 	// simple fall down
+	/*if(isonStair == false)*/
 	vy = vy + SIMON_GRAVITY * dt;
 
 	vector<LPCOLLISIONEVENT> coEvents;
@@ -103,7 +104,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	}
 	// simple screen edge collision!!!
 
-	if (vx > 0 && x > 1280 && x < 1420) x = 1420;
+	if (vx > 0 && x > 1280 && x < 1420) x = 1450;
 	if (x > 1280 && x < 1420) x = 1440;
 	if (x > 4000 && x < 4050) x = 4050;
 	if (vx != 0 && (x < 1280 || x >= 1420 || x >= 4050)) x += dx;
@@ -136,6 +137,27 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		sitattack_start = 0;
 		issitattack = false;
 	}
+	/*if (autowalking != 0)
+	{
+		vx = 0;
+		vy = 0;
+		if (nx > 0)
+		{
+			x += SIMON_AUTO_WALKING_STAIR_SPEED;
+			if (isOnStair)
+			{
+				y += -SIMON_AUTO_WALKING_STAIR_SPEED;
+			}
+		}
+		else if (nx < 0)
+		{
+			x -= SIMON_AUTO_WALKING_STAIR_SPEED;
+			if (isOnStair)
+			{
+				y += -SIMON_AUTO_WALKING_STAIR_SPEED;
+			}
+		}
+	}*/
 
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 }
@@ -168,6 +190,28 @@ void Simon::Render()
 		}
 		else if (nx > 0) ani = SIMON_ANI_IDLE_RIGHT;
 		else ani = SIMON_ANI_IDLE_LEFT;
+	/*else if (state == SIMON_STATE_IDLE)
+	{
+		if (isOnStair == true)
+		{
+			if (isStairUp == true)
+			{
+				if (nx > 0) ani = SIMON_ANI_UP_STAIR_IDLE_RIGHT;
+				else ani = SIMON_ANI_DOWN_STAIR_IDLE_LEFT;
+			}
+			else if (isStairUp == false)
+			{
+				if (nx > 0) ani = SIMON_ANI_DOWN_STAIR_IDLE_RIGHT;
+				else ani = SIMON_ANI_UP_STAIR_IDLE_LEFT;
+
+			}
+		}
+		else if (isOnStair == false)
+		{
+			if (nx > 0) ani = SIMON_ANI_IDLE_RIGHT;
+			else ani = SIMON_ANI_IDLE_LEFT;
+		}
+	}*/
 	}
 	else if (vx > 0)
 		ani = SIMON_ANI_WALKING_RIGHT;

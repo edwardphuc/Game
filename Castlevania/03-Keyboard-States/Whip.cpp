@@ -9,7 +9,7 @@ Whip::Whip(Simon *sm, vector<LPGAMEOBJECT> oj)
 	lv = 1;
 	for (int i = 0; i < oj.size(); i++)
 	{
-		if (i >= 48 && i <= 57)
+		if ((i >= 48 && i <= 57))
 		{
 			this->oj.push_back(oj[i]);
 		}
@@ -18,7 +18,7 @@ Whip::Whip(Simon *sm, vector<LPGAMEOBJECT> oj)
 	scale = 1;
 }
 
-void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
+void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT> enemy, int &countGhost)
 {
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
@@ -28,7 +28,6 @@ void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	{
 		CalcPotentialCollisions(coObjects, coEvents);
 	}
-	
 	int stt = simon->GetState();
 	float x1, y1;
 	int z;
@@ -82,25 +81,40 @@ void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	{
 		this->SetPosition(x1, y1);
 	}
+
+
+
+	/*for (int i = 0; i < enemy.size(); i++)
+	{
+		this->enemy.push_back(enemy[i]);
+	}*/
 	
 	for (int i = 0; i < this->oj.size(); i++)
 	{
 		if(this->oj[i]->GetInvisible() == true)  // xet va cham cho cac vat the hien ra tren man hinh
-		if (this->CheckCollision(this->oj[i]))
-		{
-			if (i >= 0 && i <= 4)
+			if (this->CheckCollision(this->oj[i]))
 			{
-				float x2, y2;
-				this->oj[i]->GetPosition(x2, y2);           // danh vao den thi den mat item hien ra
-				this->oj[i + 5]->SetPosition(x2, y2);
-				this->oj[i]->SetVisible(false);
-				this->oj[i + 5]->SetVisible(true);
+				if (i >= 0 && i <= 4)
+				{
+					float x2, y2;
+					this->oj[i]->GetPosition(x2, y2);           // danh vao den thi den mat, item hien ra
+					this->oj[i + 5]->SetPosition(x2, y2);
+					this->oj[i]->SetVisible(false);
+					this->oj[i + 5]->SetVisible(true);
+				}
 			}
-			
-		}
 	}
 
-		
+	for (int i = 0; i < enemy.size(); i++)
+	{
+		if (enemy[i]->GetInvisible() == true)
+			if (this->CheckCollision(enemy[i]))
+			{
+				enemy[i]->SetVisible(false);
+				countGhost--;
+				enemy.erase(enemy.begin() + i);
+			}
+	}
 	
 	/*if(coEvents.size() != 0)
 	{
@@ -215,7 +229,7 @@ void Whip::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 				break;
 			}
 		}
-		if (lv == 2)
+		else if (lv == 2)
 		{
 			int frame = animations[WHIP_LV2]->GetCurrentFrame();
 			left = x;

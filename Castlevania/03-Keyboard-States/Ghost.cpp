@@ -2,7 +2,9 @@
 #include "Brazier.h"
 Ghost::Ghost()
 {
-	
+	state = GHOST_STATE_WALKING_RIGHT;
+	visible = true;
+	vx = 0.1;
 }
 void Ghost::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
@@ -12,12 +14,9 @@ void Ghost::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	coEvents.clear();
 	CalcPotentialCollisions(coObjects, coEvents);
-	if (coEvents.size() == 0)
-	{
-		x += dx;
-		y += dy;
-	}
-	else
+	x += dx;
+	y += dy;
+	if(coEvents.size() != 0)
 	{
 		float min_tx, min_ty, nx = 0, ny;
 		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny);
@@ -26,7 +25,7 @@ void Ghost::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		x += min_tx * dx + nx * 0.4f;		// nx*0.4f : need to push out a bit to avoid overlapping next frame
 		y += min_ty * dy + ny * 0.4f;
 
-		for (UINT i = 0; i < coEventsResult.size(); i++)
+		/*for (UINT i = 0; i < coEventsResult.size(); i++)
 		{
 			LPCOLLISIONEVENT e = coEventsResult[i];
 
@@ -44,37 +43,44 @@ void Ghost::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 				}
 			}
-		}
+		}*/
 	}
-	if (x < 0)
+	if (x < 1420)
 	{
-		x = 10;
-		vx = -vx;
-		scale = 1;
+		x = 1420;
+		state = GHOST_STATE_WALKING_RIGHT;
 	}
-	if (x > 1280)
+	if (x > 2600)
 	{
-		x = 1270;
-		vx = -vx;
-		scale = -1;
+		x = 2600;
+		state = GHOST_STATE_WALKING_LEFT;
 	}
 	
 }
 void Ghost::Render()
 {
 	int ani;
-	if (vx > 0) ani = GHOST_ANI_WALKING_RIGHT;
-	else ani = GHOST_ANI_WALKING_LEFT;
-	animations[ani]->Render(x, y, scale);
-	//RenderBoundingBox();
+	if (visible == true)
+	{
+		if (vx > 0)
+		{
+			if (state == GHOST_STATE_WALKING_RIGHT) ani = GHOST_ANI_WALKING_RIGHT;
+			else if (state == GHOST_STATE_WALKING_LEFT) ani = GHOST_ANI_WALKING_LEFT;
+			animations[ani]->Render(x, y, scale);
+			RenderBoundingBox();
+		}
+	}
 }
 
 void Ghost::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
-	left = x;
-	top = y;
-	right = left + GHOST_BBOX_WIDTH;
-	bottom = top + GHOST_BBOX_HEIGHT;
+	if (visible == true)
+	{
+		left = x;
+		top = y;
+		right = left + GHOST_BBOX_WIDTH;
+		bottom = top + GHOST_BBOX_HEIGHT;
+	}
 
 }
 void Ghost::Setstate(int state)
@@ -82,6 +88,11 @@ void Ghost::Setstate(int state)
 	CGameObject::SetState(state);
 	switch (state)
 	{
+	/*case GHOST_STATE_IDLE:
+		vx = 0;
+		nx = 1;
+		scale = 1;
+		break;*/
 	case GHOST_STATE_WALKING_RIGHT:
 		vx = GHOST_WALKING_SPEED;
 		nx = 1;

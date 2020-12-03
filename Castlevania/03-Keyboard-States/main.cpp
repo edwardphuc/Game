@@ -29,6 +29,7 @@
 #include "Dagger.h";
 
 #include "WhipUpgrade.h";
+#include "Panther.h";
 
 #define WINDOW_CLASS_NAME L"SampleWindow"
 #define MAIN_WINDOW_TITLE L"Catslevania"
@@ -48,6 +49,7 @@
 #define ID_TEX_ITEM 60
 #define ID_TEX_GHOST 70
 #define ID_TEX_BRICK 80
+#define ID_TEX_PANTHER 90
 
 
 CGame *game;
@@ -58,12 +60,16 @@ Map* map3;
 Map* map4;
 Map* map5;
 Whip* whip;
+bool cancreateghost;
+int countGhost = 0;
+DWORD timecreateGhost;
 //Brazier* brazier1;
 //Brazier* brazier2;
 //Brazier* brazier3;
 //Brazier* brazier4;
 //Brazier* brazier5;
 vector<LPGAMEOBJECT> oj; //brazier oj
+vector<LPGAMEOBJECT> enemy;
 
 class CSampleKeyHander: public CKeyEventHandler
 {
@@ -168,6 +174,7 @@ void LoadResources()
 	textures->Add(ID_TEX_MAP2, L"textures\\lv2.png", D3DCOLOR_XRGB(255, 255, 255));
 	textures->Add(ID_TEX_GHOST, L"textures\\Ghost.png", D3DCOLOR_XRGB(176, 224, 248));
 	textures->Add(ID_TEX_BRICK, L"textures\\Block.png", D3DCOLOR_XRGB(176, 224, 248));
+	textures->Add(ID_TEX_PANTHER, L"textures\\Panther.png", D3DCOLOR_XRGB(176, 224, 248));
 	CSprites * sprites = CSprites::GetInstance();
 	CAnimations * animations = CAnimations::GetInstance();
 	
@@ -179,6 +186,7 @@ void LoadResources()
 	LPDIRECT3DTEXTURE9 texItem = textures->Get(ID_TEX_ITEM);
 	LPDIRECT3DTEXTURE9 texGhost = textures->Get(ID_TEX_GHOST);
 	LPDIRECT3DTEXTURE9 texBrick = textures->Get(ID_TEX_BRICK);
+	LPDIRECT3DTEXTURE9 texPanther = textures->Get(ID_TEX_PANTHER);
 
 	//Sprite Simon
 	sprites->Add(10001, 0, 3, 50, 60, texSimon); //idle
@@ -228,6 +236,11 @@ void LoadResources()
 	sprites->Add(10400, 0, 0, 30, 62, texGhost);
 	sprites->Add(10401, 32, 0, 60, 62, texGhost);
 
+	//Panther
+	sprites->Add(10500, 11, 1, 58, 31, texPanther);
+	sprites->Add(10501, 68, 0, 128, 31, texPanther);
+	sprites->Add(10503, 132, 1, 197, 31, texPanther);
+	sprites->Add(10504, 202, 0, 260, 31, texPanther);
 	LPANIMATION ani;
 
 	ani = new CAnimation(100);	
@@ -340,6 +353,27 @@ void LoadResources()
 	ani->Add(10014);
 	animations->Add(803, ani);
 
+	ani = new CAnimation(100);
+	ani->Add(10500);
+	animations->Add(3000, ani);
+
+	ani = new CAnimation(100);
+	ani->Add(10501);
+	animations->Add(3100, ani);
+
+	ani = new CAnimation(100);
+	ani->Add(10501);
+	ani->Add(10502);
+	ani->Add(10503);
+	animations->Add(3200, ani);
+
+	ani = new CAnimation(100);
+	ani->Add(10501);
+	ani->Add(10502);
+	ani->Add(10503);
+	animations->Add(3300, ani);
+
+
 	Simon::AddAnimation(400);		// idle right
 	Simon::AddAnimation(401);		// idle left
 	Simon::AddAnimation(402);		// walk right
@@ -386,6 +420,11 @@ void LoadResources()
 	WhipUpgrade::AddAnimation(2200);
 	Whip::AddAnimation(802);
 	Whip::AddAnimation(803);
+
+	Panther::AddAnimation(3000);
+	Panther::AddAnimation(3100);
+	Panther::AddAnimation(3200);
+	Panther::AddAnimation(3300);
 	for (int i = 0; i < 48; i++)
 	{
 		Brick* brick = new Brick();
@@ -415,30 +454,77 @@ void LoadResources()
 	oj.push_back(upgrade1);
 	oj.push_back(heart2);
 	oj.push_back(upgrade2);
-	
-	simon = new Simon(oj);
-	simon->SetPosition(0.0f, 240.0f);
-	float x, y;
-	simon->GetPosition(x, y);
-	whip = new Whip(simon, oj);
-	whip->SetPosition(x, y);
-	
+	for (int i = 0; i < 94; i++)
+	{
+		Brick* brick = new Brick();
+		brick->SetPosition(1420 + i * 29.0f, 305.0f);
+		oj.push_back(brick);
+	}
+	/*for (int i = 0; i < 2; i++)
+	{
+		Panther *panther = new Panther();
+		if (i == 0)
+		{
+			panther->SetPosition(1900, 150);
+		}
+		if (i == 1)
+		{
+
+		}
+		if (i == 2)
+		{
+
+		}
+		enemy.push_back(panther);
+	}*/
 	/*for (int i = 0; i < 6; i++)
 	{
 		Ghost* ghost = new Ghost();
 		if (i < 3)
 		{
-			ghost->SetPosition(i * 30.0f, 230.0f);
+			ghost->SetPosition(1420 + i * 50.0f, 240.0f);
 			ghost->Setstate(GHOST_STATE_WALKING_RIGHT);
 			oj.push_back(ghost);
 		}
 		else if (i >= 3 && i < 6)
 		{
-			ghost->SetPosition(1270 - i * 30.0f, 230.0f);
+			ghost->SetPosition(2100 - i * 50.0f, 240.0f);
 			ghost->Setstate(GHOST_STATE_WALKING_LEFT);
 			oj.push_back(ghost);
 		}
 	}*/
+	simon = new Simon(oj);
+	simon->SetPosition(0.0f, 240.0f);
+	float x, y;
+	simon->GetPosition(x, y);
+	/*if (GetTickCount() - timecreateGhost > 1000)
+	{
+		if (x >= 1600 && x < 2200)
+		{
+			if (countGhost < 3)
+			{
+				timecreateGhost = GetTickCount();
+				Ghost* ghost = new Ghost();
+				int z;
+				simon->GetDirect(z);
+				if (z == 1)
+				{
+					countGhost++;
+					ghost->SetState(GHOST_STATE_WALKING_LEFT);
+				}
+				else if (z == -1)
+				{
+					countGhost++;
+					ghost->SetState(GHOST_STATE_WALKING_RIGHT);
+				}
+			}
+		}
+	}*/
+	
+	whip = new Whip(simon, oj);
+	whip->SetPosition(x, y);
+
+	
 	
 }
 
@@ -448,29 +534,24 @@ void LoadResources()
 */
 void Update(DWORD dt)
 {
-	vector<LPGAMEOBJECT> coObjects;
-	for (int i = 0; i < oj.size(); i++)
-	{
-		coObjects.push_back(oj[i]);
-	}
 	float cx, cy;
 	simon->GetPosition(cx, cy);
-	
-	cx -= SCREEN_WIDTH / 10 ;
-	cy -= SCREEN_HEIGHT/ 10 ;
+
+	cx -= SCREEN_WIDTH / 10;
+	cy -= SCREEN_HEIGHT / 10;
 	float x, y;
 	simon->GetPosition(x, y);
-	
-	
-	if (x == 0 || x < SCREEN_WIDTH/10)
+
+
+	if (x == 0 || x < SCREEN_WIDTH / 10)
 	{
 		CGame::GetInstance()->SetCamPos(0.0f, 0.0f);
 	}
-	else if (x > 1533-640-64 && x < 1280)
+	else if (x > 1533 - 640 - 64 && x < 1280)
 	{
-		CGame::GetInstance()->SetCamPos(1533-640-64-64, 0.0f);
+		CGame::GetInstance()->SetCamPos(1533 - 640 - 64 - 64, 0.0f);
 	}
-	else if (x == 1280 || (x<1445 + 64 && x > 1280))
+	else if (x == 1280 || (x < 1445 + 64 && x > 1280))
 	{
 		CGame::GetInstance()->SetCamPos(1445, 0.0f);
 	}
@@ -478,18 +559,61 @@ void Update(DWORD dt)
 	{
 		CGame::GetInstance()->SetCamPos(4200 - 640 - 64 - 64, 0.0f);
 	}
-	else if (x == 4050 || (x>4050 && x < 4050 + 64))
+	else if (x == 4050 || (x > 4050 && x < 4050 + 64))
 	{
 		CGame::GetInstance()->SetCamPos(4050, 0.0f);
 	}
 	else CGame::GetInstance()->SetCamPos(cx, 0.0f);
+	vector<LPGAMEOBJECT> coObjects;
+	for (int i = 0; i < enemy.size(); i++)
+	{
+		enemy[i]->Update(dt, &coObjects);
+	}
+	if (GetTickCount() - timecreateGhost > 1000)
+	{
+		if (x >= 1600 && x < 2500)
+		{
+			DWORD now = GetTickCount();
+			timecreateGhost = now;
+			if (countGhost < 3)
+			{
+				timecreateGhost = GetTickCount();
+				Ghost* ghost = new Ghost();
+				int z;
+				simon->GetDirect(z);
+				if (z == 1)
+				{
+					countGhost++;
+					ghost->SetState(GHOST_STATE_WALKING_LEFT);
+					ghost->SetPosition(2500, 240);
+				}
+				else if (z == -1)
+				{
+					countGhost++;
+					ghost->SetState(GHOST_STATE_WALKING_RIGHT);
+					ghost->SetPosition(1600, 240);
+				}
+				enemy.push_back(ghost);
+			}
+		}
+	}
+	for (int i = 0; i < oj.size(); i++)
+	{
+		coObjects.push_back(oj[i]);
+	}
+	for (int i = 0; i < enemy.size(); i++)
+	{
+		coObjects.push_back(enemy[i]);
+	}
+	
 	
 	for (int i = 0; i < oj.size(); i++)
 	{
 		oj[i]->Update(dt, &coObjects);
 	}
 	simon->Update(dt, &coObjects);
-	whip->Update(dt, &coObjects);
+	
+	whip->Update(dt, &coObjects, enemy, countGhost);
 }
 
 /*
@@ -516,6 +640,10 @@ void Render()
 		for (int i = 0; i < oj.size(); i++)
 		{
 			oj[i]->Render();
+		}
+		for (int i = 0; i < enemy.size(); i++)
+		{
+			enemy[i]->Render();
 		}
 		simon->Render();
 		whip->Render();
