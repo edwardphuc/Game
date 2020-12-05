@@ -234,6 +234,10 @@ void LoadResources()
 	sprites->Add(20007, 14, 220, 48, 260, texSimon);
 	sprites->Add(20008, 60, 220, 124, 260, texSimon);
 
+	sprites->Add(20009, 0, 334, 48, 392, texSimon);
+	sprites->Add(20010, 60, 334, 108, 392, texSimon);
+	sprites->Add(20011, 120, 334, 167, 392, texSimon);
+
 	//Sprite whip
 	sprites->Add(10008, 0, 8, 18, 53, texWhip);
 	sprites->Add(10009, 40, 2, 72, 38, texWhip);
@@ -283,14 +287,14 @@ void LoadResources()
 
 
 	ani = new CAnimation(100);
-	ani->Add(10002);
 	ani->Add(10001);
+	ani->Add(10002);
 	ani->Add(10003);
 	animations->Add(402, ani);
 
 	ani = new CAnimation(100);
-	ani->Add(10002);
 	ani->Add(10001);
+	ani->Add(10002);
 	ani->Add(10003);
 	animations->Add(403, ani);
 
@@ -439,6 +443,18 @@ void LoadResources()
 	ani->Add(20006);
 	animations->Add(4007, ani);
 
+	ani = new CAnimation(100);
+	ani->Add(20009);
+	ani->Add(20010);
+	ani->Add(20011);
+	animations->Add(4008, ani);
+
+	ani = new CAnimation(100);
+	ani->Add(20009);
+	ani->Add(20010);
+	ani->Add(20011);
+	animations->Add(4009, ani);
+
 
 
 	Simon::AddAnimation(400);		// idle right
@@ -501,6 +517,8 @@ void LoadResources()
 	Simon::AddAnimation(4005);
 	Simon::AddAnimation(4006);
 	Simon::AddAnimation(4007);
+	Simon::AddAnimation(4008);
+	Simon::AddAnimation(4009);
 	for (int i = 0; i < 48; i++)
 	{
 		Brick* brick = new Brick();
@@ -578,7 +596,7 @@ void LoadResources()
 	stairoj.push_back(stair2);
 
 	simon = new Simon(oj);
-	simon->SetPosition(2350.0f, 240.0f);
+	simon->SetPosition(0.0f, 240.0f);
 	float x, y;
 	simon->GetPosition(x, y);
 	/*if (GetTickCount() - timecreateGhost > 1000)

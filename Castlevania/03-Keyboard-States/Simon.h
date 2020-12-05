@@ -11,6 +11,7 @@
 #define GROUND					240.0f
 #define AIR						170.0f
 #define SIMON_ATTACK_TIME		300
+#define SIMON_EAT_TIME          500
 
 #define SIMON_STATE_IDLE			0
 #define SIMON_STATE_WALKING_RIGHT	100
@@ -40,6 +41,8 @@
 #define SIMON_ANI_WALKING_UP_STAIR_LEFT	 31
 #define SIMON_ANI_WALKING_DOWN_STAIR_RIGHT 32
 #define SIMON_ANI_WALKING_DOWN_STAIR_LEFT  33
+#define SIMON_ANI_EAT_RIGHT				34
+#define SIMON_ANI_EAT_LEFT				35
 
 
 //BBox
@@ -58,11 +61,13 @@ private:
 	bool movingallow = false;
 	bool issitattack = false;
 	bool isonstair;
+	bool ischangecolor = false;
 	DWORD waitingtime = 0;
 	DWORD waitingtimeatt = 0;
 	DWORD attacktime = 0;
 	DWORD attack_start;
 	DWORD sitattack_start;
+	DWORD changecolor_start;
 	vector<LPGAMEOBJECT> oj;
 	int whiplv;
 	int stair;
@@ -82,6 +87,7 @@ public:
 	void GetWhiplv(int& x) { x = this->whiplv; }
 	void StartAttack();
 	void StartSitAttack();
+	void StartChangeColor() { ischangecolor = true; changecolor_start = GetTickCount(); vx = 0; }
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 };
 

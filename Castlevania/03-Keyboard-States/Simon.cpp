@@ -106,6 +106,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 				if (i >= 0 && i <= 4)
 				{
 					this->oj[i]->SetVisible(false);
+					this->StartChangeColor();
 				}
 				if (i == 2 || i == 4)
 				{
@@ -162,6 +163,12 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 		sitattack_start = 0;
 		issitattack = false;
 	}
+	if (GetTickCount() - changecolor_start > SIMON_EAT_TIME)
+	{
+		changecolor_start = 0;
+		ischangecolor = false;
+
+	}
 	/*if (autowalking != 0)
 	{
 		vx = 0;
@@ -191,7 +198,20 @@ void Simon::Render()
 	int ani;
 	if (vx == 0)
 	{
-		if (issitting == true)
+		if (ischangecolor == true)
+		{
+			if (nx > 0)
+			{
+				ani = SIMON_ANI_EAT_RIGHT;
+				scale = 1;
+			}
+			if (nx < 0)
+			{
+				ani = SIMON_ANI_EAT_LEFT;
+				scale = -1;
+			}
+		}
+		else if (issitting == true)
 		{
 			if (issitattack == true)
 			{
