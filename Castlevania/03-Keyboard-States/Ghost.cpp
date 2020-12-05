@@ -2,9 +2,7 @@
 #include "Brazier.h"
 Ghost::Ghost()
 {
-	state = GHOST_STATE_WALKING_RIGHT;
 	visible = true;
-	vx = 0.1;
 }
 void Ghost::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
@@ -45,14 +43,14 @@ void Ghost::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			}
 		}*/
 	}
-	if (x < 1420)
+	if (x < 1420 )
 	{
 		x = 1420;
 		state = GHOST_STATE_WALKING_RIGHT;
 	}
-	if (x > 2600)
+	else if (x > 4000 )
 	{
-		x = 2600;
+		x = 4000;
 		state = GHOST_STATE_WALKING_LEFT;
 	}
 	
@@ -62,7 +60,7 @@ void Ghost::Render()
 	int ani;
 	if (visible == true)
 	{
-		if (vx > 0)
+		if (vx != 0)
 		{
 			if (state == GHOST_STATE_WALKING_RIGHT) ani = GHOST_ANI_WALKING_RIGHT;
 			else if (state == GHOST_STATE_WALKING_LEFT) ani = GHOST_ANI_WALKING_LEFT;
@@ -83,7 +81,7 @@ void Ghost::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 	}
 
 }
-void Ghost::Setstate(int state)
+void Ghost::SetState(int state)
 {
 	CGameObject::SetState(state);
 	switch (state)

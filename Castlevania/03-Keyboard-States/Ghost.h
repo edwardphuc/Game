@@ -18,7 +18,7 @@ public:
 	Ghost();
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void Render();
-	void Setstate(int state);
+	void SetState(int state);
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 };
 

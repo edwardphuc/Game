@@ -140,6 +140,7 @@ bool CGameObject::CheckCollision(CGameObject* object)
 	{
 
 		return true;
+
 	}
 
 	LPCOLLISIONEVENT e = SweptAABBEx(object);
