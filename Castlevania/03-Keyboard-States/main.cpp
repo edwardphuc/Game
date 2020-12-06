@@ -51,6 +51,7 @@
 #define ID_TEX_GHOST 70
 #define ID_TEX_BRICK 80
 #define ID_TEX_PANTHER 90
+#define ID_TEX_BRICK1 100
 
 
 CGame *game;
@@ -88,7 +89,7 @@ void CSampleKeyHander::OnKeyDown(int KeyCode)
 	switch (KeyCode)
 	{
 	case DIK_SPACE:
- 		if (simon->Getwaitingtime() == 0 && simon->Getattackingstate() == false)
+ 		if (simon->Getwaitingtime() == 0 && simon->Getattackingstate() == false && simon->Getonstair() == false)
 			simon->SetState(SIMON_STATE_JUMP);
 		else simon->SetState(SIMON_STATE_IDLE);
 
@@ -132,39 +133,43 @@ void CSampleKeyHander::OnKeyUp(int KeyCode)
 void CSampleKeyHander::KeyState(BYTE *states)
 {
 	int z;
-	simon->GetDirect(z);
-	if (game->IsKeyDown(DIK_RIGHT) && simon->Getsittingstate() == false && simon->Getwaitingtimeatt() == 0 && simon->Getattackingstate() == false && simon->Getchangecolor() == false)
+	z = simon->Getstairdirect();
+	if (game->IsKeyDown(DIK_RIGHT) && simon->Getsittingstate() == false && simon->Getwaitingtimeatt() == 0 && simon->Getattackingstate() == false && simon->Getchangecolor() == false && simon->Getonstair() == false)
 		simon->SetState(SIMON_STATE_WALKING_RIGHT);
-	else if (game->IsKeyDown(DIK_LEFT) && simon->Getsittingstate() == false && simon->Getwaitingtimeatt() == 0 && simon->Getattackingstate() == false && simon->Getchangecolor() == false)
+	else if (game->IsKeyDown(DIK_LEFT) && simon->Getsittingstate() == false && simon->Getwaitingtimeatt() == 0 && simon->Getattackingstate() == false && simon->Getchangecolor() == false && simon->Getonstair() == false)
 		simon->SetState(SIMON_STATE_WALKING_LEFT);
-	else if (game->IsKeyDown(DIK_UP) && simon->Getonstair() == true)
+	else if (game->IsKeyDown(DIK_UP) && simon->Getallowstair() == 1)
 	{
 		if (z == 1)
 		{
+			simon->Setonstair(true);
 			simon->SetState(SIMON_STATE_WALKING_UP_STAIR_RIGHT);
 		}
 		else if (z == -1)
 		{
+			simon->Setonstair(true);
 			simon->SetState(SIMON_STATE_WALKING_UP_STAIR_LEFT);
 		}
 		
 	}
 	else if (game->IsKeyDown(DIK_DOWN) )
 	{
-		if (simon->Getonstair() == false) simon->SetState(SIMON_STATE_SIT);
-		else if (simon->Getonstair() == true)
+		if (simon->Getallowstair() == 0) simon->SetState(SIMON_STATE_SIT);
+		else if (simon->Getallowstair() == 1)
 		{
 			if (z == 1)
 			{
-				simon->SetState(SIMON_STATE_WALKING_DOWN_STAIR_RIGHT);
+				simon->Setonstair(true);
+				simon->SetState(SIMON_STATE_WALKING_DOWN_STAIR_LEFT);
 			}
 			else if (z == -1)
 			{
-				simon->SetState(SIMON_STATE_WALKING_DOWN_STAIR_LEFT);
+				simon->Setonstair(true);
+				simon->SetState(SIMON_STATE_WALKING_DOWN_STAIR_RIGHT);
 			}
 		}
 	}
-	else if (simon->Getonstair() == true) simon->SetState(SIMON_STATE_ONSTAIR_IDLE);
+	else if (simon->Getallowstair() == 1) simon->SetState(SIMON_STATE_ONSTAIR_IDLE);
 	else simon->SetState(SIMON_STATE_IDLE);
 }
 
@@ -227,9 +232,9 @@ void LoadResources()
 	sprites->Add(20002, 353, 10, 405, 52, texSimon);
 	sprites->Add(20003, 412, 10, 477, 52, texSimon);
 
-	sprites->Add(20004, 131, 68, 160, 128, texSimon);
-	sprites->Add(20005, 205, 68, 234, 128, texSimon);
-	sprites->Add(20006, 258, 68, 290, 128, texSimon);
+	sprites->Add(20004, 115, 68, 160, 128, texSimon);
+	sprites->Add(20005, 190, 68, 234, 128, texSimon);
+	sprites->Add(20006, 244, 68, 290, 128, texSimon);
 
 	sprites->Add(20007, 14, 220, 48, 260, texSimon);
 	sprites->Add(20008, 60, 220, 124, 260, texSimon);
@@ -426,21 +431,25 @@ void LoadResources()
 	ani = new CAnimation(100);
 	ani->Add(20005);
 	ani->Add(20004);
+	ani->Add(20005);
 	animations->Add(4004, ani);
 	
 	ani = new CAnimation(100);
 	ani->Add(20005);
 	ani->Add(20004);
+	ani->Add(20005);
 	animations->Add(4005, ani);
 
 	ani = new CAnimation(100);
 	ani->Add(20005);
 	ani->Add(20006);
+	ani->Add(20005);
 	animations->Add(4006, ani);
 
 	ani = new CAnimation(100);
 	ani->Add(20005);
 	ani->Add(20006);
+	ani->Add(20005);
 	animations->Add(4007, ani);
 
 	ani = new CAnimation(100);
@@ -554,6 +563,12 @@ void LoadResources()
 		brick->SetPosition(1420 + i * 29.0f, 305.0f);
 		oj.push_back(brick);
 	}
+	for (int i = 0; i < 2; i++)
+	{
+		Brick* brick = new Brick();
+		brick->SetPosition(2620 + i * 29.0f, 198.0f);
+		oj.push_back(brick);
+	}
 	/*for (int i = 0; i < 2; i++)
 	{
 		Panther *panther = new Panther();
@@ -588,15 +603,15 @@ void LoadResources()
 		}
 	}*/
 	StairOj* stair1 = new StairOj();
-	stair1->SetPosition(2460.0f, 280.0f);
+	stair1->SetPosition(2515.0f, 280.0f);
 	stairoj.push_back(stair1);
 
 	StairOj* stair2 = new StairOj();
-	stair2->SetPosition(2560.0f, 100.0f);
+	stair2->SetPosition(2600.0f, 108.0f);
 	stairoj.push_back(stair2);
 
 	simon = new Simon(oj);
-	simon->SetPosition(0.0f, 240.0f);
+	simon->SetPosition(2350.0f, 240.0f);
 	float x, y;
 	simon->GetPosition(x, y);
 	/*if (GetTickCount() - timecreateGhost > 1000)
@@ -673,6 +688,10 @@ void Update(DWORD dt)
 	}
 	for (int i = 0; i < stairoj.size(); i++)
 	{
+		stairoj[i]->Update(dt, &coObjects);
+	}
+	for (int i = 0; i < oj.size(); i++)
+	{
 		oj[i]->Update(dt, &coObjects);
 	}
 	simon->Update(dt, &coObjects, stairoj);
@@ -716,10 +735,7 @@ void Update(DWORD dt)
 	}
 	
 	
-	for (int i = 0; i < oj.size(); i++)
-	{
-		oj[i]->Update(dt, &coObjects);
-	}
+	
 	
 	whip->Update(dt, &coObjects, enemy, countGhost);
 }

@@ -4,7 +4,7 @@
 #include "Brazier.h"
 #include "StairOj.h"
 #define SIMON_WALKING_SPEED		0.08f
-#define SIMON_WALKING_STAIR_SPEED		    0.03f 
+#define SIMON_WALKING_STAIR_SPEED		    0.025f 
 #define SIMON_JUMP_SPEED_Y		0.5f
 #define SIMON_GRAVITY			0.002f
 #define PULL_UP_SITTING			18.0f
@@ -47,7 +47,7 @@
 
 
 //BBox
-#define SIMON_STAND_BBOX_WIDTH		55
+#define SIMON_STAND_BBOX_WIDTH		58
 #define SIMON_STAND_BBOX_HEIGHT		60
 #define SIMON_SIT_BBOX_WIDTH		56
 #define SIMON_SIT_BBOX_HEIGHT		42
@@ -71,7 +71,8 @@ private:
 	DWORD changecolor_start;
 	vector<LPGAMEOBJECT> oj;
 	int whiplv;
-	int stair;
+	int stairnx;
+	int allowstair = 0;
 public:
 	Simon(vector<LPGAMEOBJECT> oj);
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT> stairoj);
@@ -83,13 +84,16 @@ public:
 	bool Getmovingallow() { return this->movingallow; };
 	bool Getsittingstate() { return this->issitting; }
 	bool Getattackingstate() { return this->isattacking; }
+	int Getallowstair() { return this->allowstair; }
+	int Getstairdirect() { return this->stairnx; }
 	bool Getonstair() { return this->isonstair; }
-	int Getstair() { return this->stair; }
+	void Setonstair(bool x) { this->isonstair = x; }
 	bool Getchangecolor() { return this->ischangecolor; }
 	void GetWhiplv(int& x) { x = this->whiplv; }
 	void StartAttack();
 	void StartSitAttack();
 	void StartChangeColor() { ischangecolor = true; changecolor_start = GetTickCount(); vx = 0; }
+	void FixPositionStair();
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 };
 
