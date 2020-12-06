@@ -2,6 +2,7 @@
 #pragma once
 #include "GameObject.h"
 #include "Brazier.h"
+#include "StairOj.h"
 #define SIMON_WALKING_SPEED		0.08f
 #define SIMON_WALKING_STAIR_SPEED		    0.03f 
 #define SIMON_JUMP_SPEED_Y		0.5f
@@ -84,6 +85,7 @@ public:
 	bool Getattackingstate() { return this->isattacking; }
 	bool Getonstair() { return this->isonstair; }
 	int Getstair() { return this->stair; }
+	bool Getchangecolor() { return this->ischangecolor; }
 	void GetWhiplv(int& x) { x = this->whiplv; }
 	void StartAttack();
 	void StartSitAttack();
