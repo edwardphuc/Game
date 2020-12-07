@@ -6,6 +6,7 @@ using namespace std;
 
 Simon::Simon(vector<LPGAMEOBJECT> oj)
 {
+	isonstair = false;
 	whiplv = 1;
 	for (int i = 0; i < oj.size(); i++)
 	{
@@ -16,62 +17,90 @@ Simon::Simon(vector<LPGAMEOBJECT> oj)
 	}
 	state = SIMON_STATE_IDLE;
 }
-void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
+void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT> stairoj)
 {
 	CGameObject::Update(dt);
 	// simple fall down
 	/*if(isonStair == false)*/
-	vy = vy + SIMON_GRAVITY * dt;
-
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
 
 	coEvents.clear();
-    CalcPotentialCollisions(coObjects, coEvents);
-
-
-	if (coEvents.size() == 0)
+	CalcPotentialCollisions(coObjects, coEvents);
+	for (int i = 0; i < stairoj.size(); i++)
 	{
-		x += dx;
-		y += dy;
-	}
-	else
-	{
-		float min_tx, min_ty, nx = 0, ny;
-		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny);
-
-		// block 
-		x += min_tx * dx + nx * 0.4f;		// nx*0.4f : need to push out a bit to avoid overlapping next frame
-		y += min_ty * dy + ny * 0.4f;
-
-		
-
-		
-
-
-
-		//Brazier
-		for (UINT i = 0; i < coEventsResult.size(); i++)
+		float sx, sy;
+		stairoj[i]->GetPosition(sx, sy);
+		if (this->CheckCollision(stairoj[i]))
 		{
-			LPCOLLISIONEVENT e = coEventsResult[i];
-
-			if (dynamic_cast<Brazier*>(e->obj)) 
+			allowstair = 1;
+			stairnx = 1;
+			if (this->x > sx + 20 || this->y > sy - 20)
 			{
-				
-				if (e->ny != 0)
-				{
-					x += dx;
-					y += dy;
-				}
-				else if (e->nx != 0)
-				{
-					x += dx;
-					y += dy;
-				}
+				allowstair = 0;
+			}
+			if (i % 2 != 0)
+			{
+				isonstair = false;
 			}
 		}
-		
 	}
+	if (isonstair == false)
+	{
+		vy = vy + SIMON_GRAVITY * dt;
+		
+
+
+		if (coEvents.size() == 0)
+		{
+			x += dx;
+			y += dy;
+		}
+		else
+		{
+			float min_tx, min_ty, nx = 0, ny;
+			FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny);
+
+			// block 
+			x += min_tx * dx + nx * 0.4f;		// nx*0.4f : need to push out a bit to avoid overlapping next frame
+			y += min_ty * dy + ny * 0.4f;
+
+
+
+
+
+
+
+			//Brazier
+			for (UINT i = 0; i < coEventsResult.size(); i++)
+			{
+				LPCOLLISIONEVENT e = coEventsResult[i];
+
+				if (dynamic_cast<Brazier*>(e->obj))
+				{
+
+					if (e->ny != 0)
+					{
+						x += dx;
+						y += dy;
+					}
+					else if (e->nx != 0)
+					{
+						x += dx;
+						y += dy;
+					}
+				}
+			}
+
+		}
+	}
+	else if (isonstair == true)
+	{
+		x += dx * 0.5;
+		y += dy * 1.52;
+	}
+
+	
 
 	for (int i = 0; i < this->oj.size(); i++)
 	{
@@ -81,6 +110,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				if (i >= 0 && i <= 4)
 				{
 					this->oj[i]->SetVisible(false);
+					this->StartChangeColor();
 				}
 				if (i == 2 || i == 4)
 				{
@@ -88,7 +118,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				}
 			}
 	}
-
+	
 	if ((y >= AIR && y <= GROUND))
 	{
 		waitingtime = 1;
@@ -137,6 +167,12 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		sitattack_start = 0;
 		issitattack = false;
 	}
+	if (GetTickCount() - changecolor_start > SIMON_EAT_TIME)
+	{
+		changecolor_start = 0;
+		ischangecolor = false;
+
+	}
 	/*if (autowalking != 0)
 	{
 		vx = 0;
@@ -158,7 +194,6 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			}
 		}
 	}*/
-
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 }
 
@@ -167,7 +202,20 @@ void Simon::Render()
 	int ani;
 	if (vx == 0)
 	{
-		if (issitting == true)
+		if (ischangecolor == true)
+		{
+			if (nx > 0)
+			{
+				ani = SIMON_ANI_EAT_RIGHT;
+				scale = 1;
+			}
+			if (nx < 0)
+			{
+				ani = SIMON_ANI_EAT_LEFT;
+				scale = -1;
+			}
+		}
+		else if (issitting == true)
 		{
 			if (issitattack == true)
 			{
@@ -188,36 +236,50 @@ void Simon::Render()
 		{
 			ani = SIMON_ANI_ATTACK;
 		}
-		else if (nx > 0) ani = SIMON_ANI_IDLE_RIGHT;
-		else ani = SIMON_ANI_IDLE_LEFT;
-	/*else if (state == SIMON_STATE_IDLE)
-	{
-		if (isOnStair == true)
+		else if (isonstair == true)
 		{
-			if (isStairUp == true)
+			if (stairnx == 1)
 			{
-				if (nx > 0) ani = SIMON_ANI_UP_STAIR_IDLE_RIGHT;
-				else ani = SIMON_ANI_DOWN_STAIR_IDLE_LEFT;
+				if(nx > 0) ani = SIMON_ANI_UP_STAIR_IDLE_RIGHT;
+				if (nx < 0)
+				{
+					ani = SIMON_ANI_DOWN_STAIR_IDLE_LEFT;
+					scale = -1;
+				}
 			}
-			else if (isStairUp == false)
+			else if (stairnx == -1)
 			{
 				if (nx > 0) ani = SIMON_ANI_DOWN_STAIR_IDLE_RIGHT;
-				else ani = SIMON_ANI_UP_STAIR_IDLE_LEFT;
-
+				if (nx < 0)
+				{
+					ani = SIMON_ANI_UP_STAIR_IDLE_LEFT;
+					scale = 1;
+				}
 			}
 		}
-		else if (isOnStair == false)
-		{
-			if (nx > 0) ani = SIMON_ANI_IDLE_RIGHT;
-			else ani = SIMON_ANI_IDLE_LEFT;
-		}
-	}*/
+		else if (nx > 0) ani = SIMON_ANI_IDLE_RIGHT;
+		else ani = SIMON_ANI_IDLE_LEFT;
+	
 	}
 	else if (vx > 0)
-		ani = SIMON_ANI_WALKING_RIGHT;
+	{
+		if(isonstair == false) ani = SIMON_ANI_WALKING_RIGHT;
+		else if (isonstair == true)
+		{
+			if(stairnx == 1)  ani = SIMON_ANI_WALKING_UP_STAIR_RIGHT;
+			else if(stairnx == -1) ani = SIMON_ANI_WALKING_DOWN_STAIR_RIGHT;
+		}
+	}
 
-	else ani = SIMON_ANI_WALKING_LEFT;
-	
+	else if (vx < 0)
+	{
+		if (isonstair == false) ani = SIMON_ANI_WALKING_LEFT;
+		else if (isonstair == true)
+		{
+			if(stairnx == -1) ani = SIMON_ANI_WALKING_UP_STAIR_LEFT;
+			else if(stairnx == 1) ani = SIMON_ANI_WALKING_DOWN_STAIR_LEFT;
+		}
+	}
 	animations[ani]->Render(x, y, scale);
 	RenderBoundingBox();
 }
@@ -251,6 +313,34 @@ void Simon::SetState(int state)
 	case SIMON_STATE_IDLE:
 		vx = 0;
 		break;
+	case SIMON_STATE_ONSTAIR_IDLE:
+		vx = 0;
+		vy = 0;
+		break;
+	case SIMON_STATE_WALKING_UP_STAIR_RIGHT:
+		vx = SIMON_WALKING_STAIR_SPEED;
+		vy = -SIMON_WALKING_STAIR_SPEED;
+		nx = 1;
+		scale = 1;
+		break;
+	case SIMON_STATE_WALKING_UP_STAIR_LEFT:
+		vx = -SIMON_WALKING_STAIR_SPEED;
+		vy = -SIMON_WALKING_STAIR_SPEED;
+		nx = -1;
+		scale = -1;
+		break;
+	case SIMON_STATE_WALKING_DOWN_STAIR_RIGHT:
+		vx = SIMON_WALKING_STAIR_SPEED;
+		vy = SIMON_WALKING_STAIR_SPEED;
+		nx = 1;
+		scale = 1;
+		break;
+	case SIMON_STATE_WALKING_DOWN_STAIR_LEFT:
+		vx = -SIMON_WALKING_STAIR_SPEED;
+		vy = SIMON_WALKING_STAIR_SPEED;
+		nx = -1;
+		scale = -1;
+		break;
 	}
 }
 void Simon::StartAttack()
@@ -264,6 +354,10 @@ void Simon::StartSitAttack()
 	issitattack = true;
 	sitattack_start = GetTickCount();
 	animations[SIMON_ANI_SIT_ATTACK]->reset();
+}
+void Simon::FixPositionStair()
+{
+
 }
 void Simon::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {

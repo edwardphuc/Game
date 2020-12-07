@@ -1,0 +1,11 @@
+﻿  Simon.cpp
+D:\Clone\Game\Castlevania\03-Keyboard-States\GameObject.h(69,15): warning C4244: '=': conversion from 'float' to 'LONG', possible loss of data
+D:\Clone\Game\Castlevania\03-Keyboard-States\GameObject.h(70,14): warning C4244: '=': conversion from 'float' to 'LONG', possible loss of data
+D:\Clone\Game\Castlevania\03-Keyboard-States\GameObject.h(71,16): warning C4244: '=': conversion from 'float' to 'LONG', possible loss of data
+D:\Clone\Game\Castlevania\03-Keyboard-States\GameObject.h(72,17): warning C4244: '=': conversion from 'float' to 'LONG', possible loss of data
+D:\Clone\Game\Castlevania\03-Keyboard-States\Simon.cpp(11,20): warning C4018: '<': signed/unsigned mismatch
+D:\Clone\Game\Castlevania\03-Keyboard-States\Simon.cpp(30,20): warning C4018: '<': signed/unsigned mismatch
+D:\Clone\Game\Castlevania\03-Keyboard-States\Simon.cpp(99,16): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+D:\Clone\Game\Castlevania\03-Keyboard-States\Simon.cpp(100,17): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+D:\Clone\Game\Castlevania\03-Keyboard-States\Simon.cpp(105,20): warning C4018: '<': signed/unsigned mismatch
+  03-Keyboard-States.vcxproj -> D:\Clone\Game\Castlevania\Debug\03-Keyboard-States.exe

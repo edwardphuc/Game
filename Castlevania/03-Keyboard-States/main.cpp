@@ -30,6 +30,7 @@
 
 #include "WhipUpgrade.h";
 #include "Panther.h";
+#include "StairOj.h";
 
 #define WINDOW_CLASS_NAME L"SampleWindow"
 #define MAIN_WINDOW_TITLE L"Catslevania"
@@ -50,6 +51,7 @@
 #define ID_TEX_GHOST 70
 #define ID_TEX_BRICK 80
 #define ID_TEX_PANTHER 90
+#define ID_TEX_BRICK1 100
 
 
 CGame *game;
@@ -68,8 +70,9 @@ DWORD timecreateGhost;
 //Brazier* brazier3;
 //Brazier* brazier4;
 //Brazier* brazier5;
-vector<LPGAMEOBJECT> oj; //brazier oj
+vector<LPGAMEOBJECT> oj; 
 vector<LPGAMEOBJECT> enemy;
+vector<LPGAMEOBJECT> stairoj;
 
 class CSampleKeyHander: public CKeyEventHandler
 {
@@ -86,7 +89,7 @@ void CSampleKeyHander::OnKeyDown(int KeyCode)
 	switch (KeyCode)
 	{
 	case DIK_SPACE:
- 		if (simon->Getwaitingtime() == 0 && simon->Getattackingstate() == false)
+ 		if (simon->Getwaitingtime() == 0 && simon->Getattackingstate() == false && simon->Getonstair() == false)
 			simon->SetState(SIMON_STATE_JUMP);
 		else simon->SetState(SIMON_STATE_IDLE);
 
@@ -129,19 +132,44 @@ void CSampleKeyHander::OnKeyUp(int KeyCode)
 
 void CSampleKeyHander::KeyState(BYTE *states)
 {
-	if (game->IsKeyDown(DIK_RIGHT) && simon->Getsittingstate() == false && simon->Getwaitingtimeatt()==0 && simon->Getattackingstate() == false)
+	int z;
+	z = simon->Getstairdirect();
+	if (game->IsKeyDown(DIK_RIGHT) && simon->Getsittingstate() == false && simon->Getwaitingtimeatt() == 0 && simon->Getattackingstate() == false && simon->Getchangecolor() == false && simon->Getonstair() == false)
 		simon->SetState(SIMON_STATE_WALKING_RIGHT);
-	else if (game->IsKeyDown(DIK_LEFT) && simon->Getsittingstate() == false && simon->Getwaitingtimeatt() == 0 && simon->Getattackingstate() == false)
+	else if (game->IsKeyDown(DIK_LEFT) && simon->Getsittingstate() == false && simon->Getwaitingtimeatt() == 0 && simon->Getattackingstate() == false && simon->Getchangecolor() == false && simon->Getonstair() == false)
 		simon->SetState(SIMON_STATE_WALKING_LEFT);
-	else if (game->IsKeyDown(DIK_DOWN))
-		simon->SetState(SIMON_STATE_SIT);
-	/*else if (game->IsKeyDown(DIK_A))
+	else if (game->IsKeyDown(DIK_UP) && simon->Getallowstair() == 1)
 	{
-		simon->SetState(SIMON_STATE_ATTACK);
-		whip->SetState(WHIP_STATE_ACTIVE);
-	}*/
-	/*else if (game->IsKeyDown(DIK_UP) && simon->GetState() == SIMON_STATE_SIT)
-		simon->SetState(SIMON_STATE_STANDUP);*/
+		if (z == 1)
+		{
+			simon->Setonstair(true);
+			simon->SetState(SIMON_STATE_WALKING_UP_STAIR_RIGHT);
+		}
+		else if (z == -1)
+		{
+			simon->Setonstair(true);
+			simon->SetState(SIMON_STATE_WALKING_UP_STAIR_LEFT);
+		}
+		
+	}
+	else if (game->IsKeyDown(DIK_DOWN) )
+	{
+		if (simon->Getallowstair() == 0) simon->SetState(SIMON_STATE_SIT);
+		else if (simon->Getallowstair() == 1)
+		{
+			if (z == 1)
+			{
+				simon->Setonstair(true);
+				simon->SetState(SIMON_STATE_WALKING_DOWN_STAIR_LEFT);
+			}
+			else if (z == -1)
+			{
+				simon->Setonstair(true);
+				simon->SetState(SIMON_STATE_WALKING_DOWN_STAIR_RIGHT);
+			}
+		}
+	}
+	else if (simon->Getallowstair() == 1) simon->SetState(SIMON_STATE_ONSTAIR_IDLE);
 	else simon->SetState(SIMON_STATE_IDLE);
 }
 
@@ -204,6 +232,17 @@ void LoadResources()
 	sprites->Add(20002, 353, 10, 405, 52, texSimon);
 	sprites->Add(20003, 412, 10, 477, 52, texSimon);
 
+	sprites->Add(20004, 115, 68, 160, 128, texSimon);
+	sprites->Add(20005, 190, 68, 234, 128, texSimon);
+	sprites->Add(20006, 244, 68, 290, 128, texSimon);
+
+	sprites->Add(20007, 14, 220, 48, 260, texSimon);
+	sprites->Add(20008, 60, 220, 124, 260, texSimon);
+
+	sprites->Add(20009, 0, 334, 48, 392, texSimon);
+	sprites->Add(20010, 60, 334, 108, 392, texSimon);
+	sprites->Add(20011, 120, 334, 167, 392, texSimon);
+
 	//Sprite whip
 	sprites->Add(10008, 0, 8, 18, 53, texWhip);
 	sprites->Add(10009, 40, 2, 72, 38, texWhip);
@@ -253,14 +292,14 @@ void LoadResources()
 
 
 	ani = new CAnimation(100);
-	ani->Add(10002);
 	ani->Add(10001);
+	ani->Add(10002);
 	ani->Add(10003);
 	animations->Add(402, ani);
 
 	ani = new CAnimation(100);
-	ani->Add(10002);
 	ani->Add(10001);
+	ani->Add(10002);
 	ani->Add(10003);
 	animations->Add(403, ani);
 
@@ -373,6 +412,59 @@ void LoadResources()
 	ani->Add(10503);
 	animations->Add(3300, ani);
 
+	ani = new CAnimation(100);
+	ani->Add(20004);
+	animations->Add(4000, ani);
+
+	ani = new CAnimation(100);
+	ani->Add(20004);
+	animations->Add(4001, ani);
+
+	ani = new CAnimation(100);
+	ani->Add(20006);
+	animations->Add(4002, ani);
+
+	ani = new CAnimation(100);
+	ani->Add(20006);
+	animations->Add(4003, ani);
+
+	ani = new CAnimation(100);
+	ani->Add(20005);
+	ani->Add(20004);
+	ani->Add(20005);
+	animations->Add(4004, ani);
+	
+	ani = new CAnimation(100);
+	ani->Add(20005);
+	ani->Add(20004);
+	ani->Add(20005);
+	animations->Add(4005, ani);
+
+	ani = new CAnimation(100);
+	ani->Add(20005);
+	ani->Add(20006);
+	ani->Add(20005);
+	animations->Add(4006, ani);
+
+	ani = new CAnimation(100);
+	ani->Add(20005);
+	ani->Add(20006);
+	ani->Add(20005);
+	animations->Add(4007, ani);
+
+	ani = new CAnimation(100);
+	ani->Add(20009);
+	ani->Add(20010);
+	ani->Add(20011);
+	animations->Add(4008, ani);
+
+	ani = new CAnimation(100);
+	ani->Add(20009);
+	ani->Add(20010);
+	ani->Add(20011);
+	animations->Add(4009, ani);
+
+
 
 	Simon::AddAnimation(400);		// idle right
 	Simon::AddAnimation(401);		// idle left
@@ -425,6 +517,17 @@ void LoadResources()
 	Panther::AddAnimation(3100);
 	Panther::AddAnimation(3200);
 	Panther::AddAnimation(3300);
+
+	Simon::AddAnimation(4000);
+	Simon::AddAnimation(4001);
+	Simon::AddAnimation(4002);
+	Simon::AddAnimation(4003);
+	Simon::AddAnimation(4004);
+	Simon::AddAnimation(4005);
+	Simon::AddAnimation(4006);
+	Simon::AddAnimation(4007);
+	Simon::AddAnimation(4008);
+	Simon::AddAnimation(4009);
 	for (int i = 0; i < 48; i++)
 	{
 		Brick* brick = new Brick();
@@ -460,6 +563,12 @@ void LoadResources()
 		brick->SetPosition(1420 + i * 29.0f, 305.0f);
 		oj.push_back(brick);
 	}
+	for (int i = 0; i < 2; i++)
+	{
+		Brick* brick = new Brick();
+		brick->SetPosition(2620 + i * 29.0f, 198.0f);
+		oj.push_back(brick);
+	}
 	/*for (int i = 0; i < 2; i++)
 	{
 		Panther *panther = new Panther();
@@ -493,8 +602,16 @@ void LoadResources()
 			oj.push_back(ghost);
 		}
 	}*/
+	StairOj* stair1 = new StairOj();
+	stair1->SetPosition(2515.0f, 280.0f);
+	stairoj.push_back(stair1);
+
+	StairOj* stair2 = new StairOj();
+	stair2->SetPosition(2600.0f, 108.0f);
+	stairoj.push_back(stair2);
+
 	simon = new Simon(oj);
-	simon->SetPosition(0.0f, 240.0f);
+	simon->SetPosition(2350.0f, 240.0f);
 	float x, y;
 	simon->GetPosition(x, y);
 	/*if (GetTickCount() - timecreateGhost > 1000)
@@ -565,13 +682,22 @@ void Update(DWORD dt)
 	}
 	else CGame::GetInstance()->SetCamPos(cx, 0.0f);
 	vector<LPGAMEOBJECT> coObjects;
-	for (int i = 0; i < enemy.size(); i++)
+	for (int i = 0; i < oj.size(); i++)
 	{
-		enemy[i]->Update(dt, &coObjects);
+		coObjects.push_back(oj[i]);
 	}
-	if (GetTickCount() - timecreateGhost > 1000)
+	for (int i = 0; i < stairoj.size(); i++)
 	{
-		if (x >= 1600 && x < 2500)
+		stairoj[i]->Update(dt, &coObjects);
+	}
+	for (int i = 0; i < oj.size(); i++)
+	{
+		oj[i]->Update(dt, &coObjects);
+	}
+	simon->Update(dt, &coObjects, stairoj);
+	if (GetTickCount() - timecreateGhost > 2000)
+	{
+		if (x >= 1600 && x < 3000)
 		{
 			DWORD now = GetTickCount();
 			timecreateGhost = now;
@@ -585,7 +711,7 @@ void Update(DWORD dt)
 				{
 					countGhost++;
 					ghost->SetState(GHOST_STATE_WALKING_LEFT);
-					ghost->SetPosition(2500, 240);
+					ghost->SetPosition(4000, 240);
 				}
 				else if (z == -1)
 				{
@@ -597,21 +723,19 @@ void Update(DWORD dt)
 			}
 		}
 	}
-	for (int i = 0; i < oj.size(); i++)
+	for (int i = 0; i < enemy.size(); i++)
 	{
-		coObjects.push_back(oj[i]);
+		enemy[i]->Update(dt, &coObjects);
 	}
+	
+
 	for (int i = 0; i < enemy.size(); i++)
 	{
 		coObjects.push_back(enemy[i]);
 	}
 	
 	
-	for (int i = 0; i < oj.size(); i++)
-	{
-		oj[i]->Update(dt, &coObjects);
-	}
-	simon->Update(dt, &coObjects);
+	
 	
 	whip->Update(dt, &coObjects, enemy, countGhost);
 }
@@ -637,6 +761,10 @@ void Render()
 		map4->render(1003);
 		map5->render(1004);
 
+		for (int i = 0; i < stairoj.size(); i++)
+		{
+			stairoj[i]->Render();
+		}
 		for (int i = 0; i < oj.size(); i++)
 		{
 			oj[i]->Render();
