@@ -13,6 +13,7 @@ private:
 	bool isappearing = true;
 public:
 	    Brazier();
+		void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	    void Render();
 		void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 		void SetState(int state);

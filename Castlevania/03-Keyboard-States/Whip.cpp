@@ -91,7 +91,7 @@ void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT
 	
 	for (int i = 0; i < this->oj.size(); i++)
 	{
-		if(this->oj[i]->GetInvisible() == true)  // xet va cham cho cac vat the hien ra tren man hinh
+		if(this->oj[i]->GetHP() > 0)  // xet va cham cho cac vat the hien ra tren man hinh
 			if (this->CheckCollision(this->oj[i]))
 			{
 				if (i >= 0 && i <= 4)
@@ -99,8 +99,8 @@ void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT
 					float x2, y2;
 					this->oj[i]->GetPosition(x2, y2);           // danh vao den thi den mat, item hien ra
 					this->oj[i + 5]->SetPosition(x2, y2);
-					this->oj[i]->SetVisible(false);
-					this->oj[i + 5]->SetVisible(true);
+					this->oj[i]->SetHP(this->oj[i]->GetHP() -1);
+					if(this->oj[i]->GetHP() == 0) this->oj[i + 5]->SetVisible(true);
 				}
 			}
 	}
@@ -110,9 +110,12 @@ void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT
 		if (enemy[i]->GetInvisible() == true)
 			if (this->CheckCollision(enemy[i]))
 			{
-				enemy[i]->SetVisible(false);
-				countGhost--;
-				enemy.erase(enemy.begin() + i);
+				enemy[i]->SetHP(enemy[i]->GetHP()-1);
+				if (enemy[i]->GetHP() == false)
+				{
+					countGhost--;
+					enemy.erase(enemy.begin() + i);
+				}
 			}
 	}
 	

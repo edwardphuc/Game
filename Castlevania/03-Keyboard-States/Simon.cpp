@@ -35,11 +35,8 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 		{
 			allowstair = 1;
 			stairnx = 1;
-			if (this->x > sx + 20 || this->y > sy - 20)
-			{
-				allowstair = 0;
-			}
-			if (i % 2 != 0)
+			if (this->x > sx + 10 || this->y > sy + 20) allowstair = 0;
+			if (nx > 0 && i == 1)
 			{
 				isonstair = false;
 			}
@@ -134,8 +131,15 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 	}
 	// simple screen edge collision!!!
 
-	if (vx > 0 && x > 1280 && x < 1420) x = 1450;
-	if (x > 1280 && x < 1420) x = 1440;
+	if (vx < 0 && x > 1280 && x < 1420)
+	{
+		x = 1450;
+	}
+	else if (x > 1280 && x < 1420)
+	{
+		x = 1440;
+		y = -60; vy = 0.02f;
+	}
 	if (x > 4000 && x < 4050) x = 4050;
 	if (vx != 0 && (x < 1280 || x >= 1420 || x >= 4050)) x += dx;
 
@@ -224,7 +228,6 @@ void Simon::Render()
 			else
 			{
 				ani = SIMON_ANI_SIT;
-				issitting = false;
 			}
 		}
 		else if (isjumping == true)

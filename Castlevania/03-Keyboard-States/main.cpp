@@ -31,6 +31,7 @@
 #include "WhipUpgrade.h";
 #include "Panther.h";
 #include "StairOj.h";
+#include "DaggerWP.h";
 
 #define WINDOW_CLASS_NAME L"SampleWindow"
 #define MAIN_WINDOW_TITLE L"Catslevania"
@@ -62,6 +63,8 @@ Map* map3;
 Map* map4;
 Map* map5;
 Whip* whip;
+Panther* panther;
+DaggerWP* daggerWP;
 bool cancreateghost;
 int countGhost = 0;
 DWORD timecreateGhost;
@@ -95,13 +98,13 @@ void CSampleKeyHander::OnKeyDown(int KeyCode)
 
 		break;
 	case DIK_A:
-		if (simon->Getattackingstate() == false)
+		if (simon->Getattackingstate() == false && simon->Getsitattackstate()== false)
 		{
 			if (game->IsKeyDown(DIK_DOWN))
 			{
 				simon->SetState(SIMON_STATE_SIT);
-				simon->StartSitAttack();
 				whip->SetState(WHIP_STATE_ACTIVE);
+				simon->StartSitAttack();
 				whip->StartAttack();
 
 			}
@@ -114,6 +117,14 @@ void CSampleKeyHander::OnKeyDown(int KeyCode)
 			}
 		}
 		break;
+	case DIK_Z:
+		if (simon->Getattackingstate() == false && daggerWP->Getallow() == true)
+		{
+			simon->SetState(SIMON_STATE_ATTACK);
+			daggerWP->SetState(DAGGER_STATE_ACTIVE);
+			simon->StartAttack();
+			daggerWP->StartAttack();
+		}
 	}
 	
 }
@@ -277,9 +288,9 @@ void LoadResources()
 
 	//Panther
 	sprites->Add(10500, 11, 1, 58, 31, texPanther);
-	sprites->Add(10501, 68, 0, 128, 31, texPanther);
+	sprites->Add(10501, 68, 1, 128, 31, texPanther);
 	sprites->Add(10503, 132, 1, 197, 31, texPanther);
-	sprites->Add(10504, 202, 0, 260, 31, texPanther);
+	sprites->Add(10504, 202, 1, 260, 31, texPanther);
 	LPANIMATION ani;
 
 	ani = new CAnimation(100);	
@@ -373,6 +384,10 @@ void LoadResources()
 	ani = new CAnimation(100);
 	ani->Add(10301);
 	animations->Add(2100, ani);
+
+	ani = new CAnimation(100);
+	ani->Add(10301);
+	animations->Add(2101, ani);
 
 	ani = new CAnimation(100);
 	ani->Add(10302);
@@ -528,6 +543,7 @@ void LoadResources()
 	Simon::AddAnimation(4007);
 	Simon::AddAnimation(4008);
 	Simon::AddAnimation(4009);
+	DaggerWP::AddAnimation(2101);
 	for (int i = 0; i < 48; i++)
 	{
 		Brick* brick = new Brick();
@@ -607,11 +623,11 @@ void LoadResources()
 	stairoj.push_back(stair1);
 
 	StairOj* stair2 = new StairOj();
-	stair2->SetPosition(2600.0f, 108.0f);
+	stair2->SetPosition(2600.0f, 113.0f);
 	stairoj.push_back(stair2);
 
 	simon = new Simon(oj);
-	simon->SetPosition(2350.0f, 240.0f);
+	simon->SetPosition(2200.0f, 240.0f);
 	float x, y;
 	simon->GetPosition(x, y);
 	/*if (GetTickCount() - timecreateGhost > 1000)
@@ -637,11 +653,13 @@ void LoadResources()
 			}
 		}
 	}*/
-	
+	panther = new Panther(simon);
+	panther->SetPosition(2600.0f, 50.0f);
 	whip = new Whip(simon, oj);
 	whip->SetPosition(x, y);
 
-	
+	daggerWP = new DaggerWP(simon, oj);
+	daggerWP->SetPosition(x, y);
 	
 }
 
@@ -725,18 +743,20 @@ void Update(DWORD dt)
 	}
 	for (int i = 0; i < enemy.size(); i++)
 	{
+		coObjects.push_back(enemy[i]);
+	}
+
+	for (int i = 0; i < enemy.size(); i++)
+	{
 		enemy[i]->Update(dt, &coObjects);
 	}
 	
 
-	for (int i = 0; i < enemy.size(); i++)
-	{
-		coObjects.push_back(enemy[i]);
-	}
 	
 	
 	
-	
+	panther->Update(dt, &coObjects);
+	daggerWP->Update(dt, &coObjects, enemy, countGhost);
 	whip->Update(dt, &coObjects, enemy, countGhost);
 }
 
@@ -774,6 +794,8 @@ void Render()
 			enemy[i]->Render();
 		}
 		simon->Render();
+		daggerWP->Render();
+		panther->Render();
 		whip->Render();
 		spriteHandler->End();
 		d3ddv->EndScene();

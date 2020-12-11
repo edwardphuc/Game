@@ -2,6 +2,11 @@
 Brazier::Brazier()
 {
 	state = BRAZIER_STATE_ACTIVE;
+	hp = 1;
+}
+void Brazier::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
+{
+	CGameObject::Update(dt);
 }
 void Brazier::Render()
 {

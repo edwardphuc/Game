@@ -43,7 +43,7 @@ protected:
 
 	int state;	
 	bool visible;
-
+	int hp;
 	double scale = 1;
 
 	DWORD dt;
@@ -60,6 +60,8 @@ public:
 	int GetState() { return this->state; }
 	bool GetInvisible() { return this->visible; }
 	void SetVisible(bool vs) { this->visible = vs; }
+	int GetHP() { return this->hp; }
+	void SetHP(int hp) { this->hp = hp; }
 	bool CheckCollision(CGameObject* object);
 	RECT CGameObject::GetBound()
 	{

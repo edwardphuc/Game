@@ -84,6 +84,7 @@ public:
 	bool Getmovingallow() { return this->movingallow; };
 	bool Getsittingstate() { return this->issitting; }
 	bool Getattackingstate() { return this->isattacking; }
+	bool Getsitattackstate() { return this->issitattack; }
 	int Getallowstair() { return this->allowstair; }
 	int Getstairdirect() { return this->stairnx; }
 	bool Getonstair() { return this->isonstair; }

@@ -125,6 +125,7 @@
     <ClCompile Include="Brazier.cpp" />
     <ClCompile Include="Brick.cpp" />
     <ClCompile Include="Dagger.cpp" />
+    <ClCompile Include="DaggerWP.cpp" />
     <ClCompile Include="debug.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -145,6 +146,7 @@
     <ClInclude Include="Brazier.h" />
     <ClInclude Include="Brick.h" />
     <ClInclude Include="Dagger.h" />
+    <ClInclude Include="DaggerWP.h" />
     <ClInclude Include="Ghost.h" />
     <ClInclude Include="Heart.h" />
     <ClInclude Include="Map.h" />
