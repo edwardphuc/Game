@@ -107,7 +107,7 @@ void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT
 
 	for (int i = 0; i < enemy.size(); i++)
 	{
-		if (enemy[i]->GetInvisible() == true)
+		if (enemy[i]->GetInvisible() == true && this->isactive == true)
 			if (this->CheckCollision(enemy[i]))
 			{
 				enemy[i]->SetHP(enemy[i]->GetHP()-1);

@@ -1,14 +1,16 @@
 #include "Panther.h"
 #include <algorithm>
+#include "debug.h"
 
 Panther::Panther(Simon *sm)
 {
-	state = PANTHER_STATE_SIT;
 	this->simon = sm;
+	this->SetState(PANTHER_STATE_SIT);
 	visible = true;
 	hp = 1;
+	allowjump = true;
 }
-void Panther::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
+void Panther::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT> stairoj)
 {
 	CGameObject::Update(dt);
 	vector<LPCOLLISIONEVENT> coEvents;
@@ -17,6 +19,7 @@ void Panther::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	coEvents.clear();
 	CalcPotentialCollisions(coObjects, coEvents);
+	
 	if (coEvents.size() == 0)
 	{
 		y += dy;
@@ -38,7 +41,7 @@ void Panther::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	{
 		this->StandUp();
 	}
-	else if (x - x1 < 300)
+	else if (x - x1 < 300 && isrunparabol == false)
 	{
 		runtosimon = true;
 	}
@@ -46,25 +49,52 @@ void Panther::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	{
 		this->RuntoSimon();
 	}
+	
+	if (x <= 2600 && y <= 265)
+	{
+		isrunparabol = true;
+		this->RunParabol();
+	}
+	if (y > 265)
+	{
+		allowjump = true;
+		isrunparabol = false;
+		SetState(PANTHER_STATE_RUN_RIGHT);
+		x += dx;
+	}
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 }
 void Panther::StandUp()
 {
-	this->SetState(PANTHER_STATE_IDLE);
+	SetState(PANTHER_STATE_IDLE);
 }
 void Panther::RuntoSimon()
 {
-	this->SetState(PANTHER_STATE_RUN_LEFT);
+	SetState(PANTHER_STATE_RUN_LEFT);
 	x += dx;
+}
+void Panther::RunParabol()
+{
+	runtosimon = false;
+	if (y < 170 && y >= 80 && allowjump == true)
+	{
+		vy = -0.12f;
+		allowjump = false;
+	}
+	else if (y < 80) vy = 0.25f;
+	vx = -0.1f;
+	x += dx;
+	y += dy;
 }
 void Panther::Render()
 {
 	int ani;
+	int direct = this->GetState();
 	if (visible == true)
 	{
-		if (state == PANTHER_STATE_RUN_RIGHT) ani = PANTHER_ANI_RUN_RIGHT;
-		else if(state == PANTHER_STATE_RUN_LEFT) ani = PANTHER_ANI_RUN_LEFT;
-		else if (state == PANTHER_STATE_SIT) ani = PANTHER_ANI_SIT;
+		if (direct == PANTHER_STATE_RUN_RIGHT) ani = PANTHER_ANI_RUN_RIGHT;
+		else if(direct == PANTHER_STATE_RUN_LEFT) ani = PANTHER_ANI_RUN_LEFT;
+		else if (direct == PANTHER_STATE_SIT) ani = PANTHER_ANI_SIT;
 		else ani = PANTHER_ANI_IDLE;
 	}
 	animations[ani]->Render(x, y, scale);
@@ -78,12 +108,12 @@ void Panther::GetBoundingBox(float& left, float& top, float& right, float& botto
 	if (state == PANTHER_STATE_SIT)
 	{
 		right = x + 60;
-		bottom = y + 30;
+		bottom = y + 35;
 	}
 	else
 	{
 		right = x + 60;
-		bottom = y + 30;
+		bottom = y + 35;
 	}
 
 }

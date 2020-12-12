@@ -289,8 +289,8 @@ void LoadResources()
 	//Panther
 	sprites->Add(10500, 11, 1, 58, 31, texPanther);
 	sprites->Add(10501, 68, 1, 128, 31, texPanther);
-	sprites->Add(10503, 132, 1, 197, 31, texPanther);
-	sprites->Add(10504, 202, 1, 260, 31, texPanther);
+	sprites->Add(10502, 132, 1, 197, 31, texPanther);
+	sprites->Add(10503, 202, 1, 260, 31, texPanther);
 	LPANIMATION ani;
 
 	ani = new CAnimation(100);	
@@ -654,7 +654,7 @@ void LoadResources()
 		}
 	}*/
 	panther = new Panther(simon);
-	panther->SetPosition(2600.0f, 50.0f);
+	panther->SetPosition(2650.0f, 50.0f);
 	whip = new Whip(simon, oj);
 	whip->SetPosition(x, y);
 
@@ -755,7 +755,7 @@ void Update(DWORD dt)
 	
 	
 	
-	panther->Update(dt, &coObjects);
+	panther->Update(dt, &coObjects, stairoj);
 	daggerWP->Update(dt, &coObjects, enemy, countGhost);
 	whip->Update(dt, &coObjects, enemy, countGhost);
 }

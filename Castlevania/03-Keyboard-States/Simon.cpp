@@ -228,6 +228,7 @@ void Simon::Render()
 			else
 			{
 				ani = SIMON_ANI_SIT;
+				issitting = false;
 			}
 		}
 		else if (isjumping == true)

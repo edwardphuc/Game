@@ -49,23 +49,37 @@ void DaggerWP::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOB
 				isfree = true;
 			}
 		}
+		nx = z;
 	}
-	else if (isactive == false && isfree == false)
+	else if ((isactive == false && isfree == false))
 	{
 		this->SetPosition(x1, y1);
 	}
 	else if (isfree == true && isactive == false)
 	{
-		if (z == 1 && isallowdirect == true)
+		if (nx == 1 )
 		{
 			x += 0.5 * dt;
+			
 		}
-		else if (z == -1 && isallowdirect == true) x += -0.5 * dt;
-	}
+		else if (nx == -1 ) {
+			x += -0.5 * dt;
+			
+		}
 
+	}
+	if (abs(x - x1) > 650)
+	{
+		this->SetPosition(x1, y1);
+		this->isallow = true;
+		this->isfree = false;
+		this->isactive = false;
+		
+	}
+	
 	for (int i = 0; i < enemy.size(); i++)
 	{
-		if (enemy[i]->GetInvisible() == true)
+		if (enemy[i]->GetInvisible() == true && this->isfree == true)
 			if (this->CheckCollision(enemy[i]))
 			{
 				this->isallow = true;
@@ -93,9 +107,7 @@ void DaggerWP::Render()
 	int ani;
 	if (isactive == true || isfree == true)
 	{
-		int z;
-		simon->GetDirect(z);
-		if (z == 1)
+		if (nx == 1)
 		{
 			scale = 1;
 		}
