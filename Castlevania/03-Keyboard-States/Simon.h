@@ -63,6 +63,7 @@ private:
 	bool issitattack = false;
 	bool isonstair;
 	bool ischangecolor = false;
+	int soluongdao;
 	DWORD waitingtime = 0;
 	DWORD waitingtimeatt = 0;
 	DWORD attacktime = 0;
@@ -87,10 +88,12 @@ public:
 	bool Getsitattackstate() { return this->issitattack; }
 	int Getallowstair() { return this->allowstair; }
 	int Getstairdirect() { return this->stairnx; }
+	int Getsoluongdao() { return this->soluongdao; }
 	bool Getonstair() { return this->isonstair; }
 	void Setonstair(bool x) { this->isonstair = x; }
 	bool Getchangecolor() { return this->ischangecolor; }
 	void GetWhiplv(int& x) { x = this->whiplv; }
+	void Setsoluongdao(int x) { this->soluongdao = x; }
 	void StartAttack();
 	void StartSitAttack();
 	void StartChangeColor() { ischangecolor = true; changecolor_start = GetTickCount(); vx = 0; }

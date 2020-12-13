@@ -10,12 +10,16 @@ Panther::Panther(Simon *sm)
 	hp = 1;
 	allowjump = true;
 }
-void Panther::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT> stairoj)
+void Panther::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
+	if (visible == true)
+	{
+
+	}
 	CGameObject::Update(dt);
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
-	vy = vy + 0.0002f * dt;
+	
 
 	coEvents.clear();
 	CalcPotentialCollisions(coObjects, coEvents);
@@ -23,6 +27,7 @@ void Panther::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJ
 	if (coEvents.size() == 0)
 	{
 		y += dy;
+		vy = vy + 0.0002f * dt;
 	}
 	else
 	{
@@ -49,19 +54,52 @@ void Panther::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJ
 	{
 		this->RuntoSimon();
 	}
+	if (id == 0)
+	{
+		if (x <= 2600 && y <= 265)
+		{
+			isrunparabol = true;
+			this->RunParabol();
+		}
+		if (y > 265)
+		{
+			allowjump = true;
+			isrunparabol = false;
+			SetState(PANTHER_STATE_RUN_RIGHT);
+			x += dx;
+		}
+	}
+	if (id == 1)
+	{
+		if (x <= 2720 && y <= 160)
+		{
+			isrunparabol = true;
+			this->RunParabol();
+		}
+		if (y > 160)
+		{
+			allowjump = true;
+			isrunparabol = false;
+			SetState(PANTHER_STATE_RUN_RIGHT);
+			x += dx;
+		}
+	}
+	if (id == 2)
+	{
+		if (x <= 3000  && y <= 265)
+		{
+			isrunparabol = true;
+			this->RunParabolForLastPanther();
+		}
+		if (y > 265)
+		{
+			allowjump = true;
+			isrunparabol = false;
+			SetState(PANTHER_STATE_RUN_RIGHT);
+			x += dx;
+		}
+	}
 	
-	if (x <= 2600 && y <= 265)
-	{
-		isrunparabol = true;
-		this->RunParabol();
-	}
-	if (y > 265)
-	{
-		allowjump = true;
-		isrunparabol = false;
-		SetState(PANTHER_STATE_RUN_RIGHT);
-		x += dx;
-	}
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 }
 void Panther::StandUp()
@@ -78,11 +116,24 @@ void Panther::RunParabol()
 	runtosimon = false;
 	if (y < 170 && y >= 80 && allowjump == true)
 	{
-		vy = -0.12f;
+		vy = -0.15f;
 		allowjump = false;
 	}
-	else if (y < 80) vy = 0.25f;
-	vx = -0.1f;
+	else if (y < 80) vy = 0.08f;
+	vx = -0.175f;
+	x += dx;
+	y += dy;
+}
+void Panther::RunParabolForLastPanther()
+{
+	runtosimon = false;
+	if (y < 170 && y >= 157 && allowjump == true)
+	{
+		vy = -0.15f;
+		allowjump = false;
+	}
+	else if (y < 157) vy = 0.08f;
+	vx = -0.175f;
 	x += dx;
 	y += dy;
 }
@@ -96,9 +147,10 @@ void Panther::Render()
 		else if(direct == PANTHER_STATE_RUN_LEFT) ani = PANTHER_ANI_RUN_LEFT;
 		else if (direct == PANTHER_STATE_SIT) ani = PANTHER_ANI_SIT;
 		else ani = PANTHER_ANI_IDLE;
+		animations[ani]->Render(x, y, scale);
+		RenderBoundingBox();
 	}
-	animations[ani]->Render(x, y, scale);
-	RenderBoundingBox();
+	
 }
 
 void Panther::GetBoundingBox(float& left, float& top, float& right, float& bottom)

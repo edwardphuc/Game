@@ -3,7 +3,7 @@
 
 
 #define BBOX_BRICK_WIDTH 29
-#define BBOX_BRICK_HEIGHT 20
+#define BBOX_BRICK_HEIGHT 15
 class Brick : public CGameObject
 {
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);

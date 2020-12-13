@@ -64,6 +64,8 @@ Map* map4;
 Map* map5;
 Whip* whip;
 Panther* panther;
+Panther* panther1;
+Panther* panther2;
 DaggerWP* daggerWP;
 bool cancreateghost;
 int countGhost = 0;
@@ -118,7 +120,7 @@ void CSampleKeyHander::OnKeyDown(int KeyCode)
 		}
 		break;
 	case DIK_Z:
-		if (simon->Getattackingstate() == false && daggerWP->Getallow() == true)
+		if (simon->Getattackingstate() == false && daggerWP->Getallow() == true && simon->Getsoluongdao() > 0)
 		{
 			simon->SetState(SIMON_STATE_ATTACK);
 			daggerWP->SetState(DAGGER_STATE_ACTIVE);
@@ -579,10 +581,28 @@ void LoadResources()
 		brick->SetPosition(1420 + i * 29.0f, 305.0f);
 		oj.push_back(brick);
 	}
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < 1; i++)
 	{
 		Brick* brick = new Brick();
-		brick->SetPosition(2620 + i * 29.0f, 198.0f);
+		brick->SetPosition(2640 + i * 29.0f, 198.0f);
+		oj.push_back(brick);
+	}
+	for (int i = 0; i < 8; i++)
+	{
+		Brick* brick = new Brick();
+		brick->SetPosition(2750 + i * 29.0f, 142.0f);
+		oj.push_back(brick);
+	}
+	for (int i = 0; i < 3; i++)
+	{
+		Brick* brick = new Brick();
+		brick->SetPosition(3050 + i * 29.0f, 198.0f);
+		oj.push_back(brick);
+	}
+	for (int i = 0; i < 13; i++)
+	{
+		Brick* brick = new Brick();
+		brick->SetPosition(3850 + i * 29.0f, 142.0f);
 		oj.push_back(brick);
 	}
 	/*for (int i = 0; i < 2; i++)
@@ -627,7 +647,7 @@ void LoadResources()
 	stairoj.push_back(stair2);
 
 	simon = new Simon(oj);
-	simon->SetPosition(2200.0f, 240.0f);
+	simon->SetPosition(3850.0f, 0.0f);
 	float x, y;
 	simon->GetPosition(x, y);
 	/*if (GetTickCount() - timecreateGhost > 1000)
@@ -654,7 +674,20 @@ void LoadResources()
 		}
 	}*/
 	panther = new Panther(simon);
+	panther->SetID(0);
 	panther->SetPosition(2650.0f, 50.0f);
+	enemy.push_back(panther);
+
+	panther1 = new Panther(simon);
+	panther1->SetID(1);
+	panther1->SetPosition(2950.0f, 50.0f);
+	enemy.push_back(panther1);
+
+	panther2 = new Panther(simon);
+	panther2->SetID(2);
+	panther2->SetPosition(3100.0f, 50.0f);
+	enemy.push_back(panther2);
+
 	whip = new Whip(simon, oj);
 	whip->SetPosition(x, y);
 
@@ -745,7 +778,6 @@ void Update(DWORD dt)
 	{
 		coObjects.push_back(enemy[i]);
 	}
-
 	for (int i = 0; i < enemy.size(); i++)
 	{
 		enemy[i]->Update(dt, &coObjects);
@@ -755,7 +787,7 @@ void Update(DWORD dt)
 	
 	
 	
-	panther->Update(dt, &coObjects, stairoj);
+	
 	daggerWP->Update(dt, &coObjects, enemy, countGhost);
 	whip->Update(dt, &coObjects, enemy, countGhost);
 }
@@ -795,7 +827,7 @@ void Render()
 		}
 		simon->Render();
 		daggerWP->Render();
-		panther->Render();
+		
 		whip->Render();
 		spriteHandler->End();
 		d3ddv->EndScene();

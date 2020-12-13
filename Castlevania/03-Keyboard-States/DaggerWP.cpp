@@ -28,78 +28,80 @@ void DaggerWP::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOB
 		isactive = false;
 	}
 	if (isactive != false)
-	{
-		if (z == 1)
 		{
-
-			
-			if (GetTickCount() - attack_start > 240 )
+			if (z == 1)
 			{
-				this->SetPosition(x1 + 60, y1 + 15);
-				isfree = true;
-			}
 
-		}
-		else if (z == -1)
-		{
 
-			if (GetTickCount() - attack_start > 240)
-			{
-				this->SetPosition(x1 - 45, y1 + 15);
-				isfree = true;
-			}
-		}
-		nx = z;
-	}
-	else if ((isactive == false && isfree == false))
-	{
-		this->SetPosition(x1, y1);
-	}
-	else if (isfree == true && isactive == false)
-	{
-		if (nx == 1 )
-		{
-			x += 0.5 * dt;
-			
-		}
-		else if (nx == -1 ) {
-			x += -0.5 * dt;
-			
-		}
-
-	}
-	if (abs(x - x1) > 650)
-	{
-		this->SetPosition(x1, y1);
-		this->isallow = true;
-		this->isfree = false;
-		this->isactive = false;
-		
-	}
-	
-	for (int i = 0; i < enemy.size(); i++)
-	{
-		if (enemy[i]->GetInvisible() == true && this->isfree == true)
-			if (this->CheckCollision(enemy[i]))
-			{
-				this->isallow = true;
-				this->isallowdirect = true;
-				enemy[i]->SetHP(enemy[i]->GetHP() - 1);
-				if (enemy[i]->GetHP() == false)
+				if (GetTickCount() - attack_start > 240)
 				{
-					countGhost--;
-					enemy.erase(enemy.begin() + i);
-					this->isactive = false;
-					this->isfree = false;
+					this->SetPosition(x1 + 60, y1 + 15);
+					isfree = true;
+				}
+
+			}
+			else if (z == -1)
+			{
+
+				if (GetTickCount() - attack_start > 240)
+				{
+					this->SetPosition(x1 - 45, y1 + 15);
+					isfree = true;
 				}
 			}
-	}
+			nx = z;
+		}
+		else if ((isactive == false && isfree == false))
+		{
+			this->SetPosition(x1, y1);
+		}
+		else if (isfree == true && isactive == false)
+		{
+			if (nx == 1)
+			{
+				x += 0.5 * dt;
+
+			}
+			else if (nx == -1) {
+				x += -0.5 * dt;
+
+			}
+
+		}
+		if (abs(x - x1) > 650)
+		{
+			this->SetPosition(x1, y1);
+			this->isallow = true;
+			this->isfree = false;
+			this->isactive = false;
+		}
+
+		for (int i = 0; i < enemy.size(); i++)
+		{
+			if (enemy[i]->GetInvisible() == true && this->isfree == true)
+				if (this->CheckCollision(enemy[i]))
+				{
+					this->isallow = true;
+					this->isallowdirect = true;
+					enemy[i]->SetHP(enemy[i]->GetHP() - 1);
+					if (enemy[i]->GetHP() == false)
+					{
+						countGhost--;
+						enemy.erase(enemy.begin() + i);
+						this->isactive = false;
+						this->isfree = false;
+					}
+					
+				}
+		}
+	
 }
 void DaggerWP::StartAttack()
 {
 	this->attack_start = GetTickCount();
 	isactive = true;
 	isallow = false;
+	simon->Setsoluongdao(simon->Getsoluongdao() - 1);
 	animations[36]->reset();
 }
 void DaggerWP::Render()

@@ -111,9 +111,9 @@ void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT
 			if (this->CheckCollision(enemy[i]))
 			{
 				enemy[i]->SetHP(enemy[i]->GetHP()-1);
-				if (enemy[i]->GetHP() == false)
+				if (enemy[i]->GetHP() == 0)
 				{
-					countGhost--;
+					if(i > 2) countGhost--;
 					enemy.erase(enemy.begin() + i);
 				}
 			}

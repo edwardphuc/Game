@@ -16,6 +16,7 @@ Simon::Simon(vector<LPGAMEOBJECT> oj)
 		}
 	}
 	state = SIMON_STATE_IDLE;
+	soluongdao = 3;
 }
 void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT> stairoj)
 {
@@ -108,6 +109,10 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 				{
 					this->oj[i]->SetVisible(false);
 					this->StartChangeColor();
+					if (i == 1) // dao
+					{
+						soluongdao++;
+					}
 				}
 				if (i == 2 || i == 4)
 				{
@@ -140,7 +145,15 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 		x = 1440;
 		y = -60; vy = 0.02f;
 	}
-	if (x > 4000 && x < 4050) x = 4050;
+	if (x > 4000 && x < 4050 && vx > 0)
+	{
+		x = 4050;
+		y = 78;
+	}
+	else if (x > 4000 && x < 4050)
+	{
+		x = 4050;
+	}
 	if (vx != 0 && (x < 1280 || x >= 1420 || x >= 4050)) x += dx;
 
 
