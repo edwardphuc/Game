@@ -36,7 +36,7 @@ void Heart::Render()
 	ani = ANI_HEART;
 	if (visible == true)
 	{
-		animations[ani]->Render(x, y, scale);
+		animations[ani]->Render(x, y, alpha, scale);
 	}
 	RenderBoundingBox();
 }

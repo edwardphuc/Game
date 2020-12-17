@@ -14,7 +14,7 @@ void Brazier::Render()
 	if (visible == true)
 	{
 		ani = BRAZIER;
-		animations[ani]->Render(x, y, 1);
+		animations[ani]->Render(x, y, alpha, 1);
 		RenderBoundingBox();
 	}
 	

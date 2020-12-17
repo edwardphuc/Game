@@ -45,6 +45,8 @@ protected:
 	bool visible;
 	int hp;
 	double scale = 1;
+	
+	int alpha = 255;
 
 	DWORD dt;
 

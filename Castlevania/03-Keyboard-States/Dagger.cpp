@@ -36,7 +36,7 @@ void Dagger::Render()
 	ani = ANI_DAGGER;
 	if (visible == true)
 	{
-		animations[ani]->Render(x, y, scale);
+		animations[ani]->Render(x, y, alpha, scale);
 		RenderBoundingBox();
 	}
 }

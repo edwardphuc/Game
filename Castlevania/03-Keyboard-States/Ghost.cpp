@@ -65,7 +65,7 @@ void Ghost::Render()
 		{
 			if (state == GHOST_STATE_WALKING_RIGHT) ani = GHOST_ANI_WALKING_RIGHT;
 			else if (state == GHOST_STATE_WALKING_LEFT) ani = GHOST_ANI_WALKING_LEFT;
-			animations[ani]->Render(x, y, scale);
+			animations[ani]->Render(x, y, alpha, scale);
 			RenderBoundingBox();
 		}
 	}

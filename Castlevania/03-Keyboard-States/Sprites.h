@@ -20,7 +20,7 @@ public:
 	CSprite(int id, int left, int top, int right, int bottom, LPDIRECT3DTEXTURE9 tex);
 	DWORD timeAccumulated;	 // thời gian chờ đã tích lũy
 	DWORD timeAnimation; // thời gian phải chờ giữa các frame
-	void Draw(float x, float y, double scale);
+	void Draw(float x, float y, int alpha, double scale);
 	void Next();
 };
 
@@ -69,7 +69,7 @@ public:
 	void Add(int spriteId, DWORD time = 0);
 	int GetCurrentFrame() { return currentFrame; };
 	void SetCurrentFrame(int frame) { currentFrame = frame; };
-	void Render(float x, float y, double scale);
+	void Render(float x, float y, int alpha, double scale);
 	void reset() { currentFrame = -1; };
 	LPANIMATION_FRAME GetFrame(int i) { return frames[i]; };
 };

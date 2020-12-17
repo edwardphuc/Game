@@ -3,7 +3,7 @@
 #include "GameObject.h"
 #include "Brazier.h"
 #include "StairOj.h"
-#define SIMON_WALKING_SPEED		0.08f
+#define SIMON_WALKING_SPEED		0.05f
 #define SIMON_WALKING_STAIR_SPEED		    0.025f 
 #define SIMON_JUMP_SPEED_Y		0.5f
 #define SIMON_GRAVITY			0.002f
@@ -13,6 +13,10 @@
 #define AIR						170.0f
 #define SIMON_ATTACK_TIME		300
 #define SIMON_EAT_TIME          500
+#define SIMON_DAMAGED_TIME		450
+#define SIMON_UNTOUCHABLE_TIME	2800
+#define SIMON_DIE_DEFLECT_SPEED	0.5f
+#define SIMON_DIE_TIME			2000
 
 #define SIMON_STATE_IDLE			0
 #define SIMON_STATE_WALKING_RIGHT	100
@@ -25,6 +29,7 @@
 #define SIMON_STATE_WALKING_UP_STAIR_LEFT	800
 #define SIMON_STATE_WALKING_DOWN_STAIR_RIGHT	900
 #define SIMON_STATE_WALKING_DOWN_STAIR_LEFT     1000
+#define SIMON_STATE_DIE							1100
 
 #define SIMON_ANI_IDLE_RIGHT		0
 #define SIMON_ANI_IDLE_LEFT			1
@@ -44,7 +49,9 @@
 #define SIMON_ANI_WALKING_DOWN_STAIR_LEFT  33
 #define SIMON_ANI_EAT_RIGHT				34
 #define SIMON_ANI_EAT_LEFT				35
-
+#define SIMON_ANI_DAMAGED_RIGHT			37
+#define SIMON_ANI_DAMAGED_LEFT			38
+#define	SIMON_ANI_DIE					39
 
 //BBox
 #define SIMON_STAND_BBOX_WIDTH		58
@@ -63,6 +70,10 @@ private:
 	bool issitattack = false;
 	bool isonstair;
 	bool ischangecolor = false;
+	bool isdamaged = false;
+	bool isuntouchable = false;
+	bool isdied = false;
+	bool enable_reset = true;
 	int soluongdao;
 	DWORD waitingtime = 0;
 	DWORD waitingtimeatt = 0;
@@ -70,13 +81,16 @@ private:
 	DWORD attack_start;
 	DWORD sitattack_start;
 	DWORD changecolor_start;
+	DWORD damaged_start;
+	DWORD untouchable_start;
+	DWORD dietime_start;
 	vector<LPGAMEOBJECT> oj;
 	int whiplv;
 	int stairnx;
 	int allowstair = 0;
 public:
 	Simon(vector<LPGAMEOBJECT> oj);
-	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT> stairoj);
+	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT> stairoj, vector<LPGAMEOBJECT> enemy);
 	void Render();
 	void SetState(int state);
 	//void GetState(int x) { x = this->state; }
@@ -93,10 +107,14 @@ public:
 	void Setonstair(bool x) { this->isonstair = x; }
 	bool Getchangecolor() { return this->ischangecolor; }
 	void GetWhiplv(int& x) { x = this->whiplv; }
+	bool GetUntouchable() { return this->isuntouchable; }
 	void Setsoluongdao(int x) { this->soluongdao = x; }
 	void StartAttack();
 	void StartSitAttack();
 	void StartChangeColor() { ischangecolor = true; changecolor_start = GetTickCount(); vx = 0; }
+	void StartIsDamaged() { isdamaged = true; damaged_start = GetTickCount();}
+	void StartUntouchable() { isuntouchable = true; untouchable_start = GetTickCount(); }
+	void StartDieTime() { isdied = true; dietime_start = GetTickCount(); this->SetHP(this->GetHP() - 1); isuntouchable = false; isdamaged = false; }
 	void FixPositionStair();
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 };

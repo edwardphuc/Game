@@ -36,6 +36,7 @@ void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT
 	lv = wp;
 	simon->GetPosition(x1, y1);
 	simon->GetDirect(z);
+	if (simon->GetInvisible() == false) this->isactive = false;
 	if (GetTickCount() - attack_start > SIMON_ATTACK_TIME)
 	{
 			this->attack_start = 0;
@@ -179,7 +180,7 @@ void Whip::Render()
 		{
 			ani1 = WHIP_LV3;
 		}
-		animations[ani1]->Render(x, y, scale);
+		animations[ani1]->Render(x, y, alpha, scale);
 		RenderBoundingBox();
 	}
 	

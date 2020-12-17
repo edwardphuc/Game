@@ -35,7 +35,7 @@ void WhipUpgrade::Render()
 	ani = ANI_UPGRADE;
 	if (visible == true)
 	{
-		animations[ani]->Render(x, y, scale);
+		animations[ani]->Render(x, y, alpha, scale);
 	}
 	RenderBoundingBox();
 }

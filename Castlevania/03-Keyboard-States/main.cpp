@@ -122,10 +122,22 @@ void CSampleKeyHander::OnKeyDown(int KeyCode)
 	case DIK_Z:
 		if (simon->Getattackingstate() == false && daggerWP->Getallow() == true && simon->Getsoluongdao() > 0)
 		{
-			simon->SetState(SIMON_STATE_ATTACK);
-			daggerWP->SetState(DAGGER_STATE_ACTIVE);
-			simon->StartAttack();
-			daggerWP->StartAttack();
+			if (game->IsKeyDown(DIK_DOWN))
+			{
+				simon->SetState(SIMON_STATE_SIT);
+				daggerWP->SetState(DAGGER_STATE_ACTIVE);
+				simon->StartSitAttack();
+				daggerWP->StartAttack();
+
+			}
+			else
+			{
+				simon->SetState(SIMON_STATE_ATTACK);
+				daggerWP->SetState(DAGGER_STATE_ACTIVE);
+				simon->StartAttack();
+				daggerWP->StartAttack();
+			}
+			
 		}
 	}
 	
@@ -255,6 +267,11 @@ void LoadResources()
 	sprites->Add(20009, 0, 334, 48, 392, texSimon);
 	sprites->Add(20010, 60, 334, 108, 392, texSimon);
 	sprites->Add(20011, 120, 334, 167, 392, texSimon);
+
+	sprites->Add(20012, 9, 138, 42, 194, texSimon);
+
+	sprites->Add(20013, 0, 204, 54, 261, texSimon);
+	sprites->Add(20014, 60, 204, 123, 261, texSimon);
 
 	//Sprite whip
 	sprites->Add(10008, 0, 8, 18, 53, texWhip);
@@ -481,6 +498,19 @@ void LoadResources()
 	ani->Add(20011);
 	animations->Add(4009, ani);
 
+	ani = new CAnimation(100);
+	ani->Add(20012);
+	animations->Add(4010, ani);
+
+	ani = new CAnimation(100);
+	ani->Add(20012);
+	animations->Add(4011, ani);
+
+	ani = new CAnimation(100);
+	ani->Add(20013);
+	ani->Add(20014);
+	animations->Add(4012, ani);
+
 
 
 	Simon::AddAnimation(400);		// idle right
@@ -546,6 +576,9 @@ void LoadResources()
 	Simon::AddAnimation(4008);
 	Simon::AddAnimation(4009);
 	DaggerWP::AddAnimation(2101);
+	Simon::AddAnimation(4010);
+	Simon::AddAnimation(4011);
+	Simon::AddAnimation(4012);
 	for (int i = 0; i < 48; i++)
 	{
 		Brick* brick = new Brick();
@@ -647,7 +680,7 @@ void LoadResources()
 	stairoj.push_back(stair2);
 
 	simon = new Simon(oj);
-	simon->SetPosition(3850.0f, 0.0f);
+	simon->SetPosition(2200.0f, 0.0f);
 	float x, y;
 	simon->GetPosition(x, y);
 	/*if (GetTickCount() - timecreateGhost > 1000)
@@ -745,7 +778,7 @@ void Update(DWORD dt)
 	{
 		oj[i]->Update(dt, &coObjects);
 	}
-	simon->Update(dt, &coObjects, stairoj);
+	simon->Update(dt, &coObjects, stairoj, enemy);
 	if (GetTickCount() - timecreateGhost > 2000)
 	{
 		if (x >= 1600 && x < 3000)

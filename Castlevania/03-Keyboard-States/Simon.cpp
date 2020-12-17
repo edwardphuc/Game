@@ -1,7 +1,8 @@
 #include "Simon.h"
 #include <algorithm>
-#include "Brazier.h"
+#include "Ghost.h"
 #include <iostream>
+
 using namespace std;
 
 Simon::Simon(vector<LPGAMEOBJECT> oj)
@@ -17,8 +18,9 @@ Simon::Simon(vector<LPGAMEOBJECT> oj)
 	}
 	state = SIMON_STATE_IDLE;
 	soluongdao = 3;
+	hp = 2;
 }
-void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT> stairoj)
+void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT> stairoj, vector<LPGAMEOBJECT> enemy)
 {
 	CGameObject::Update(dt);
 	// simple fall down
@@ -69,26 +71,16 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 
 
 
-			//Brazier
-			for (UINT i = 0; i < coEventsResult.size(); i++)
+			/*for (UINT i = 0; i < coEventsResult.size(); i++)
 			{
 				LPCOLLISIONEVENT e = coEventsResult[i];
 
-				if (dynamic_cast<Brazier*>(e->obj))
+				if (dynamic_cast<Ghost *>(e->obj))
 				{
 
-					if (e->ny != 0)
-					{
-						x += dx;
-						y += dy;
-					}
-					else if (e->nx != 0)
-					{
-						x += dx;
-						y += dy;
-					}
+					this->StartIsDamaged();
 				}
-			}
+			}*/
 
 		}
 	}
@@ -120,6 +112,34 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 				}
 			}
 	}
+	for (int i = 0; i < enemy.size(); i++)
+	{
+		if (enemy[i]->GetInvisible() == true)
+		{
+			if (this->CheckCollision(enemy[i]))
+			{
+				int z;
+				enemy[i]->GetDirect(z);
+				if (this->GetUntouchable() == false)
+				{
+					if (z > 0)
+					{
+						nx = -1;
+					}
+					else if (z < 0)
+					{
+						nx = 1;
+					}
+					this->StartIsDamaged();
+					this->StartUntouchable();
+					this->SetHP(this->GetHP() - 1);
+				}
+				
+				
+			}
+		}
+	}
+	
 	
 	if ((y >= AIR && y <= GROUND))
 	{
@@ -145,14 +165,18 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 		x = 1440;
 		y = -60; vy = 0.02f;
 	}
-	if (x > 4000 && x < 4050 && vx > 0)
+	if (x > 4000 && x < 4050 && vx > 0 && y <=82)
 	{
 		x = 4050;
 		y = 78;
 	}
-	else if (x > 4000 && x < 4050)
+	else if (x > 4000 && x < 4050 )
 	{
 		x = 4050;
+	}
+	if (x > 3990 && y >= 240 && x < 4050)
+	{
+		x = 3980;
 	}
 	if (vx != 0 && (x < 1280 || x >= 1420 || x >= 4050)) x += dx;
 
@@ -174,6 +198,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 		movingallow = false;
 		animations[SIMON_ANI_ATTACK]->reset();
 	}*/
+	
 	if (GetTickCount() - attack_start > SIMON_ATTACK_TIME)
 	{
 		attack_start = 0;
@@ -189,6 +214,65 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 		changecolor_start = 0;
 		ischangecolor = false;
 
+	}
+	if (GetTickCount() - damaged_start > SIMON_DAMAGED_TIME)
+	{
+		damaged_start = 0;
+		isdamaged = false;
+	}
+	
+	else
+	{
+		if (GetTickCount() - damaged_start < (SIMON_DAMAGED_TIME / 2))
+		{
+			if (nx > 0)
+			{
+				vx = -0.05f;
+			}
+			else { vx = 0.05f; }
+			dx = vx * dt;
+			x += dx;
+		    vy = -0.05f;
+			y += dy;
+			
+		}
+		else if (GetTickCount() - damaged_start >= 250)
+		{
+			dx = vx * dt;
+			x += dx;
+			if (y>=235 && this->GetState() != SIMON_STATE_DIE)
+			{
+				SetState(SIMON_STATE_IDLE);
+			}
+		}
+	}
+	if (GetTickCount() - untouchable_start > SIMON_UNTOUCHABLE_TIME)
+	{
+		untouchable_start = 0;
+		isuntouchable = false;
+		alpha = 255;
+	}
+	else
+	{
+		if (GetTickCount() - untouchable_start < SIMON_UNTOUCHABLE_TIME)
+		{
+			if(this->GetState()!= SIMON_STATE_DIE)
+			alpha = 150;
+		}
+	}
+	if (this->GetHP() == 0)
+	{
+		this->SetState(SIMON_STATE_DIE);
+		this->StartDieTime();
+	}
+	if ((this->GetHP() <= 0) && (GetTickCount() - dietime_start > SIMON_DIE_TIME))
+	{
+
+	}
+	else if ((this->GetHP() <= 0) && (GetTickCount() - dietime_start < SIMON_DIE_TIME))
+	{
+		alpha = 255;
+		this->SetVisible(true);
 	}
 	/*if (autowalking != 0)
 	{
@@ -217,88 +301,113 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 void Simon::Render()
 {
 	int ani;
-	if (vx == 0)
+	if (this->GetInvisible() == true)
 	{
-		if (ischangecolor == true)
-		{
-			if (nx > 0)
+		if (isdied == true) {
+			ani = SIMON_ANI_DIE;
+			if (GetTickCount() - dietime_start < SIMON_DIE_TIME / 2)
 			{
-				ani = SIMON_ANI_EAT_RIGHT;
-				scale = 1;
+				animations[ani]->GetFrame(0)->GetSprite()->Draw(x, y, alpha, scale);
 			}
-			if (nx < 0)
+			else if (GetTickCount() - dietime_start > SIMON_DIE_TIME / 2 && GetTickCount() - dietime_start < SIMON_DIE_TIME)
 			{
-				ani = SIMON_ANI_EAT_LEFT;
-				scale = -1;
+				animations[ani]->GetFrame(1)->GetSprite()->Draw(x, y, alpha, scale);
 			}
+			
 		}
-		else if (issitting == true)
-		{
-			if (issitattack == true)
+		else {
+			if (isdamaged == true)
 			{
-				ani = SIMON_ANI_SIT_ATTACK;
+				if (nx > 0) ani = SIMON_ANI_DAMAGED_RIGHT;
+				else if (nx < 0) ani = SIMON_ANI_DAMAGED_LEFT;
 			}
-			else
+			else if (vx == 0)
 			{
-				ani = SIMON_ANI_SIT;
-				issitting = false;
-			}
-		}
-		else if (isjumping == true)
-		{
-			ani = SIMON_ANI_JUMP;
-			isjumping = false;
-		}
-		else if(isattacking == true)
-		{
-			ani = SIMON_ANI_ATTACK;
-		}
-		else if (isonstair == true)
-		{
-			if (stairnx == 1)
-			{
-				if(nx > 0) ani = SIMON_ANI_UP_STAIR_IDLE_RIGHT;
-				if (nx < 0)
+				if (ischangecolor == true)
 				{
-					ani = SIMON_ANI_DOWN_STAIR_IDLE_LEFT;
-					scale = -1;
+					if (nx > 0)
+					{
+						ani = SIMON_ANI_EAT_RIGHT;
+						scale = 1;
+					}
+					if (nx < 0)
+					{
+						ani = SIMON_ANI_EAT_LEFT;
+						scale = -1;
+					}
 				}
-			}
-			else if (stairnx == -1)
-			{
-				if (nx > 0) ani = SIMON_ANI_DOWN_STAIR_IDLE_RIGHT;
-				if (nx < 0)
+				else if (issitting == true)
 				{
-					ani = SIMON_ANI_UP_STAIR_IDLE_LEFT;
-					scale = 1;
+					if (issitattack == true)
+					{
+						ani = SIMON_ANI_SIT_ATTACK;
+					}
+					else
+					{
+						ani = SIMON_ANI_SIT;
+						issitting = false;
+					}
 				}
-			}
-		}
-		else if (nx > 0) ani = SIMON_ANI_IDLE_RIGHT;
-		else ani = SIMON_ANI_IDLE_LEFT;
-	
-	}
-	else if (vx > 0)
-	{
-		if(isonstair == false) ani = SIMON_ANI_WALKING_RIGHT;
-		else if (isonstair == true)
-		{
-			if(stairnx == 1)  ani = SIMON_ANI_WALKING_UP_STAIR_RIGHT;
-			else if(stairnx == -1) ani = SIMON_ANI_WALKING_DOWN_STAIR_RIGHT;
-		}
-	}
+				else if (isjumping == true)
+				{
+					ani = SIMON_ANI_JUMP;
+					isjumping = false;
+				}
+				else if (isattacking == true)
+				{
+					ani = SIMON_ANI_ATTACK;
+				}
+				else if (isonstair == true)
+				{
+					if (stairnx == 1)
+					{
+						if (nx > 0) ani = SIMON_ANI_UP_STAIR_IDLE_RIGHT;
+						if (nx < 0)
+						{
+							ani = SIMON_ANI_DOWN_STAIR_IDLE_LEFT;
+							scale = -1;
+						}
+					}
+					else if (stairnx == -1)
+					{
+						if (nx > 0) ani = SIMON_ANI_DOWN_STAIR_IDLE_RIGHT;
+						if (nx < 0)
+						{
+							ani = SIMON_ANI_UP_STAIR_IDLE_LEFT;
+							scale = 1;
+						}
+					}
+				}
+				else if (nx > 0) ani = SIMON_ANI_IDLE_RIGHT;
+				else ani = SIMON_ANI_IDLE_LEFT;
 
-	else if (vx < 0)
-	{
-		if (isonstair == false) ani = SIMON_ANI_WALKING_LEFT;
-		else if (isonstair == true)
-		{
-			if(stairnx == -1) ani = SIMON_ANI_WALKING_UP_STAIR_LEFT;
-			else if(stairnx == 1) ani = SIMON_ANI_WALKING_DOWN_STAIR_LEFT;
+			}
+			else if (vx > 0)
+			{
+				if (isonstair == false) ani = SIMON_ANI_WALKING_RIGHT;
+				else if (isonstair == true)
+				{
+					if (stairnx == 1)  ani = SIMON_ANI_WALKING_UP_STAIR_RIGHT;
+					else if (stairnx == -1) ani = SIMON_ANI_WALKING_DOWN_STAIR_RIGHT;
+				}
+			}
+
+			else if (vx < 0)
+			{
+				if (isonstair == false) ani = SIMON_ANI_WALKING_LEFT;
+				else if (isonstair == true)
+				{
+					if (stairnx == -1) ani = SIMON_ANI_WALKING_UP_STAIR_LEFT;
+					else if (stairnx == 1) ani = SIMON_ANI_WALKING_DOWN_STAIR_LEFT;
+				}
+			}
+			animations[ani]->Render(x, y, alpha, scale);
+			RenderBoundingBox();
 		}
+		
 	}
-	animations[ani]->Render(x, y, scale);
-	RenderBoundingBox();
+	
+	
 }
 
 void Simon::SetState(int state)
@@ -323,6 +432,9 @@ void Simon::SetState(int state)
 	case SIMON_STATE_SIT:
 		issitting = true;
 		vx = 0;
+		break;
+	case SIMON_STATE_DIE:
+		vy = -SIMON_DIE_DEFLECT_SPEED;
 		break;
 	case SIMON_STATE_ATTACK:
 		vx = 0;
@@ -381,12 +493,17 @@ void Simon::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 	left = x;
 	top = y;
 
-	if (state == SIMON_STATE_SIT)
+	if (this->GetState() == SIMON_STATE_SIT)
 	{
 		right = x + SIMON_SIT_BBOX_WIDTH;
 		bottom = y + SIMON_SIT_BBOX_HEIGHT;
 
 	}
+	/*else if (isdied == true)
+	{
+		right = x + 54;
+		bottom = y + 44;
+	}*/
 	else
 	{
 		right = x + SIMON_STAND_BBOX_WIDTH;

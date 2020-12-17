@@ -147,7 +147,7 @@ void Panther::Render()
 		else if(direct == PANTHER_STATE_RUN_LEFT) ani = PANTHER_ANI_RUN_LEFT;
 		else if (direct == PANTHER_STATE_SIT) ani = PANTHER_ANI_SIT;
 		else ani = PANTHER_ANI_IDLE;
-		animations[ani]->Render(x, y, scale);
+		animations[ani]->Render(x, y, alpha, scale);
 		RenderBoundingBox();
 	}
 	

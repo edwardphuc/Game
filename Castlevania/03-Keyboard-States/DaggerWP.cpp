@@ -86,7 +86,7 @@ void DaggerWP::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOB
 					enemy[i]->SetHP(enemy[i]->GetHP() - 1);
 					if (enemy[i]->GetHP() == false)
 					{
-						countGhost--;
+						if (i > 2) countGhost--;
 						enemy.erase(enemy.begin() + i);
 						this->isactive = false;
 						this->isfree = false;
@@ -115,7 +115,7 @@ void DaggerWP::Render()
 		}
 		else scale = -1;
 		ani = DAGGERWP_ANI;
-		animations[ani]->Render(x, y, scale);
+		animations[ani]->Render(x, y, alpha, scale);
 		RenderBoundingBox();
 	}
 
