@@ -2,6 +2,8 @@
 #include <algorithm>
 #include "Brazier.h"
 #include <iostream>
+#include "Ghost.h"
+#include "Bat.h"
 using namespace std;
 Whip::Whip(Simon *sm, vector<LPGAMEOBJECT> oj)
 {
@@ -18,7 +20,7 @@ Whip::Whip(Simon *sm, vector<LPGAMEOBJECT> oj)
 	scale = 1;
 }
 
-void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT> enemy, int &countGhost)
+void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT> enemy, int &countGhost, int &countBat)
 {
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
@@ -114,8 +116,10 @@ void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT
 				enemy[i]->SetHP(enemy[i]->GetHP()-1);
 				if (enemy[i]->GetHP() == 0)
 				{
-					if(i > 2) countGhost--;
+					if (enemy[i]->GetState() == GHOST_STATE_WALKING_LEFT || enemy[i]->GetState() == GHOST_STATE_WALKING_RIGHT) countGhost--;
+					if (enemy[i]->GetState() == BAT_STATE_FLY_LEFT) countBat--;
 					enemy.erase(enemy.begin() + i);
+					
 				}
 			}
 	}

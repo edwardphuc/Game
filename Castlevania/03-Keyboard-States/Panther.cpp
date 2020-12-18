@@ -12,9 +12,9 @@ Panther::Panther(Simon *sm)
 }
 void Panther::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
-	if (visible == true)
+	if (x >= 3880)
 	{
-
+		this->SetVisible(false);
 	}
 	CGameObject::Update(dt);
 	vector<LPCOLLISIONEVENT> coEvents;

@@ -112,8 +112,12 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 				}
 			}
 	}
+	
 	for (int i = 0; i < enemy.size(); i++)
 	{
+		float x1, y1;
+		enemy[i]->GetPosition(x1, y1);
+		if (abs(this->y - y1) <= 50)
 		if (enemy[i]->GetInvisible() == true)
 		{
 			if (this->CheckCollision(enemy[i]))
@@ -272,6 +276,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 	else if ((this->GetHP() <= 0) && (GetTickCount() - dietime_start < SIMON_DIE_TIME))
 	{
 		alpha = 255;
+		waitingtimeatt = 1;
 		this->SetVisible(true);
 	}
 	/*if (autowalking != 0)

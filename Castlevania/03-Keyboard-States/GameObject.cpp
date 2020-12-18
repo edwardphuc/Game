@@ -140,13 +140,13 @@ void CGameObject::Render()
 }
 bool CGameObject::CheckCollision(CGameObject* object)
 {
+	
 	if (CGame::GetInstance()->CheckAABB(this->GetBound(), object->GetBound()))
 	{
 
 		return true;
 
 	}
-
 	LPCOLLISIONEVENT e = SweptAABBEx(object);
 	if (e->t > 0 && e->t <= 1.0f)
 	{
@@ -155,6 +155,7 @@ bool CGameObject::CheckCollision(CGameObject* object)
 		return true;
 	}
 	delete e;
+	
 }
 void CGameObject::AddAnimation(int aniId)
 {

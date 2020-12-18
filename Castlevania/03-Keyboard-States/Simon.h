@@ -5,8 +5,8 @@
 #include "StairOj.h"
 #define SIMON_WALKING_SPEED		0.05f
 #define SIMON_WALKING_STAIR_SPEED		    0.025f 
-#define SIMON_JUMP_SPEED_Y		0.5f
-#define SIMON_GRAVITY			0.002f
+#define SIMON_JUMP_SPEED_Y		0.45f
+#define SIMON_GRAVITY			0.0015f
 #define PULL_UP_SITTING			18.0f
 #define PULL_UP_JUMPING			5.0f
 #define GROUND					240.0f

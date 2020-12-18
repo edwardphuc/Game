@@ -72,6 +72,12 @@
     <ClCompile Include="DaggerWP.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Bat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Fishmen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="debug.h">
@@ -126,6 +132,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DaggerWP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Bat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Fishmen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

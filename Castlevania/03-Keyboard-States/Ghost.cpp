@@ -3,7 +3,7 @@
 Ghost::Ghost()
 {
 	visible = true;
-	hp = 4;
+	hp = 1;
 }
 void Ghost::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {

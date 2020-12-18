@@ -14,7 +14,7 @@ class DaggerWP :public CGameObject
 	bool isallowdirect = true;
 public:
 	DaggerWP(Simon* sm, vector<LPGAMEOBJECT> oj);
-	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT> enemy, int& countGhost);
+	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT> enemy, int& countGhost, int& countBat);
 	void Render();
 	void SetState(int state);
 	void StartAttack();

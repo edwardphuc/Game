@@ -12,6 +12,7 @@
 #include <windows.h>
 #include <d3d9.h>
 #include <d3dx9.h>
+#include <cstdlib>
 
 #include "debug.h"
 #include "Game.h"
@@ -26,12 +27,15 @@
 #include "Ghost.h"
 #include "Brick.h"
 
-#include "Dagger.h";
+#include "Dagger.h"
 
-#include "WhipUpgrade.h";
-#include "Panther.h";
-#include "StairOj.h";
-#include "DaggerWP.h";
+#include "WhipUpgrade.h"
+#include "Panther.h"
+#include "StairOj.h"
+#include "DaggerWP.h"
+
+#include "Bat.h"
+#include "Fishmen.h"
 
 #define WINDOW_CLASS_NAME L"SampleWindow"
 #define MAIN_WINDOW_TITLE L"Catslevania"
@@ -53,6 +57,8 @@
 #define ID_TEX_BRICK 80
 #define ID_TEX_PANTHER 90
 #define ID_TEX_BRICK1 100
+#define ID_TEX_BAT		110
+#define ID_TEX_FISHMEN	120
 
 
 CGame *game;
@@ -69,7 +75,11 @@ Panther* panther2;
 DaggerWP* daggerWP;
 bool cancreateghost;
 int countGhost = 0;
+int countBat = 0;
+int countFish = 0;
 DWORD timecreateGhost;
+DWORD timecreateBat;
+DWORD timecreateFish;
 //Brazier* brazier1;
 //Brazier* brazier2;
 //Brazier* brazier3;
@@ -228,6 +238,8 @@ void LoadResources()
 	textures->Add(ID_TEX_GHOST, L"textures\\Ghost.png", D3DCOLOR_XRGB(176, 224, 248));
 	textures->Add(ID_TEX_BRICK, L"textures\\Block.png", D3DCOLOR_XRGB(176, 224, 248));
 	textures->Add(ID_TEX_PANTHER, L"textures\\Panther.png", D3DCOLOR_XRGB(176, 224, 248));
+	textures->Add(ID_TEX_BAT, L"textures\\VampireBat.png", D3DCOLOR_XRGB(176, 224, 248));
+	textures->Add(ID_TEX_FISHMEN, L"textures\\Fishman.png", D3DCOLOR_XRGB(176, 224, 248));
 	CSprites * sprites = CSprites::GetInstance();
 	CAnimations * animations = CAnimations::GetInstance();
 	
@@ -240,6 +252,8 @@ void LoadResources()
 	LPDIRECT3DTEXTURE9 texGhost = textures->Get(ID_TEX_GHOST);
 	LPDIRECT3DTEXTURE9 texBrick = textures->Get(ID_TEX_BRICK);
 	LPDIRECT3DTEXTURE9 texPanther = textures->Get(ID_TEX_PANTHER);
+	LPDIRECT3DTEXTURE9 texBat = textures->Get(ID_TEX_BAT);
+	LPDIRECT3DTEXTURE9 texFishmen = textures->Get(ID_TEX_FISHMEN);
 
 	//Sprite Simon
 	sprites->Add(10001, 0, 3, 50, 60, texSimon); //idle
@@ -310,6 +324,17 @@ void LoadResources()
 	sprites->Add(10501, 68, 1, 128, 31, texPanther);
 	sprites->Add(10502, 132, 1, 197, 31, texPanther);
 	sprites->Add(10503, 202, 1, 260, 31, texPanther);
+
+	//Bat
+	sprites->Add(30000, 0, 0, 30, 34, texBat);
+	sprites->Add(30001, 35, 0, 67, 34, texBat);
+	sprites->Add(30002, 68, 0, 101, 34, texBat);
+	sprites->Add(30003, 103, 0, 135, 34, texBat);
+
+	//Fishmen
+	sprites->Add(40000, 0, 0, 28, 65, texFishmen);
+	sprites->Add(40001, 35, 0, 64, 65, texFishmen);
+	sprites->Add(40002, 68, 0, 100, 65, texFishmen);
 	LPANIMATION ani;
 
 	ani = new CAnimation(100);	
@@ -511,6 +536,27 @@ void LoadResources()
 	ani->Add(20014);
 	animations->Add(4012, ani);
 
+	ani = new CAnimation(100);
+	ani->Add(30001);
+	ani->Add(30002);
+	ani->Add(30003);
+	animations->Add(4013, ani);
+
+	ani = new CAnimation(100);
+	ani->Add(40000);
+	ani->Add(40001);
+	animations->Add(4014, ani);
+	ani = new CAnimation(100);
+	ani->Add(40000);
+	ani->Add(40001);
+	animations->Add(4015, ani);
+	ani = new CAnimation(100);
+	ani->Add(40000);
+	ani->Add(40002);
+	animations->Add(4016, ani);
+
+	
+
 
 
 	Simon::AddAnimation(400);		// idle right
@@ -579,12 +625,17 @@ void LoadResources()
 	Simon::AddAnimation(4010);
 	Simon::AddAnimation(4011);
 	Simon::AddAnimation(4012);
+	Bat::AddAnimation(4013);
+	Fishmen::AddAnimation(4014);
+	Fishmen::AddAnimation(4015);
+	Fishmen::AddAnimation(4016);
 	for (int i = 0; i < 48; i++)
 	{
 		Brick* brick = new Brick();
 		brick->SetPosition(i * 29.0f, 301.0f);
 		oj.push_back(brick);
 	}
+	
 	map1->SetPosition(-40.0f, -20.0f);
 	map2->SetPosition(1215.0f, -28.0f);
 	map3->SetPosition(3980.0f, -28.0f);
@@ -614,6 +665,12 @@ void LoadResources()
 		brick->SetPosition(1420 + i * 29.0f, 305.0f);
 		oj.push_back(brick);
 	}
+	for (int i = 0; i < 120; i++)
+	{
+		Brick* brick = new Brick();
+		brick->SetPosition(4000 + i * 29.0f, 305.0f);
+		oj.push_back(brick);
+	}
 	for (int i = 0; i < 1; i++)
 	{
 		Brick* brick = new Brick();
@@ -632,10 +689,16 @@ void LoadResources()
 		brick->SetPosition(3050 + i * 29.0f, 198.0f);
 		oj.push_back(brick);
 	}
-	for (int i = 0; i < 13; i++)
+	for (int i = 0; i < 14; i++)
 	{
 		Brick* brick = new Brick();
-		brick->SetPosition(3850 + i * 29.0f, 142.0f);
+		brick->SetPosition(3827 + i * 29.0f, 142.0f);
+		oj.push_back(brick);
+	}
+	for (int i = 0; i < 12; i++)
+	{
+		Brick* brick = new Brick();
+		brick->SetPosition(4292 + i * 29.0f, 198.0f);
 		oj.push_back(brick);
 	}
 	/*for (int i = 0; i < 2; i++)
@@ -807,6 +870,51 @@ void Update(DWORD dt)
 			}
 		}
 	}
+	if (GetTickCount() - timecreateBat > 1000)
+	{
+		if (x >= 4100 && x < 5000)
+		{
+			DWORD now = GetTickCount();
+			timecreateBat = now;
+			if (countBat < 1)
+			{
+				timecreateBat = GetTickCount();
+				Bat* bat = new Bat();
+				countBat++;
+				bat->SetState(BAT_STATE_FLY_LEFT);
+				bat->SetPosition(5200, rand() % (180-80+1) + 80);
+				enemy.push_back(bat);
+			}
+		}
+	}
+	if (GetTickCount() - timecreateFish > 2000)
+	{
+		if (x >= 1600 && x < 3000)
+		{
+			DWORD now = GetTickCount();
+			timecreateFish = now;
+			if (countGhost < 3)
+			{
+				timecreateGhost = GetTickCount();
+				Fishmen* fishmen = new Fishmen();
+				int z;
+				simon->GetDirect(z);
+				if (z == 1)
+				{
+					countFish++;
+					fishmen->SetState(FISH_STATE_JUMP);
+					fishmen->SetPosition(4000, 240);
+				}
+				else if (z == -1)
+				{
+					countGhost++;
+					fishmen->SetState(FISH_STATE_JUMP);
+					fishmen->SetPosition(1600, 240);
+				}
+				enemy.push_back(fishmen);
+			}
+		}
+	}
 	for (int i = 0; i < enemy.size(); i++)
 	{
 		coObjects.push_back(enemy[i]);
@@ -817,12 +925,8 @@ void Update(DWORD dt)
 	}
 	
 
-	
-	
-	
-	
-	daggerWP->Update(dt, &coObjects, enemy, countGhost);
-	whip->Update(dt, &coObjects, enemy, countGhost);
+	daggerWP->Update(dt, &coObjects, enemy, countGhost, countBat);
+	whip->Update(dt, &coObjects, enemy, countGhost, countBat);
 }
 
 /*

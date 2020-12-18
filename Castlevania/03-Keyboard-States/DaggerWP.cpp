@@ -8,7 +8,7 @@ DaggerWP::DaggerWP(Simon* sm, vector<LPGAMEOBJECT> oj)
 	state = DAGGER_STATE_UNACTIVE;
 	scale = 1;
 }
-void DaggerWP::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT> enemy, int& countGhost)
+void DaggerWP::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT> enemy, int& countGhost, int& countBat)
 {
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
@@ -87,6 +87,7 @@ void DaggerWP::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOB
 					if (enemy[i]->GetHP() == false)
 					{
 						if (i > 2) countGhost--;
+						if (i > 5) countBat--;
 						enemy.erase(enemy.begin() + i);
 						this->isactive = false;
 						this->isfree = false;
