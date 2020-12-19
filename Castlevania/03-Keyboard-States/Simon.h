@@ -6,6 +6,7 @@
 #define SIMON_WALKING_SPEED		0.05f
 #define SIMON_WALKING_STAIR_SPEED		    0.025f 
 #define SIMON_JUMP_SPEED_Y		0.45f
+#define SIMON_JUMP_TIME             500
 #define SIMON_GRAVITY			0.0015f
 #define PULL_UP_SITTING			18.0f
 #define PULL_UP_JUMPING			5.0f
@@ -84,6 +85,7 @@ private:
 	DWORD damaged_start;
 	DWORD untouchable_start;
 	DWORD dietime_start;
+	DWORD jump_start;
 	vector<LPGAMEOBJECT> oj;
 	int whiplv;
 	int stairnx;
@@ -96,6 +98,7 @@ public:
 	//void GetState(int x) { x = this->state; }
 	DWORD Getwaitingtime() { return this->waitingtime;}
 	DWORD Getwaitingtimeatt() { return this->waitingtimeatt; }
+	bool Getjump() { return this->isjumping; }
 	bool Getmovingallow() { return this->movingallow; };
 	bool Getsittingstate() { return this->issitting; }
 	bool Getattackingstate() { return this->isattacking; }
@@ -111,6 +114,7 @@ public:
 	void Setsoluongdao(int x) { this->soluongdao = x; }
 	void StartAttack();
 	void StartSitAttack();
+	void StartJump() { isjumping = true; jump_start = GetTickCount(); }
 	void StartChangeColor() { ischangecolor = true; changecolor_start = GetTickCount(); vx = 0; }
 	void StartIsDamaged() { isdamaged = true; damaged_start = GetTickCount();}
 	void StartUntouchable() { isuntouchable = true; untouchable_start = GetTickCount(); }

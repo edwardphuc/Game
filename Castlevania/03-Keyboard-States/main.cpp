@@ -104,8 +104,11 @@ void CSampleKeyHander::OnKeyDown(int KeyCode)
 	switch (KeyCode)
 	{
 	case DIK_SPACE:
- 		if (simon->Getwaitingtime() == 0 && simon->Getattackingstate() == false && simon->Getonstair() == false)
+		if (simon->Getattackingstate() == false && simon->Getonstair() == false && simon->Getwaitingtime() == 0)
+		{
 			simon->SetState(SIMON_STATE_JUMP);
+			simon->StartJump();
+		}
 		else simon->SetState(SIMON_STATE_IDLE);
 
 		break;

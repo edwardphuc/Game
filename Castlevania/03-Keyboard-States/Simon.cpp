@@ -45,6 +45,92 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 			}
 		}
 	}
+	if (GetTickCount() - jump_start > SIMON_JUMP_TIME)
+	{
+		jump_start = 0;
+	}
+	else
+	{
+		if (GetTickCount() - jump_start < SIMON_JUMP_TIME)
+		{
+			if (waitingtime == 0) waitingtime = 1;
+		}
+	}
+	if (GetTickCount() - attack_start > SIMON_ATTACK_TIME)
+	{
+		attack_start = 0;
+		isattacking = false;
+	}
+	if (GetTickCount() - sitattack_start > SIMON_ATTACK_TIME)
+	{
+		sitattack_start = 0;
+		issitattack = false;
+	}
+	if (GetTickCount() - changecolor_start > SIMON_EAT_TIME)
+	{
+		changecolor_start = 0;
+		ischangecolor = false;
+
+	}
+	if (GetTickCount() - damaged_start > SIMON_DAMAGED_TIME)
+	{
+		damaged_start = 0;
+		isdamaged = false;
+	}
+    else
+	{
+		if (GetTickCount() - damaged_start < (SIMON_DAMAGED_TIME / 2))
+		{
+			if (nx > 0)
+			{
+				vx = -0.05f;
+			}
+			else { vx = 0.05f; }
+			dx = vx * dt;
+			x += dx;
+			vy = -0.05f;
+			y += dy;
+
+		}
+		else if (GetTickCount() - damaged_start >= 250)
+		{
+			dx = vx * dt;
+			x += dx;
+			if (y >= 235 && this->GetState() != SIMON_STATE_DIE)
+			{
+				SetState(SIMON_STATE_IDLE);
+			}
+		}
+	}
+	if (GetTickCount() - untouchable_start > SIMON_UNTOUCHABLE_TIME)
+	{
+		untouchable_start = 0;
+		isuntouchable = false;
+		alpha = 255;
+	}
+	else
+	{
+		if (GetTickCount() - untouchable_start < SIMON_UNTOUCHABLE_TIME)
+		{
+			if (this->GetState() != SIMON_STATE_DIE)
+				alpha = 150;
+		}
+	}
+	if (this->GetHP() == 0)
+	{
+		this->SetState(SIMON_STATE_DIE);
+		this->StartDieTime();
+	}
+	if ((this->GetHP() <= 0) && (GetTickCount() - dietime_start > SIMON_DIE_TIME))
+	{
+
+	}
+	else if ((this->GetHP() <= 0) && (GetTickCount() - dietime_start < SIMON_DIE_TIME))
+	{
+		alpha = 255;
+		waitingtimeatt = 1;
+		this->SetVisible(true);
+	}
 	if (isonstair == false)
 	{
 		vy = vy + SIMON_GRAVITY * dt;
@@ -58,13 +144,14 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 		}
 		else
 		{
+			
 			float min_tx, min_ty, nx = 0, ny;
 			FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny);
 
 			// block 
 			x += min_tx * dx + nx * 0.4f;		// nx*0.4f : need to push out a bit to avoid overlapping next frame
 			y += min_ty * dy + ny * 0.4f;
-
+			waitingtime = 0;
 
 
 
@@ -145,7 +232,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 	}
 	
 	
-	if ((y >= AIR && y <= GROUND))
+	/*if ((y >= AIR && y <= GROUND))
 	{
 		waitingtime = 1;
 		
@@ -153,7 +240,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 	if (y > GROUND)
 	{
 		waitingtime = 0;
-	}
+	}*/
 	if (y > 258 && issitting == false)
 	{
 		y = 240.0f;
@@ -203,82 +290,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 		animations[SIMON_ANI_ATTACK]->reset();
 	}*/
 	
-	if (GetTickCount() - attack_start > SIMON_ATTACK_TIME)
-	{
-		attack_start = 0;
-		isattacking = false;
-	}
-	if (GetTickCount() - sitattack_start > SIMON_ATTACK_TIME)
-	{
-		sitattack_start = 0;
-		issitattack = false;
-	}
-	if (GetTickCount() - changecolor_start > SIMON_EAT_TIME)
-	{
-		changecolor_start = 0;
-		ischangecolor = false;
-
-	}
-	if (GetTickCount() - damaged_start > SIMON_DAMAGED_TIME)
-	{
-		damaged_start = 0;
-		isdamaged = false;
-	}
 	
-	else
-	{
-		if (GetTickCount() - damaged_start < (SIMON_DAMAGED_TIME / 2))
-		{
-			if (nx > 0)
-			{
-				vx = -0.05f;
-			}
-			else { vx = 0.05f; }
-			dx = vx * dt;
-			x += dx;
-		    vy = -0.05f;
-			y += dy;
-			
-		}
-		else if (GetTickCount() - damaged_start >= 250)
-		{
-			dx = vx * dt;
-			x += dx;
-			if (y>=235 && this->GetState() != SIMON_STATE_DIE)
-			{
-				SetState(SIMON_STATE_IDLE);
-			}
-		}
-	}
-	if (GetTickCount() - untouchable_start > SIMON_UNTOUCHABLE_TIME)
-	{
-		untouchable_start = 0;
-		isuntouchable = false;
-		alpha = 255;
-	}
-	else
-	{
-		if (GetTickCount() - untouchable_start < SIMON_UNTOUCHABLE_TIME)
-		{
-			if(this->GetState()!= SIMON_STATE_DIE)
-			alpha = 150;
-		}
-	}
-	if (this->GetHP() == 0)
-	{
-		this->SetState(SIMON_STATE_DIE);
-		this->StartDieTime();
-	}
-	if ((this->GetHP() <= 0) && (GetTickCount() - dietime_start > SIMON_DIE_TIME))
-	{
-
-	}
-	else if ((this->GetHP() <= 0) && (GetTickCount() - dietime_start < SIMON_DIE_TIME))
-	{
-		alpha = 255;
-		waitingtimeatt = 1;
-		this->SetVisible(true);
-	}
 	/*if (autowalking != 0)
 	{
 		vx = 0;
@@ -432,7 +444,6 @@ void Simon::SetState(int state)
 		break;
 	case SIMON_STATE_JUMP:
 		vy = -SIMON_JUMP_SPEED_Y;
-		isjumping = true;
 		break;
 	case SIMON_STATE_SIT:
 		issitting = true;
