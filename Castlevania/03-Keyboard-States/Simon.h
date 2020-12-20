@@ -56,9 +56,9 @@
 
 //BBox
 #define SIMON_STAND_BBOX_WIDTH		58
-#define SIMON_STAND_BBOX_HEIGHT		60
+#define SIMON_STAND_BBOX_HEIGHT		62
 #define SIMON_SIT_BBOX_WIDTH		56
-#define SIMON_SIT_BBOX_HEIGHT		42
+#define SIMON_SIT_BBOX_HEIGHT		48
 
 class Simon : public CGameObject
 {
@@ -75,7 +75,9 @@ private:
 	bool isuntouchable = false;
 	bool isdied = false;
 	bool enable_reset = true;
+	bool getpullup = false;
 	int soluongdao;
+	float originalY;
 	DWORD waitingtime = 0;
 	DWORD waitingtimeatt = 0;
 	DWORD attacktime = 0;
@@ -86,10 +88,13 @@ private:
 	DWORD untouchable_start;
 	DWORD dietime_start;
 	DWORD jump_start;
+	DWORD sit_start;
 	vector<LPGAMEOBJECT> oj;
 	int whiplv;
 	int stairnx;
 	int allowstair = 0;
+	int dem = 0;
+	bool allowsit;
 public:
 	Simon(vector<LPGAMEOBJECT> oj);
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT> stairoj, vector<LPGAMEOBJECT> enemy);
@@ -107,18 +112,22 @@ public:
 	int Getstairdirect() { return this->stairnx; }
 	int Getsoluongdao() { return this->soluongdao; }
 	bool Getonstair() { return this->isonstair; }
+	bool GetAllowsit() { return this->allowsit; }
+	bool GetDamaged() { return this->isdamaged; }
 	void Setonstair(bool x) { this->isonstair = x; }
 	bool Getchangecolor() { return this->ischangecolor; }
+	void SetPullUp(bool a) { this->getpullup = a; }
 	void GetWhiplv(int& x) { x = this->whiplv; }
 	bool GetUntouchable() { return this->isuntouchable; }
 	void Setsoluongdao(int x) { this->soluongdao = x; }
 	void StartAttack();
 	void StartSitAttack();
-	void StartJump() { isjumping = true; jump_start = GetTickCount(); }
+	void StartJump() { isjumping = true; jump_start = GetTickCount(); allowsit = false; }
 	void StartChangeColor() { ischangecolor = true; changecolor_start = GetTickCount(); vx = 0; }
 	void StartIsDamaged() { isdamaged = true; damaged_start = GetTickCount();}
 	void StartUntouchable() { isuntouchable = true; untouchable_start = GetTickCount(); }
 	void StartDieTime() { isdied = true; dietime_start = GetTickCount(); this->SetHP(this->GetHP() - 1); isuntouchable = false; isdamaged = false; }
+	void StartSit() { issitting = true; sit_start = GetTickCount(); }
 	void FixPositionStair();
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 };

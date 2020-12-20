@@ -2,6 +2,7 @@
 #include <algorithm>
 #include "Ghost.h"
 #include <iostream>
+#include "debug.h"
 
 using namespace std;
 
@@ -18,7 +19,7 @@ Simon::Simon(vector<LPGAMEOBJECT> oj)
 	}
 	state = SIMON_STATE_IDLE;
 	soluongdao = 3;
-	hp = 2;
+	hp = 10;
 }
 void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT> stairoj, vector<LPGAMEOBJECT> enemy)
 {
@@ -27,21 +28,60 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 	/*if(isonStair == false)*/
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
-
+	if (state != SIMON_STATE_SIT) originalY = y;
 	coEvents.clear();
 	CalcPotentialCollisions(coObjects, coEvents);
 	for (int i = 0; i < stairoj.size(); i++)
 	{
 		float sx, sy;
 		stairoj[i]->GetPosition(sx, sy);
+		
 		if (this->CheckCollision(stairoj[i]))
 		{
-			allowstair = 1;
-			stairnx = 1;
-			if (this->x > sx + 10 || this->y > sy + 20) allowstair = 0;
-			if (nx > 0 && i == 1)
+			
+			if (i == 0 || i == 1) stairnx = 1;
+			/*if (nx > 0)
 			{
-				isonstair = false;
+				if (this->x - sx > 20 )
+				{
+					allowstair = 0;
+				}
+				else allowstair = 1;
+			} 
+			else if (nx < 0)
+			{
+				if (sx - this->x > 0 )
+				{
+					allowstair = 0;
+				}
+				else allowstair = 1;
+			}*/
+			
+			if (stairnx == 1)
+			{
+				allowstair = 1;
+				if (i == 0)
+				{
+					if (x - sx > 10 || sx - x > 60 || (nx < 0 && y > sy - 50))
+					{
+						allowstair = 0;
+					}
+				}
+				else if (i == 1)
+				{
+					if (nx > 0)
+					{
+						allowstair = 0;
+					}
+				}
+				
+			}
+			if (stairnx == 1)
+			{
+				if (((nx > 0 && i % 2 != 0) || (nx < 0 && i % 2 == 0)))
+				{
+					isonstair = false;
+				}
 			}
 		}
 	}
@@ -56,6 +96,13 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 			if (waitingtime == 0) waitingtime = 1;
 		}
 	}
+	
+	if (GetTickCount() - sit_start > 0 && this->getpullup == true)
+	{
+		this->getpullup = false;
+		y = y - 12.0f;
+	}
+	if (GetTickCount() - sit_start == 0) y = originalY + 12;
 	if (GetTickCount() - attack_start > SIMON_ATTACK_TIME)
 	{
 		attack_start = 0;
@@ -152,29 +199,20 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 			x += min_tx * dx + nx * 0.4f;		// nx*0.4f : need to push out a bit to avoid overlapping next frame
 			y += min_ty * dy + ny * 0.4f;
 			waitingtime = 0;
+			allowsit = true;
 
 
 
 
 
-
-			/*for (UINT i = 0; i < coEventsResult.size(); i++)
-			{
-				LPCOLLISIONEVENT e = coEventsResult[i];
-
-				if (dynamic_cast<Ghost *>(e->obj))
-				{
-
-					this->StartIsDamaged();
-				}
-			}*/
+			
 
 		}
 	}
 	else if (isonstair == true)
 	{
-		x += dx * 0.5;
-		y += dy * 1.52;
+		x += dx * 0.2;
+		y += dy * 1.2;
 	}
 
 	
@@ -204,7 +242,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 	{
 		float x1, y1;
 		enemy[i]->GetPosition(x1, y1);
-		if (abs(this->y - y1) <= 50)
+		if (abs(this->y - y1) <= 50 && this->isonstair == false)
 		if (enemy[i]->GetInvisible() == true)
 		{
 			if (this->CheckCollision(enemy[i]))
@@ -232,15 +270,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 	}
 	
 	
-	/*if ((y >= AIR && y <= GROUND))
-	{
-		waitingtime = 1;
-		
-	}
-	if (y > GROUND)
-	{
-		waitingtime = 0;
-	}*/
+	
 	if (y > 258 && issitting == false)
 	{
 		y = 240.0f;
@@ -273,10 +303,10 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 
 
 	if (vx < 0 && x < 0) x = 0;
-	if (issitting == true)
+	/*if (issitting == true)
 	{
 		y = y - 2;
-	}
+	}*/
 	/*if (animations[SIMON_ANI_ATTACK]->GetCurrentFrame() == 0)
 	{
 		waitingtimeatt = 1;
@@ -446,8 +476,8 @@ void Simon::SetState(int state)
 		vy = -SIMON_JUMP_SPEED_Y;
 		break;
 	case SIMON_STATE_SIT:
-		issitting = true;
 		vx = 0;
+		vy = 0;
 		break;
 	case SIMON_STATE_DIE:
 		vy = -SIMON_DIE_DEFLECT_SPEED;

@@ -104,18 +104,18 @@ void CSampleKeyHander::OnKeyDown(int KeyCode)
 	switch (KeyCode)
 	{
 	case DIK_SPACE:
-		if (simon->Getattackingstate() == false && simon->Getonstair() == false && simon->Getwaitingtime() == 0)
+		if (simon->Getattackingstate() == false && simon->Getonstair() == false && simon->Getwaitingtime() == 0 && simon->Getsittingstate() == false && simon->GetDamaged() == false)
 		{
 			simon->SetState(SIMON_STATE_JUMP);
 			simon->StartJump();
 		}
-		else simon->SetState(SIMON_STATE_IDLE);
+		else if(simon->Getsittingstate() == false) simon->SetState(SIMON_STATE_IDLE);
 
 		break;
 	case DIK_A:
-		if (simon->Getattackingstate() == false && simon->Getsitattackstate()== false)
+		if (simon->Getattackingstate() == false && simon->Getsitattackstate()== false && simon->GetDamaged() == false)
 		{
-			if (game->IsKeyDown(DIK_DOWN))
+			if (game->IsKeyDown(DIK_DOWN) && simon->GetAllowsit() == true)
 			{
 				simon->SetState(SIMON_STATE_SIT);
 				whip->SetState(WHIP_STATE_ACTIVE);
@@ -133,11 +133,13 @@ void CSampleKeyHander::OnKeyDown(int KeyCode)
 		}
 		break;
 	case DIK_Z:
-		if (simon->Getattackingstate() == false && daggerWP->Getallow() == true && simon->Getsoluongdao() > 0)
+		if (simon->Getattackingstate() == false && daggerWP->Getallow() == true && simon->Getsoluongdao() > 0 && simon->GetDamaged() == false)
 		{
 			if (game->IsKeyDown(DIK_DOWN))
 			{
 				simon->SetState(SIMON_STATE_SIT);
+				simon->StartSit();
+				simon->SetPullUp(true);
 				daggerWP->SetState(DAGGER_STATE_ACTIVE);
 				simon->StartSitAttack();
 				daggerWP->StartAttack();
@@ -172,11 +174,11 @@ void CSampleKeyHander::KeyState(BYTE *states)
 {
 	int z;
 	z = simon->Getstairdirect();
-	if (game->IsKeyDown(DIK_RIGHT) && simon->Getsittingstate() == false && simon->Getwaitingtimeatt() == 0 && simon->Getattackingstate() == false && simon->Getchangecolor() == false && simon->Getonstair() == false)
+	if (game->IsKeyDown(DIK_RIGHT) && simon->Getsittingstate() == false && simon->Getwaitingtimeatt() == 0 && simon->Getattackingstate() == false && simon->Getchangecolor() == false && simon->Getonstair() == false && simon->GetDamaged() == false)
 		simon->SetState(SIMON_STATE_WALKING_RIGHT);
-	else if (game->IsKeyDown(DIK_LEFT) && simon->Getsittingstate() == false && simon->Getwaitingtimeatt() == 0 && simon->Getattackingstate() == false && simon->Getchangecolor() == false && simon->Getonstair() == false)
+	else if (game->IsKeyDown(DIK_LEFT) && simon->Getsittingstate() == false && simon->Getwaitingtimeatt() == 0 && simon->Getattackingstate() == false && simon->Getchangecolor() == false && simon->Getonstair() == false && simon->GetDamaged() == false)
 		simon->SetState(SIMON_STATE_WALKING_LEFT);
-	else if (game->IsKeyDown(DIK_UP) && simon->Getallowstair() == 1)
+	else if (game->IsKeyDown(DIK_UP) && simon->Getallowstair() == 1 && simon->GetDamaged() == false)
 	{
 		if (z == 1)
 		{
@@ -190,9 +192,14 @@ void CSampleKeyHander::KeyState(BYTE *states)
 		}
 		
 	}
-	else if (game->IsKeyDown(DIK_DOWN) )
+	else if (game->IsKeyDown(DIK_DOWN) && simon->GetDamaged() == false)
 	{
-		if (simon->Getallowstair() == 0) simon->SetState(SIMON_STATE_SIT);
+		if (simon->Getallowstair() == 0 && simon->GetAllowsit() == true)
+		{
+			simon->SetState(SIMON_STATE_SIT);
+			simon->StartSit();
+			simon->SetPullUp(true);
+		}
 		else if (simon->Getallowstair() == 1)
 		{
 			if (z == 1)
@@ -207,7 +214,7 @@ void CSampleKeyHander::KeyState(BYTE *states)
 			}
 		}
 	}
-	else if (simon->Getallowstair() == 1) simon->SetState(SIMON_STATE_ONSTAIR_IDLE);
+	else if (simon->Getallowstair() == 1 && simon->GetDamaged() == false) simon->SetState(SIMON_STATE_ONSTAIR_IDLE);
 	else simon->SetState(SIMON_STATE_IDLE);
 }
 
@@ -259,20 +266,20 @@ void LoadResources()
 	LPDIRECT3DTEXTURE9 texFishmen = textures->Get(ID_TEX_FISHMEN);
 
 	//Sprite Simon
-	sprites->Add(10001, 0, 3, 50, 60, texSimon); //idle
+	sprites->Add(10001, 0, 3, 50, 63, texSimon); //idle
 
-	sprites->Add(10002, 57, 3, 110, 60, texSimon); //walk
-	sprites->Add(10003, 175, 3, 230, 60, texSimon);
+	sprites->Add(10002, 57, 3, 110, 63, texSimon); //walk
+	sprites->Add(10003, 175, 3, 230, 63, texSimon);
 	
-	sprites->Add(10004, 234, 10, 290, 52, texSimon); //sit
+	sprites->Add(10004, 234, 8, 290, 55, texSimon); //sit
 
 	sprites->Add(10005, 295, 70, 348, 127, texSimon); //attack
 	sprites->Add(10006, 355, 70, 410, 127, texSimon);
 	sprites->Add(10007, 415, 70, 479, 127, texSimon);
 
-	sprites->Add(20001, 298, 10, 346, 52, texSimon); // sit attack
-	sprites->Add(20002, 353, 10, 405, 52, texSimon);
-	sprites->Add(20003, 412, 10, 477, 52, texSimon);
+	sprites->Add(20001, 298, 8, 346, 55, texSimon); // sit attack
+	sprites->Add(20002, 353,8, 405, 55, texSimon);
+	sprites->Add(20003, 412, 8, 477, 55, texSimon);
 
 	sprites->Add(20004, 115, 68, 160, 128, texSimon);
 	sprites->Add(20005, 190, 68, 234, 128, texSimon);
@@ -635,7 +642,7 @@ void LoadResources()
 	for (int i = 0; i < 48; i++)
 	{
 		Brick* brick = new Brick();
-		brick->SetPosition(i * 29.0f, 301.0f);
+		brick->SetPosition(i * 29.0f, 305.0f);
 		oj.push_back(brick);
 	}
 	
@@ -674,10 +681,10 @@ void LoadResources()
 		brick->SetPosition(4000 + i * 29.0f, 305.0f);
 		oj.push_back(brick);
 	}
-	for (int i = 0; i < 1; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		Brick* brick = new Brick();
-		brick->SetPosition(2640 + i * 29.0f, 198.0f);
+		brick->SetPosition(2620 + i * 29.0f, 198.0f);
 		oj.push_back(brick);
 	}
 	for (int i = 0; i < 8; i++)
@@ -689,7 +696,7 @@ void LoadResources()
 	for (int i = 0; i < 3; i++)
 	{
 		Brick* brick = new Brick();
-		brick->SetPosition(3050 + i * 29.0f, 198.0f);
+		brick->SetPosition(3040 + i * 29.0f, 198.0f);
 		oj.push_back(brick);
 	}
 	for (int i = 0; i < 14; i++)
@@ -738,11 +745,11 @@ void LoadResources()
 		}
 	}*/
 	StairOj* stair1 = new StairOj();
-	stair1->SetPosition(2515.0f, 280.0f);
+	stair1->SetPosition(2520.0f, 290.0f);
 	stairoj.push_back(stair1);
 
 	StairOj* stair2 = new StairOj();
-	stair2->SetPosition(2600.0f, 113.0f);
+	stair2->SetPosition(2590.0f, 125.0f);
 	stairoj.push_back(stair2);
 
 	simon = new Simon(oj);

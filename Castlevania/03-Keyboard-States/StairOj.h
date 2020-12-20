@@ -1,8 +1,8 @@
 #pragma once
 #include "GameObject.h"
 
-#define STAIR_BBOX_WIDTH	20
-#define STAIR_BBOX_HEIGHT	20
+#define STAIR_BBOX_WIDTH	10
+#define STAIR_BBOX_HEIGHT	10
 class StairOj :public CGameObject
 {
 public:
