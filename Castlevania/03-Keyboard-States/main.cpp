@@ -554,7 +554,6 @@ void LoadResources()
 
 	ani = new CAnimation(100);
 	ani->Add(40000);
-	ani->Add(40001);
 	animations->Add(4014, ani);
 	ani = new CAnimation(100);
 	ani->Add(40000);
@@ -562,8 +561,12 @@ void LoadResources()
 	animations->Add(4015, ani);
 	ani = new CAnimation(100);
 	ani->Add(40000);
-	ani->Add(40002);
+	ani->Add(40001);
 	animations->Add(4016, ani);
+	ani = new CAnimation(100);
+	ani->Add(40000);
+	ani->Add(40002);
+	animations->Add(4017, ani);
 
 	
 
@@ -639,6 +642,7 @@ void LoadResources()
 	Fishmen::AddAnimation(4014);
 	Fishmen::AddAnimation(4015);
 	Fishmen::AddAnimation(4016);
+	Fishmen::AddAnimation(4017);
 	for (int i = 0; i < 48; i++)
 	{
 		Brick* brick = new Brick();
@@ -687,22 +691,22 @@ void LoadResources()
 		brick->SetPosition(2620 + i * 29.0f, 198.0f);
 		oj.push_back(brick);
 	}
-	for (int i = 0; i < 8; i++)
+	for (int i = 0; i < 7; i++)
 	{
 		Brick* brick = new Brick();
-		brick->SetPosition(2750 + i * 29.0f, 142.0f);
+		brick->SetPosition(2750 + i * 32.0f, 142.0f);
 		oj.push_back(brick);
 	}
 	for (int i = 0; i < 3; i++)
 	{
 		Brick* brick = new Brick();
-		brick->SetPosition(3040 + i * 29.0f, 198.0f);
+		brick->SetPosition(3040 + i * 30.0f, 198.0f);
 		oj.push_back(brick);
 	}
 	for (int i = 0; i < 14; i++)
 	{
 		Brick* brick = new Brick();
-		brick->SetPosition(3827 + i * 29.0f, 142.0f);
+		brick->SetPosition(3835 + i * 29.0f, 142.0f);
 		oj.push_back(brick);
 	}
 	for (int i = 0; i < 12; i++)
@@ -711,39 +715,7 @@ void LoadResources()
 		brick->SetPosition(4292 + i * 29.0f, 198.0f);
 		oj.push_back(brick);
 	}
-	/*for (int i = 0; i < 2; i++)
-	{
-		Panther *panther = new Panther();
-		if (i == 0)
-		{
-			panther->SetPosition(1900, 150);
-		}
-		if (i == 1)
-		{
-
-		}
-		if (i == 2)
-		{
-
-		}
-		enemy.push_back(panther);
-	}*/
-	/*for (int i = 0; i < 6; i++)
-	{
-		Ghost* ghost = new Ghost();
-		if (i < 3)
-		{
-			ghost->SetPosition(1420 + i * 50.0f, 240.0f);
-			ghost->Setstate(GHOST_STATE_WALKING_RIGHT);
-			oj.push_back(ghost);
-		}
-		else if (i >= 3 && i < 6)
-		{
-			ghost->SetPosition(2100 - i * 50.0f, 240.0f);
-			ghost->Setstate(GHOST_STATE_WALKING_LEFT);
-			oj.push_back(ghost);
-		}
-	}*/
+	
 	StairOj* stair1 = new StairOj();
 	stair1->SetPosition(2520.0f, 290.0f);
 	stairoj.push_back(stair1);
@@ -752,33 +724,35 @@ void LoadResources()
 	stair2->SetPosition(2590.0f, 125.0f);
 	stairoj.push_back(stair2);
 
+	StairOj* stair3 = new StairOj();
+	stair3->SetPosition(2687.0f, 180.0f);
+	stairoj.push_back(stair3);
+
+	StairOj* stair4 = new StairOj();
+	stair4->SetPosition(2750.0f, 85.0f);
+	stairoj.push_back(stair4);
+
+	StairOj* stair5 = new StairOj();
+	stair5->SetPosition(2967.0f, 85.0f);
+	stairoj.push_back(stair5);
+
+	StairOj* stair6 = new StairOj();
+	stair6->SetPosition(3070.0f, 180.0f);
+	stairoj.push_back(stair6);
+
+	StairOj* stair7 = new StairOj();
+	stair7->SetPosition(3670.0f, 290.0f);
+	stairoj.push_back(stair7);
+
+	StairOj* stair8 = new StairOj();
+	stair8->SetPosition(3780.0f, 68.0f);
+	stairoj.push_back(stair8);
+
 	simon = new Simon(oj);
-	simon->SetPosition(2200.0f, 0.0f);
+	simon->SetPosition(3600.0f, 0.0f);
 	float x, y;
 	simon->GetPosition(x, y);
-	/*if (GetTickCount() - timecreateGhost > 1000)
-	{
-		if (x >= 1600 && x < 2200)
-		{
-			if (countGhost < 3)
-			{
-				timecreateGhost = GetTickCount();
-				Ghost* ghost = new Ghost();
-				int z;
-				simon->GetDirect(z);
-				if (z == 1)
-				{
-					countGhost++;
-					ghost->SetState(GHOST_STATE_WALKING_LEFT);
-				}
-				else if (z == -1)
-				{
-					countGhost++;
-					ghost->SetState(GHOST_STATE_WALKING_RIGHT);
-				}
-			}
-		}
-	}*/
+	
 	panther = new Panther(simon);
 	panther->SetID(0);
 	panther->SetPosition(2650.0f, 50.0f);
@@ -897,7 +871,7 @@ void Update(DWORD dt)
 			}
 		}
 	}
-	if (GetTickCount() - timecreateFish > 2000)
+	/*if (GetTickCount() - timecreateFish > 2000)
 	{
 		if (x >= 1600 && x < 3000)
 		{
@@ -924,7 +898,7 @@ void Update(DWORD dt)
 				enemy.push_back(fishmen);
 			}
 		}
-	}
+	}*/
 	for (int i = 0; i < enemy.size(); i++)
 	{
 		coObjects.push_back(enemy[i]);

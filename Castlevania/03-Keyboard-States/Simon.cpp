@@ -39,7 +39,8 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 		if (this->CheckCollision(stairoj[i]))
 		{
 			
-			if (i == 0 || i == 1) stairnx = 1;
+			if (i == 0 || i == 1 || i == 2 || i ==3 || i == 6 || i == 7) stairnx = 1;
+			if (i == 4 || i == 5) stairnx = -1;
 			/*if (nx > 0)
 			{
 				if (this->x - sx > 20 )
@@ -60,14 +61,14 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 			if (stairnx == 1)
 			{
 				allowstair = 1;
-				if (i == 0)
+				if (i %2 == 0)
 				{
 					if (x - sx > 10 || sx - x > 60 || (nx < 0 && y > sy - 50))
 					{
 						allowstair = 0;
 					}
 				}
-				else if (i == 1)
+				else if (i %2 != 0)
 				{
 					if (nx > 0)
 					{
@@ -76,6 +77,25 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 				}
 				
 			}
+			else if (stairnx == -1)
+			{
+				allowstair = 1;
+				if (i % 2 == 0)
+				{
+					if (nx < 0)
+					{
+						allowstair = 0;
+					}
+				}
+				else if (i % 2 != 0)
+				{
+					if (x - sx > 0 || (nx > 0 && y > sy - 50))
+					{
+						allowstair = 0;
+					}
+				}
+
+			}
 			if (stairnx == 1)
 			{
 				if (((nx > 0 && i % 2 != 0) || (nx < 0 && i % 2 == 0)))
@@ -83,6 +103,14 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 					isonstair = false;
 				}
 			}
+			else if (stairnx == -1)
+			{
+				if (((nx > 0 && i % 2 != 0) || (nx < 0 && i % 2 == 0)))
+				{
+					isonstair = false;
+				}
+			}
+			
 		}
 	}
 	if (GetTickCount() - jump_start > SIMON_JUMP_TIME)
@@ -421,7 +449,7 @@ void Simon::Render()
 						if (nx < 0)
 						{
 							ani = SIMON_ANI_UP_STAIR_IDLE_LEFT;
-							scale = 1;
+							scale = -1;
 						}
 					}
 				}
