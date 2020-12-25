@@ -1,0 +1,12 @@
+﻿  DaggerWP.cpp
+D:\Clone\Game\Castlevania\03-Keyboard-States\GameObject.h(74,15): warning C4244: '=': conversion from 'float' to 'LONG', possible loss of data
+D:\Clone\Game\Castlevania\03-Keyboard-States\GameObject.h(75,14): warning C4244: '=': conversion from 'float' to 'LONG', possible loss of data
+D:\Clone\Game\Castlevania\03-Keyboard-States\GameObject.h(76,16): warning C4244: '=': conversion from 'float' to 'LONG', possible loss of data
+D:\Clone\Game\Castlevania\03-Keyboard-States\GameObject.h(77,17): warning C4244: '=': conversion from 'float' to 'LONG', possible loss of data
+D:\Clone\Game\Castlevania\03-Keyboard-States\DaggerWP.cpp(63,18): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+D:\Clone\Game\Castlevania\03-Keyboard-States\DaggerWP.cpp(67,19): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+D:\Clone\Game\Castlevania\03-Keyboard-States\DaggerWP.cpp(80,21): warning C4018: '<': signed/unsigned mismatch
+D:\Clone\Game\Castlevania\03-Keyboard-States\DaggerWP.cpp(87,40): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+D:\Clone\Game\Castlevania\03-Keyboard-States\DaggerWP.cpp(88,36): warning C4805: '==': unsafe mix of type 'float' and type 'bool' in operation
+D:\Clone\Game\Castlevania\03-Keyboard-States\DaggerWP.cpp(128,6): warning C4101: 'z': unreferenced local variable
+  03-Keyboard-States.vcxproj -> D:\Clone\Game\Castlevania\Debug\03-Keyboard-States.exe

@@ -1,6 +1,7 @@
 #include "DaggerWP.h"
 #include <algorithm>
-
+#include "Ghost.h"
+#include "Bat.h"
 DaggerWP::DaggerWP(Simon* sm, vector<LPGAMEOBJECT> oj)
 {
 	this->simon = sm;
@@ -83,11 +84,11 @@ void DaggerWP::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOB
 				{
 					this->isallow = true;
 					this->isallowdirect = true;
-					enemy[i]->SetHP(enemy[i]->GetHP() - 1);
+					enemy[i]->SetHP(enemy[i]->GetHP() - 0.4);
 					if (enemy[i]->GetHP() == false)
 					{
-						if (i > 2) countGhost--;
-						if (i > 5) countBat--;
+						if (enemy[i]->GetState() == GHOST_STATE_WALKING_LEFT || enemy[i]->GetState() == GHOST_STATE_WALKING_RIGHT) countGhost--;
+						if (enemy[i]->GetState() == BAT_STATE_FLY_LEFT) countBat--;
 						enemy.erase(enemy.begin() + i);
 						this->isactive = false;
 						this->isfree = false;

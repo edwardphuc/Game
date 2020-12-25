@@ -4,6 +4,7 @@ Dagger::Dagger()
 {
 	visible = false;
 	scale = 1.3;
+	hp = 10;
 }
 void Dagger::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
@@ -28,6 +29,8 @@ void Dagger::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		// block 
 		x += min_tx * dx + nx * 0.4f;		// nx*0.4f : need to push out a bit to avoid overlapping next frame
 		y += min_ty * dy + ny * 0.4f;
+
+		
 	}
 }
 void Dagger::Render()

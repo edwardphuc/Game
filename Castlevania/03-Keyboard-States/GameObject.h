@@ -43,7 +43,7 @@ protected:
 
 	int state;	
 	bool visible;
-	int hp;
+	float hp;
 	double scale = 1;
 	
 	int alpha = 255;
@@ -58,12 +58,13 @@ public:
 	void GetSpeed(float& vx, float& vy) { vx = this->vx; vy = this->vy; }
 	void SetSpeed(float vx, float vy) { this->vx = vx, this->vy = vy; }
 	void GetDirect(int& nx) { nx = this->nx; }
+	void SetDirect(int direct) { this->nx = direct; }
 	void SetState(int state) { this->state = state; }
 	int GetState() { return this->state; }
 	bool GetInvisible() { return this->visible; }
 	void SetVisible(bool vs) { this->visible = vs; }
-	int GetHP() { return this->hp; }
-	void SetHP(int hp) { this->hp = hp; }
+	float GetHP() { return this->hp; }
+	void SetHP(float hp) { this->hp = hp; }
 	bool CheckCollision(CGameObject* object);
 	RECT CGameObject::GetBound()
 	{

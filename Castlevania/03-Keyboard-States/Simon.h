@@ -130,5 +130,6 @@ public:
 	void StartSit() { issitting = true; sit_start = GetTickCount(); }
 	void FixPositionStair();
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
+	void resettodefault();
 };
 

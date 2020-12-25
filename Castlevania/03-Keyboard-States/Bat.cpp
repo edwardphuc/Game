@@ -4,7 +4,6 @@ Bat::Bat()
 {
 	this->SetState(BAT_STATE_FLY_LEFT);
 	hp = 1;
-	ybackup = y;
 	vy = BAT_FLYING_SPEED_Y;
 }
 void Bat::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)

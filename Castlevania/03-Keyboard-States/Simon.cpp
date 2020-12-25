@@ -3,6 +3,7 @@
 #include "Ghost.h"
 #include <iostream>
 #include "debug.h"
+#include "Brick.h"
 
 using namespace std;
 
@@ -19,7 +20,7 @@ Simon::Simon(vector<LPGAMEOBJECT> oj)
 	}
 	state = SIMON_STATE_IDLE;
 	soluongdao = 3;
-	hp = 10;
+	hp = 3;
 }
 void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT> stairoj, vector<LPGAMEOBJECT> enemy)
 {
@@ -40,7 +41,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 		{
 			
 			if (i == 0 || i == 1 || i == 2 || i ==3 || i == 6 || i == 7) stairnx = 1;
-			if (i == 4 || i == 5) stairnx = -1;
+			if (i == 4 || i == 5 || i == 8 || i == 9 || i == 10 || i == 11) stairnx = -1;
 			/*if (nx > 0)
 			{
 				if (this->x - sx > 20 )
@@ -130,7 +131,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 		this->getpullup = false;
 		y = y - 12.0f;
 	}
-	if (GetTickCount() - sit_start == 0) y = originalY + 12;
+	if (GetTickCount() - sit_start == 0) y = originalY + 12.0f;
 	if (GetTickCount() - attack_start > SIMON_ATTACK_TIME)
 	{
 		attack_start = 0;
@@ -220,15 +221,34 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 		else
 		{
 			
-			float min_tx, min_ty, nx = 0, ny;
+			float min_tx, min_ty, nx=0, ny;
 			FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny);
 
 			// block 
 			x += min_tx * dx + nx * 0.4f;		// nx*0.4f : need to push out a bit to avoid overlapping next frame
 			y += min_ty * dy + ny * 0.4f;
+
+			/*if (nx != 0) vx = 0;*/
+			/*if (ny != 0) vy = 0;*/
 			waitingtime = 0;
 			allowsit = true;
+			for (UINT i = 0; i < coEventsResult.size(); i++)
+			{
+				LPCOLLISIONEVENT e = coEventsResult[i];
 
+				if (dynamic_cast<Brazier*>(e->obj)) // if e->obj is Goomba 
+				{
+					
+					y += dy;
+				}
+				/*if (dynamic_cast<Brick*>(e->obj))
+				{
+					if (e->nx != 0) {
+						vx = 0;
+						resettodefault();
+					}
+				}*/
+			}
 
 
 
@@ -298,13 +318,21 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 	}
 	
 	
-	
-	if (y > 258 && issitting == false)
+	if (y > 240 && y < 400 && issitting == false && isonstair == false)
 	{
 		y = 240.0f;
 	}
+	/*if (y > 500 && issitting == false)
+	{
+		y = 500.0f;
+	}*/
 	// simple screen edge collision!!!
-
+	if (isonstair == true && y > 270 && y < 450)
+	{
+		x = 5128;
+		y = 450;
+	}
+	
 	if (vx < 0 && x > 1280 && x < 1420)
 	{
 		x = 1450;
@@ -322,6 +350,10 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 	else if (x > 4000 && x < 4050 )
 	{
 		x = 4050;
+	}
+	else if (y > 400 && x < 5000 && vx < 0)
+	{
+		x = 5001;
 	}
 	if (x > 3990 && y >= 240 && x < 4050)
 	{
@@ -372,7 +404,10 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 	}*/
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 }
-
+void Simon::resettodefault()
+{
+	state = SIMON_STATE_IDLE;
+}
 void Simon::Render()
 {
 	int ani;

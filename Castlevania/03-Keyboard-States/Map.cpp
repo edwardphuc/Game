@@ -29,7 +29,7 @@ void Map::render(int id)
 	else if (id == 1004)
 	{
 		ani = MAP5;
-		animations[ani]->Render(x, y, alpha, 0.85);
+		animations[ani]->Render(x, y, alpha, 1);
 	}
 	
 }

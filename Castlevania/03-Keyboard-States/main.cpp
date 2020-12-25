@@ -73,6 +73,7 @@ Panther* panther;
 Panther* panther1;
 Panther* panther2;
 DaggerWP* daggerWP;
+Fishmen* fish;
 bool cancreateghost;
 int countGhost = 0;
 int countBat = 0;
@@ -173,7 +174,9 @@ void CSampleKeyHander::OnKeyUp(int KeyCode)
 void CSampleKeyHander::KeyState(BYTE *states)
 {
 	int z;
+	int direct;
 	z = simon->Getstairdirect();
+	simon->GetDirect(direct);
 	if (game->IsKeyDown(DIK_RIGHT) && simon->Getsittingstate() == false && simon->Getwaitingtimeatt() == 0 && simon->Getattackingstate() == false && simon->Getchangecolor() == false && simon->Getonstair() == false && simon->GetDamaged() == false)
 		simon->SetState(SIMON_STATE_WALKING_RIGHT);
 	else if (game->IsKeyDown(DIK_LEFT) && simon->Getsittingstate() == false && simon->Getwaitingtimeatt() == 0 && simon->Getattackingstate() == false && simon->Getchangecolor() == false && simon->Getonstair() == false && simon->GetDamaged() == false)
@@ -204,13 +207,27 @@ void CSampleKeyHander::KeyState(BYTE *states)
 		{
 			if (z == 1)
 			{
-				simon->Setonstair(true);
-				simon->SetState(SIMON_STATE_WALKING_DOWN_STAIR_LEFT);
+				if (direct < 0)
+				{
+					simon->Setonstair(true);
+					simon->SetState(SIMON_STATE_WALKING_DOWN_STAIR_LEFT);
+				}
+				if (simon->Getonstair() == true)
+				{
+					simon->SetState(SIMON_STATE_WALKING_DOWN_STAIR_LEFT);
+				}
 			}
 			else if (z == -1)
 			{
-				simon->Setonstair(true);
-				simon->SetState(SIMON_STATE_WALKING_DOWN_STAIR_RIGHT);
+				if (direct > 0)
+				{
+					simon->Setonstair(true);
+					simon->SetState(SIMON_STATE_WALKING_DOWN_STAIR_RIGHT);
+				}
+				if (simon->Getonstair() == true)
+				{
+					simon->SetState(SIMON_STATE_WALKING_DOWN_STAIR_RIGHT);
+				}
 			}
 		}
 	}
@@ -654,7 +671,7 @@ void LoadResources()
 	map2->SetPosition(1215.0f, -28.0f);
 	map3->SetPosition(3980.0f, -28.0f);
 	map4->SetPosition(4804.0f, -28.0f);
-	map5->SetPosition(3980.0f, 280.0f);
+	map5->SetPosition(5000.0f, 400.0f);
 	
 
 	brazier1->SetPosition(253.0f, 235.0f);
@@ -703,16 +720,30 @@ void LoadResources()
 		brick->SetPosition(3040 + i * 30.0f, 198.0f);
 		oj.push_back(brick);
 	}
-	for (int i = 0; i < 14; i++)
+	for (int i = 0; i < 15; i++)
 	{
 		Brick* brick = new Brick();
 		brick->SetPosition(3835 + i * 29.0f, 142.0f);
 		oj.push_back(brick);
 	}
-	for (int i = 0; i < 12; i++)
+	for (int i = 0; i < 2; i++)
 	{
 		Brick* brick = new Brick();
-		brick->SetPosition(4292 + i * 29.0f, 198.0f);
+		brick->SetPosition(4292 + i * 20.0f, 198.0f);
+		oj.push_back(brick);
+	}
+
+	for (int i = 0; i < 1; i++)
+	{
+		Brick* brick = new Brick();
+		brick->SetPosition(5230 , 545.0f);
+		oj.push_back(brick);
+	}
+
+	for (int i = 0; i < 14; i++)
+	{
+		Brick* brick = new Brick();
+		brick->SetPosition(5000 + i * 30.0f, 608.0f);
 		oj.push_back(brick);
 	}
 	
@@ -748,8 +779,25 @@ void LoadResources()
 	stair8->SetPosition(3780.0f, 68.0f);
 	stairoj.push_back(stair8);
 
+	StairOj* stair9 = new StairOj();
+	stair9->SetPosition(4340.0f, 125.0f);
+	stairoj.push_back(stair9);
+
+	StairOj* stair10 = new StairOj();
+	stair10->SetPosition(4460.0f, 290.0f);
+	stairoj.push_back(stair10);
+
+	StairOj* stair11 = new StairOj();
+	stair11->SetPosition(4100.0f, 230.0f);
+	stairoj.push_back(stair11);
+
+	StairOj* stair12 = new StairOj();
+	stair12->SetPosition(5200.0f, 535.0f);
+	stairoj.push_back(stair12);
+
 	simon = new Simon(oj);
-	simon->SetPosition(3600.0f, 0.0f);
+	simon->SetPosition(5050.0f, 530.0f);
+	/*simon->SetPosition(5000.0f, 500.0f);*/
 	float x, y;
 	simon->GetPosition(x, y);
 	
@@ -768,6 +816,8 @@ void LoadResources()
 	panther2->SetPosition(3100.0f, 50.0f);
 	enemy.push_back(panther2);
 
+	fish = new Fishmen(5050.0f, 750.0f);
+	enemy.push_back(fish);
 	whip = new Whip(simon, oj);
 	whip->SetPosition(x, y);
 
@@ -791,25 +841,37 @@ void Update(DWORD dt)
 	simon->GetPosition(x, y);
 
 
-	if (x == 0 || x < SCREEN_WIDTH / 10)
+	if ((x == 0 || x < SCREEN_WIDTH / 10) && y < 400)
 	{
 		CGame::GetInstance()->SetCamPos(0.0f, 0.0f);
 	}
-	else if (x > 1533 - 640 - 64 && x < 1280)
+	else if (x > 1533 - 640 - 64 && x < 1280 && y < 400)
 	{
 		CGame::GetInstance()->SetCamPos(1533 - 640 - 64 - 64, 0.0f);
 	}
-	else if (x == 1280 || (x < 1445 + 64 && x > 1280))
+	else if ((x == 1280 || (x < 1445 + 64 && x > 1280)) && y < 400)
 	{
 		CGame::GetInstance()->SetCamPos(1445, 0.0f);
 	}
-	else if (x > 4200 - 640 - 64 && x < 4000)
+	else if (x > 4200 - 640 - 64 && x < 4000 && y < 400)
 	{
 		CGame::GetInstance()->SetCamPos(4200 - 640 - 64 - 64, 0.0f);
 	}
-	else if (x == 4050 || (x > 4050 && x < 4050 + 64))
+	else if ((x == 4050 || (x > 4050 && x < 4050 + 64)) && y < 400)
 	{
 		CGame::GetInstance()->SetCamPos(4050, 0.0f);
+	}
+	else if ( y > 400 && x >= 5000 && x <= 5064)
+	{
+		CGame::GetInstance()->SetCamPos(5000, 460.0f);
+	}
+	else if (y > 400 && x >= 5390 + 64)
+	{
+		CGame::GetInstance()->SetCamPos(5390, 460.0f);
+	}
+	else if (y > 400 && x > 5064 && x < 5390 + 64)
+	{
+		CGame::GetInstance()->SetCamPos(cx, 460.0f);
 	}
 	else CGame::GetInstance()->SetCamPos(cx, 0.0f);
 	vector<LPGAMEOBJECT> coObjects;
@@ -854,19 +916,23 @@ void Update(DWORD dt)
 			}
 		}
 	}
+	
 	if (GetTickCount() - timecreateBat > 1000)
 	{
 		if (x >= 4100 && x < 5000)
 		{
 			DWORD now = GetTickCount();
 			timecreateBat = now;
-			if (countBat < 1)
+			if (countBat < 2)
 			{
+				float random = rand() / (float)RAND_MAX;
+				float r = 80.0 + random * (180.0 - 80.0);
 				timecreateBat = GetTickCount();
 				Bat* bat = new Bat();
 				countBat++;
 				bat->SetState(BAT_STATE_FLY_LEFT);
-				bat->SetPosition(5200, rand() % (180-80+1) + 80);
+				bat->Setybackup(r);
+				bat->SetPosition(5000, r);
 				enemy.push_back(bat);
 			}
 		}
@@ -930,9 +996,10 @@ void Render()
 		spriteHandler->Begin(D3DXSPRITE_ALPHABLEND);
 		map1->render(1000);
 		map2->render(1001);
+		map5->render(1004);
 		map3->render(1002);
 		map4->render(1003);
-		map5->render(1004);
+		
 
 		for (int i = 0; i < stairoj.size(); i++)
 		{

@@ -76,7 +76,7 @@ void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT
 			}
 			else if (GetTickCount() - attack_start <= 360)
 			{
-				this->SetPosition(x1 - 45, y1 + 15);
+				this->SetPosition(x1 - 60, y1 + 15);
 			}
 		}
 	}
@@ -94,7 +94,8 @@ void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT
 	
 	for (int i = 0; i < this->oj.size(); i++)
 	{
-		if(this->oj[i]->GetHP() > 0)  // xet va cham cho cac vat the hien ra tren man hinh
+		
+		if(this->oj[i]->GetHP() > 0 && this->isactive == true)  // xet va cham cho cac vat the hien ra tren man hinh
 			if (this->CheckCollision(this->oj[i]))
 			{
 				if (i >= 0 && i <= 4)
