@@ -14,7 +14,7 @@
 #define FISH_STATE_FLY_LEFT		1240
 
 #define FISH_WALKING_SPEED		0.1f
-#define FISH_FLY_SPEED			0.5f
+#define FISH_FLY_SPEED			0.4f
 #define FISH_GRAVITY			0.002f
 class Fishmen :
     public CGameObject

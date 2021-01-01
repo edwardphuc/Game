@@ -7,7 +7,6 @@ Fishmen::Fishmen(float X, float Y)
 	originalX = x;
 	originalY = y;
 	hp = 12;
-	state = FISH_STATE_FLY_RIGHT;
 	vy = -FISH_FLY_SPEED;
 }
 void Fishmen::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -43,7 +42,17 @@ void Fishmen::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				{
 					y += dy;
 				}
-				
+				if (isfly != true)
+				{
+					if (nx > 0)
+					{
+						state = FISH_STATE_WALKING_RIGHT;
+					}
+					else if (nx < 0)
+					{
+						state = FISH_STATE_WALKING_LEFT;
+					}
+				}
 			}
 		}
 	}
@@ -54,6 +63,7 @@ void Fishmen::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	}
 
 	if (originalY - y > 200) isfly = false;
+	if (abs(x - originalX) >= 150) vx = -vx;
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 }
 void Fishmen::Render()

@@ -73,7 +73,6 @@ Panther* panther;
 Panther* panther1;
 Panther* panther2;
 DaggerWP* daggerWP;
-Fishmen* fish;
 bool cancreateghost;
 int countGhost = 0;
 int countBat = 0;
@@ -708,10 +707,10 @@ void LoadResources()
 		brick->SetPosition(2620 + i * 29.0f, 198.0f);
 		oj.push_back(brick);
 	}
-	for (int i = 0; i < 7; i++)
+	for (int i = 0; i < 8; i++)
 	{
 		Brick* brick = new Brick();
-		brick->SetPosition(2750 + i * 32.0f, 142.0f);
+		brick->SetPosition(2750 + i * 30.0f, 142.0f);
 		oj.push_back(brick);
 	}
 	for (int i = 0; i < 3; i++)
@@ -733,17 +732,24 @@ void LoadResources()
 		oj.push_back(brick);
 	}
 
-	for (int i = 0; i < 1; i++)
+	for (int i = 0; i < 2; i++)
 	{
 		Brick* brick = new Brick();
-		brick->SetPosition(5230 , 545.0f);
+		brick->SetPosition(5205 + i* 15.0f , 545.0f);
 		oj.push_back(brick);
 	}
 
-	for (int i = 0; i < 14; i++)
+	for (int i = 0; i < 15; i++)
 	{
 		Brick* brick = new Brick();
 		brick->SetPosition(5000 + i * 30.0f, 608.0f);
+		oj.push_back(brick);
+	}
+
+	for (int i = 0; i < 2; i++)
+	{
+		Brick* brick = new Brick();
+		brick->SetPosition(5500 + i * 15.0f, 608.0f);
 		oj.push_back(brick);
 	}
 	
@@ -756,19 +762,19 @@ void LoadResources()
 	stairoj.push_back(stair2);
 
 	StairOj* stair3 = new StairOj();
-	stair3->SetPosition(2687.0f, 180.0f);
+	stair3->SetPosition(2692.0f, 195.0f);
 	stairoj.push_back(stair3);
 
 	StairOj* stair4 = new StairOj();
-	stair4->SetPosition(2750.0f, 85.0f);
+	stair4->SetPosition(2755.0f, 85.0f);
 	stairoj.push_back(stair4);
 
 	StairOj* stair5 = new StairOj();
-	stair5->SetPosition(2967.0f, 85.0f);
+	stair5->SetPosition(3010.0f, 65.0f);
 	stairoj.push_back(stair5);
 
 	StairOj* stair6 = new StairOj();
-	stair6->SetPosition(3070.0f, 180.0f);
+	stair6->SetPosition(3050.0f, 180.0f);
 	stairoj.push_back(stair6);
 
 	StairOj* stair7 = new StairOj();
@@ -792,11 +798,11 @@ void LoadResources()
 	stairoj.push_back(stair11);
 
 	StairOj* stair12 = new StairOj();
-	stair12->SetPosition(5200.0f, 535.0f);
+	stair12->SetPosition(5168.0f, 532.0f);
 	stairoj.push_back(stair12);
 
 	simon = new Simon(oj);
-	simon->SetPosition(5050.0f, 530.0f);
+	simon->SetPosition(2960.0f, 0.0f);
 	/*simon->SetPosition(5000.0f, 500.0f);*/
 	float x, y;
 	simon->GetPosition(x, y);
@@ -816,8 +822,7 @@ void LoadResources()
 	panther2->SetPosition(3100.0f, 50.0f);
 	enemy.push_back(panther2);
 
-	fish = new Fishmen(5050.0f, 750.0f);
-	enemy.push_back(fish);
+	
 	whip = new Whip(simon, oj);
 	whip->SetPosition(x, y);
 
@@ -937,34 +942,39 @@ void Update(DWORD dt)
 			}
 		}
 	}
-	/*if (GetTickCount() - timecreateFish > 2000)
+
+	if (GetTickCount() - timecreateFish > 2000)
 	{
-		if (x >= 1600 && x < 3000)
+		if (x >= 5000 && x < 6500)
 		{
+			Fishmen* fish;
 			DWORD now = GetTickCount();
 			timecreateFish = now;
-			if (countGhost < 3)
+			if (countFish < 3)
 			{
-				timecreateGhost = GetTickCount();
-				Fishmen* fishmen = new Fishmen();
+				timecreateFish = GetTickCount();
 				int z;
 				simon->GetDirect(z);
 				if (z == 1)
 				{
+
+					fish = new Fishmen(x + 150, 750.0f);
 					countFish++;
-					fishmen->SetState(FISH_STATE_JUMP);
-					fishmen->SetPosition(4000, 240);
+					fish->SetState(FISH_STATE_FLY_LEFT);
+					enemy.push_back(fish);
 				}
 				else if (z == -1)
 				{
-					countGhost++;
-					fishmen->SetState(FISH_STATE_JUMP);
-					fishmen->SetPosition(1600, 240);
+					fish = new Fishmen(x - 150, 750.0f);
+					countFish++;
+					fish->SetState(FISH_STATE_FLY_RIGHT);
+					enemy.push_back(fish);
 				}
-				enemy.push_back(fishmen);
+				
 			}
 		}
-	}*/
+	}
+	
 	for (int i = 0; i < enemy.size(); i++)
 	{
 		coObjects.push_back(enemy[i]);
@@ -976,7 +986,7 @@ void Update(DWORD dt)
 	
 
 	daggerWP->Update(dt, &coObjects, enemy, countGhost, countBat);
-	whip->Update(dt, &coObjects, enemy, countGhost, countBat);
+	whip->Update(dt, &coObjects, enemy, countGhost, countBat, countFish);
 }
 
 /*

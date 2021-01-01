@@ -85,7 +85,7 @@ void DaggerWP::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOB
 					this->isallow = true;
 					this->isallowdirect = true;
 					enemy[i]->SetHP(enemy[i]->GetHP() - 0.4);
-					if (enemy[i]->GetHP() == false)
+					if (enemy[i]->GetHP() <= 0)
 					{
 						if (enemy[i]->GetState() == GHOST_STATE_WALKING_LEFT || enemy[i]->GetState() == GHOST_STATE_WALKING_RIGHT) countGhost--;
 						if (enemy[i]->GetState() == BAT_STATE_FLY_LEFT) countBat--;

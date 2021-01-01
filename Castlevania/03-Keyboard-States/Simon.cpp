@@ -42,32 +42,18 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 			
 			if (i == 0 || i == 1 || i == 2 || i ==3 || i == 6 || i == 7) stairnx = 1;
 			if (i == 4 || i == 5 || i == 8 || i == 9 || i == 10 || i == 11) stairnx = -1;
-			/*if (nx > 0)
-			{
-				if (this->x - sx > 20 )
-				{
-					allowstair = 0;
-				}
-				else allowstair = 1;
-			} 
-			else if (nx < 0)
-			{
-				if (sx - this->x > 0 )
-				{
-					allowstair = 0;
-				}
-				else allowstair = 1;
-			}*/
+			
 			
 			if (stairnx == 1)
 			{
 				allowstair = 1;
 				if (i %2 == 0)
 				{
-					if (x - sx > 10 || sx - x > 60 || (nx < 0 && y > sy - 50))
+					if ((x - sx > 10 || sx - x > 60 || nx <= 0 || y > sy - 50))
 					{
 						allowstair = 0;
 					}
+
 				}
 				else if (i %2 != 0)
 				{
@@ -87,15 +73,22 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 					{
 						allowstair = 0;
 					}
+					else if (nx > 0)
+					{
+						if (x - sx > 10 || sx - x > 60)
+						{
+							allowstair = 0;
+						}
+					}
 				}
 				else if (i % 2 != 0)
 				{
-					if (x - sx > 0 || (nx > 0 && y > sy - 50))
+					if ((x - sx > 10 || (sx - x > 20) || nx > 0 || y < sy - 50) && isonstair == false)
 					{
 						allowstair = 0;
 					}
 				}
-
+				
 			}
 			if (stairnx == 1)
 			{
@@ -129,7 +122,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 	if (GetTickCount() - sit_start > 0 && this->getpullup == true)
 	{
 		this->getpullup = false;
-		y = y - 12.0f;
+		y = y - 14.0f;
 	}
 	if (GetTickCount() - sit_start == 0) y = originalY + 12.0f;
 	if (GetTickCount() - attack_start > SIMON_ATTACK_TIME)
@@ -228,8 +221,8 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 			x += min_tx * dx + nx * 0.4f;		// nx*0.4f : need to push out a bit to avoid overlapping next frame
 			y += min_ty * dy + ny * 0.4f;
 
-			/*if (nx != 0) vx = 0;*/
-			/*if (ny != 0) vy = 0;*/
+			if (nx != 0) vx = 0;
+			if (ny != 0) vy = 0;
 			waitingtime = 0;
 			allowsit = true;
 			for (UINT i = 0; i < coEventsResult.size(); i++)
@@ -240,14 +233,9 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 				{
 					
 					y += dy;
+					x += dx;
 				}
-				/*if (dynamic_cast<Brick*>(e->obj))
-				{
-					if (e->nx != 0) {
-						vx = 0;
-						resettodefault();
-					}
-				}*/
+				
 			}
 
 
@@ -329,7 +317,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 	// simple screen edge collision!!!
 	if (isonstair == true && y > 270 && y < 450)
 	{
-		x = 5128;
+		x = 5135;
 		y = 450;
 	}
 	
@@ -367,41 +355,10 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 	{
 		y = y - 2;
 	}*/
-	/*if (animations[SIMON_ANI_ATTACK]->GetCurrentFrame() == 0)
-	{
-		waitingtimeatt = 1;
-		movingallow = true;
-	}
-	if (animations[SIMON_ANI_ATTACK]->GetCurrentFrame() == 2)
-	{
-		isattacking = false;
-		waitingtimeatt = 0;
-		movingallow = false;
-		animations[SIMON_ANI_ATTACK]->reset();
-	}*/
 	
 	
-	/*if (autowalking != 0)
-	{
-		vx = 0;
-		vy = 0;
-		if (nx > 0)
-		{
-			x += SIMON_AUTO_WALKING_STAIR_SPEED;
-			if (isOnStair)
-			{
-				y += -SIMON_AUTO_WALKING_STAIR_SPEED;
-			}
-		}
-		else if (nx < 0)
-		{
-			x -= SIMON_AUTO_WALKING_STAIR_SPEED;
-			if (isOnStair)
-			{
-				y += -SIMON_AUTO_WALKING_STAIR_SPEED;
-			}
-		}
-	}*/
+	
+	
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 }
 void Simon::resettodefault()

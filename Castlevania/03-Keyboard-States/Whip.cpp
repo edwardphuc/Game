@@ -4,6 +4,7 @@
 #include <iostream>
 #include "Ghost.h"
 #include "Bat.h"
+#include "Fishmen.h"
 using namespace std;
 Whip::Whip(Simon *sm, vector<LPGAMEOBJECT> oj)
 {
@@ -20,7 +21,7 @@ Whip::Whip(Simon *sm, vector<LPGAMEOBJECT> oj)
 	scale = 1;
 }
 
-void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT> enemy, int &countGhost, int &countBat)
+void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT> enemy, int &countGhost, int &countBat, int &countFish)
 {
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
@@ -118,9 +119,9 @@ void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT
 				if (enemy[i]->GetHP() == 0)
 				{
 					if (enemy[i]->GetState() == GHOST_STATE_WALKING_LEFT || enemy[i]->GetState() == GHOST_STATE_WALKING_RIGHT) countGhost--;
+					if (enemy[i]->GetState() == FISH_STATE_WALKING_LEFT || enemy[i]->GetState() == FISH_STATE_WALKING_RIGHT) countFish--;
 					if (enemy[i]->GetState() == BAT_STATE_FLY_LEFT) countBat--;
 					enemy.erase(enemy.begin() + i);
-					
 				}
 			}
 	}
