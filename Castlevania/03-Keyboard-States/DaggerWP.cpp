@@ -2,6 +2,7 @@
 #include <algorithm>
 #include "Ghost.h"
 #include "Bat.h"
+#include "Fishmen.h"
 DaggerWP::DaggerWP(Simon* sm, vector<LPGAMEOBJECT> oj)
 {
 	this->simon = sm;
@@ -9,7 +10,7 @@ DaggerWP::DaggerWP(Simon* sm, vector<LPGAMEOBJECT> oj)
 	state = DAGGER_STATE_UNACTIVE;
 	scale = 1;
 }
-void DaggerWP::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT> enemy, int& countGhost, int& countBat)
+void DaggerWP::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT> enemy, int& countGhost, int& countBat, int& countFish)
 {
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
@@ -84,16 +85,17 @@ void DaggerWP::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOB
 				{
 					this->isallow = true;
 					this->isallowdirect = true;
-					enemy[i]->SetHP(enemy[i]->GetHP() - 0.4);
+					enemy[i]->SetHP(enemy[i]->GetHP() - 1);
 					if (enemy[i]->GetHP() <= 0)
 					{
 						if (enemy[i]->GetState() == GHOST_STATE_WALKING_LEFT || enemy[i]->GetState() == GHOST_STATE_WALKING_RIGHT) countGhost--;
 						if (enemy[i]->GetState() == BAT_STATE_FLY_LEFT) countBat--;
+						if (enemy[i]->GetState() == FISH_STATE_WALKING_LEFT || enemy[i]->GetState() == FISH_STATE_WALKING_RIGHT) countFish--;
 						enemy.erase(enemy.begin() + i);
-						this->isactive = false;
-						this->isfree = false;
+						
 					}
-					
+					this->isactive = false;
+					this->isfree = false;
 				}
 		}
 	
