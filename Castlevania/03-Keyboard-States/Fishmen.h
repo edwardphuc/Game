@@ -3,7 +3,7 @@
 #include "FireBall.h"
 #include "Simon.h"
 
-#define FISH_ATTACK_TIME		400
+#define FISH_ATTACK_TIME		200
 #define FISH_ANI_IDLE			41
 #define FISH_ANI_WALKING_RIGHT	42
 #define FISH_ANI_WALKING_LEFT	43

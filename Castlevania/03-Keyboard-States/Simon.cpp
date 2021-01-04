@@ -21,6 +21,7 @@ Simon::Simon(vector<LPGAMEOBJECT> oj)
 	state = SIMON_STATE_IDLE;
 	soluongdao = 3;
 	hp = 10;
+	
 }
 void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT> stairoj, vector<LPGAMEOBJECT> enemy)
 {
@@ -229,7 +230,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 			{
 				LPCOLLISIONEVENT e = coEventsResult[i];
 
-				if (dynamic_cast<Brazier*>(e->obj)) // if e->obj is Goomba 
+				if (dynamic_cast<Brazier*>(e->obj)) 
 				{
 					
 					y += dy;

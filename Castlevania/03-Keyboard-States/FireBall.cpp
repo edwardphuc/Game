@@ -9,17 +9,26 @@ FireBall::FireBall(Simon *simon)
 void FireBall::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CGameObject::Update(dt);
-	if (this->CheckCollision(this->simon))
+	if (this->CheckCollision(this->simon) && (this->Getactive() == true || this->Getfree() == true))
 	{
-		this->simon->SetHP(this->simon->GetHP() - 1);
+		if (this->simon->GetUntouchable() == false)
+		{
+			if (nx > 0)
+			{
+				this->simon->SetDirect(-1);
+			}
+			else if (nx < 0)
+			{
+				this->simon->SetDirect(1);
+			}
+			this->simon->StartIsDamaged();
+			this->simon->StartUntouchable();
+			this->SetHP(this->GetHP() - 1);
+		}
 		this->isfree = false;
 	}
-	if (isactive == false && isfree == true)
-	{
-		if (nx > 0) vx = FIRE_SPEED;
-		else if (nx < 0) vx = -FIRE_SPEED;
-		x += dx;
-	}
+	
+	
 }
 void FireBall::Render()
 {

@@ -36,7 +36,6 @@ void Fishmen::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		// block 
 		x += min_tx * dx + nx * 0.4f;		// nx*0.4f : need to push out a bit to avoid overlapping next frame
 		y += min_ty * dy + ny * 0.4f;
-		
 		for (UINT i = 0; i < coEventsResult.size(); i++)
 		{
 			LPCOLLISIONEVENT e = coEventsResult[i];
@@ -47,10 +46,11 @@ void Fishmen::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				{
 					y += dy;
 				}
-				if (isfly == false)
+				else if (isfly != true)
 				{
-					x += dx;
 					vx = -vx;
+					
+					
 				}
 			}
 			if (dynamic_cast<Fishmen*>(e->obj))
@@ -63,51 +63,73 @@ void Fishmen::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (isfly == false)
 	{
 		vy = vy + FISH_GRAVITY * dt;
+		int z;
+		this->simon->GetDirect(z);
 		float x1, y1;
 		this->simon->GetPosition(x1, y1);
-		if (this->fire->Getactive() == false  && this->fire->Getfree() == false)
+		float x2, y2;
+		this->fire->GetPosition(x2, y2);
+		int direct;
+		this->fire->GetDirect(direct);
+		
+		if (this->fire->Getactive() == false  && this->fire->Getfree() == false && isattacking == false)
 		{
 			this->fire->SetPosition(x, y);
 			this->fire->SetDirect(nx);
 		}
-		else if (this->fire->Getactive() == true && this->fire->Getfree() == false)
+		else if (this->fire->Getactive() == true && this->fire->Getfree() == false && isattacking == true)
 		{
 			if (nx > 0)
 			{
-				this->fire->SetPosition(x + 40, y + 25);
+				this->fire->SetPosition(x + 40, y + 15);
 			}
 			if (nx < 0)
 			{
-				this->fire->SetPosition(x - 15, y + 25);
+				this->fire->SetPosition(x - 15, y + 15);
 			}
 		}
-		int z;
-		this->simon->GetDirect(z);
-		
-		if (abs(x - x1) <= 100 && isattacking == false && this->fire->Getfree() == false)
+		if (abs(x - x1) <= 500 && isattacking == false && this->fire->Getfree() == false && this->GetInvisible() == true)
 		{
-			if ((z < 0 && nx > 0 && x > x1) || (z > 0 && nx < 0 && x < x1))
+			this->SetState(FISH_STATE_ATTACK);
+			if ((z < 0 && nx > 0 && x1 > x) || (z > 0 && nx < 0 && x1 < x))
 			{
-				this->SetState(FISH_STATE_ATTACK);
 				this->StartAttack();
 				this->fire->StartAttack();
 			}
-			
+
 		}
-		if (GetTickCount() - attack_start > FISH_ATTACK_TIME)
+		if (GetTickCount() - attack_start > FISH_ATTACK_TIME && isattacking == true)
 		{
 			attack_start = 0;
 			isattacking = false;
+			this->fire->Setfree(true);
+			this->fire->Setactive(false);
+			
+		}
+		if (isattacking == false)
+		{
 			if (nx > 0)
 			{
 				this->SetState(FISH_STATE_WALKING_RIGHT);
 			}
-			else if (nx < 0)
-			{
-				this->SetState(FISH_STATE_WALKING_LEFT);
-			}
-			this->fire->Setfree(true);
+			else this->SetState(FISH_STATE_WALKING_LEFT);
+		}
+		if (this->fire->Getactive() == false && this->fire->Getfree() == true && isattacking == false)
+		{
+			if (direct < 0) this->fire->SetPosition(x2 - FIRE_SPEED * dt, y2);
+			else if (direct > 0) this->fire->SetPosition(x2 + FIRE_SPEED * dt, y2);
+
+			
+		}
+
+		if (abs(x2 - x1) > 400)
+		{
+			this->fire->Setfree(false);
+		}
+		if (this->GetInvisible() == false)
+		{
 			this->fire->Setactive(false);
+			this->fire->Setfree(false);
 		}
 		if (abs(x - originalX) >= 50)
 		{
@@ -142,9 +164,15 @@ void Fishmen::Render()
 	int ani;
 	if (visible == true)
 	{
-		if (isattacking == true) ani = FISH_ANI_ATTACK;
-		else if (vx > 0) ani = FISH_ANI_WALKING_RIGHT;
-		else if (vx < 0) ani = FISH_ANI_WALKING_LEFT;
+		if (isattacking == true)
+		{
+			ani = FISH_ANI_ATTACK;
+		}
+		else if (isattacking == false)
+		{
+			if (vx < 0) ani = FISH_ANI_WALKING_LEFT;
+			else ani = FISH_ANI_WALKING_RIGHT;
+		}
 		else ani = FISH_ANI_IDLE;
 		animations[ani]->Render(x, y, alpha, scale);
 		RenderBoundingBox();
