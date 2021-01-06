@@ -42,7 +42,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 		{
 			
 			if (i == 0 || i == 1 || i == 2 || i ==3 || i == 6 || i == 7) stairnx = 1;
-			if (i == 4 || i == 5 || i == 8 || i == 9 || i == 10 || i == 11) stairnx = -1;
+			if (i == 4 || i == 5 || i == 8 || i == 9 || i == 10 || i == 11 || i == 12 || i ==13 || i==14 || i== 15 || i==16 || i==17) stairnx = -1;
 			
 			
 			if (stairnx == 1)
@@ -84,7 +84,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 				}
 				else if (i % 2 != 0)
 				{
-					if ((x - sx > 10 || (sx - x > 20) || nx > 0 || y < sy - 50) && isonstair == false)
+					if ((x - sx > 10 || sx - x > 20 || nx > 0 || y < sy - 50) && isonstair == false)
 					{
 						allowstair = 0;
 					}
