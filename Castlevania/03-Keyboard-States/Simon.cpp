@@ -336,7 +336,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 		x = 4050;
 		y = 78;
 	}
-	else if (x > 4000 && x < 4050 )
+	else if (x > 4000 && x < 4050)
 	{
 		x = 4050;
 	}
@@ -347,6 +347,18 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 	if (x > 3990 && y >= 240 && x < 4050)
 	{
 		x = 3980;
+	}
+	if (y < 400 && y > 120 && vx > 0 && x > 4860 && x < 4900)
+	{
+		x = 4860;
+	}
+	if (y < 120 && vx > 0 && x > 4860 && x < 4920)
+	{
+		x = 4920;
+	}
+	if (y < 120 && vx < 0 && x < 4910 && x > 4860)
+	{
+		x = 4910;
 	}
 	if (vx != 0 && (x < 1280 || x >= 1420 || x >= 4050)) x += dx;
 
