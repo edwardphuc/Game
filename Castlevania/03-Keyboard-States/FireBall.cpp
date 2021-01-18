@@ -23,7 +23,7 @@ void FireBall::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			}
 			this->simon->StartIsDamaged();
 			this->simon->StartUntouchable();
-			this->SetHP(this->GetHP() - 1);
+			this->simon->SetHP(this->simon->GetHP() - 1);
 		}
 		this->isfree = false;
 	}

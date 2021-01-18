@@ -786,10 +786,22 @@ void LoadResources()
 		brick->SetPosition(5150 + i * 28.0f, 198.0f);
 		oj.push_back(brick);
 	}
+	for (int i = 0; i < 1; i++)
+	{
+		Brick* brick = new Brick();
+		brick->SetPosition(6090 + i * 28.0f, 250.0f);
+		oj.push_back(brick);
+	}
+	for (int i = 0; i < 1; i++)
+	{
+		Brick* brick = new Brick();
+		brick->SetPosition(6175 + i * 28.0f, 198.0f);
+		oj.push_back(brick);
+	}
 	for (int i = 0; i < 2; i++)
 	{
 		Brick* brick = new Brick();
-		brick->SetPosition(5205 + i* 20.0f , 545.0f);
+		brick->SetPosition(5215 + i* 15.0f , 545.0f);
 		oj.push_back(brick);
 	}
 
@@ -807,12 +819,25 @@ void LoadResources()
 		oj.push_back(brick);
 	}
 
-	for (int i = 0; i < 15; i++)
+	for (int i = 0; i < 9; i++)
 	{
 		Brick* brick = new Brick();
 		brick->SetPosition(5645 + i * 30.0f, 608.0f);
 		oj.push_back(brick);
 	}
+	for (int i = 0; i < 4; i++)
+	{
+		Brick* brick = new Brick();
+		brick->SetPosition(5975 + i * 30.0f, 668.0f);
+		oj.push_back(brick);
+	}
+	for (int i = 0; i < 1; i++)
+	{
+		Brick* brick = new Brick();
+		brick->SetPosition(5930 + i * 30.0f, 732.0f);
+		oj.push_back(brick);
+	}
+
 	
 	StairOj* stair1 = new StairOj();
 	stair1->SetPosition(2520.0f, 290.0f);
@@ -847,7 +872,7 @@ void LoadResources()
 	stairoj.push_back(stair8);
 
 	StairOj* stair9 = new StairOj();
-	stair9->SetPosition(4320.0f, 130.0f);
+	stair9->SetPosition(4335.0f, 135.0f);
 	stairoj.push_back(stair9);
 
 	StairOj* stair10 = new StairOj();
@@ -886,8 +911,24 @@ void LoadResources()
 	stair18->SetPosition(5530.0f, 290.0f);
 	stairoj.push_back(stair18);
 
+	StairOj* stair19 = new StairOj();
+	stair19->SetPosition(4650.0f, 245.0f);
+	stairoj.push_back(stair19);
+
+	StairOj* stair20 = new StairOj();
+	stair20->SetPosition(5880.0f, 585.0f);
+	stairoj.push_back(stair20);
+
+	StairOj* stair21 = new StairOj();
+	stair21->SetPosition(6100.0f, 240.0f);
+	stairoj.push_back(stair21);
+
+	StairOj* stair22 = new StairOj();
+	stair22->SetPosition(6170.0f, 125.0f);
+	stairoj.push_back(stair22);
+
 	simon = new Simon(oj);
-	simon->SetPosition(4050.0f, 0.0f);
+	simon->SetPosition(5205.0f, 480.0f);
 	/*simon->SetPosition(5000.0f, 500.0f);*/
 	float x, y;
 	simon->GetPosition(x, y);
@@ -1028,7 +1069,7 @@ void Update(DWORD dt)
 		}
 	}
 	
-	/*if (GetTickCount() - timecreateBat > 1000)
+	if (GetTickCount() - timecreateBat > 1000)
 	{
 		if (x >= 4100 && x < 5000)
 		{
@@ -1047,7 +1088,7 @@ void Update(DWORD dt)
 				enemy.push_back(bat);
 			}
 		}
-	}*/
+	}
 
 	if (GetTickCount() - timecreateFish > 2000)
 	{

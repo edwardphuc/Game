@@ -65,6 +65,7 @@ void Fishmen::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		vy = vy + FISH_GRAVITY * dt;
 		int z;
 		this->simon->GetDirect(z);
+		bool untouch = this->simon->GetUntouchable();
 		float x1, y1;
 		this->simon->GetPosition(x1, y1);
 		float x2, y2;
@@ -77,7 +78,7 @@ void Fishmen::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			this->fire->SetPosition(x, y);
 			this->fire->SetDirect(nx);
 		}
-		else if (this->fire->Getactive() == true && this->fire->Getfree() == false && isattacking == true)
+		else if (this->fire->Getactive() == true && this->fire->Getfree() == false && isattacking == true && untouch == false)
 		{
 			if (nx > 0)
 			{
@@ -88,7 +89,7 @@ void Fishmen::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				this->fire->SetPosition(x - 15, y + 15);
 			}
 		}
-		if (abs(x - x1) <= 500 && isattacking == false && this->fire->Getfree() == false && this->GetInvisible() == true)
+		if (abs(x - x1) <= 500 && isattacking == false && this->fire->Getfree() == false && this->GetInvisible() == true && untouch == false)
 		{
 			this->SetState(FISH_STATE_ATTACK);
 			if ((z < 0 && nx > 0 && x1 > x) || (z > 0 && nx < 0 && x1 < x))

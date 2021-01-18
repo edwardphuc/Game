@@ -20,7 +20,7 @@ Simon::Simon(vector<LPGAMEOBJECT> oj)
 	}
 	state = SIMON_STATE_IDLE;
 	soluongdao = 3;
-	hp = 10;
+	hp = 2;
 	
 }
 void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT> stairoj, vector<LPGAMEOBJECT> enemy)
@@ -41,8 +41,8 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 		if (this->CheckCollision(stairoj[i]))
 		{
 			
-			if (i == 0 || i == 1 || i == 2 || i ==3 || i == 6 || i == 7) stairnx = 1;
-			if (i == 4 || i == 5 || i == 8 || i == 9 || i == 10 || i == 11 || i == 12 || i ==13 || i==14 || i== 15 || i==16 || i==17) stairnx = -1;
+			if (i == 0 || i == 1 || i == 2 || i ==3 || i == 6 || i == 7 || i == 20 || i == 21) stairnx = 1;
+			if (i == 4 || i == 5 || i == 8 || i == 9 || i == 10 || i == 11 || i == 12 || i ==13 || i==14 || i== 15 || i==16 || i==17 || i==18 || i == 19) stairnx = -1;
 			
 			
 			if (stairnx == 1)
@@ -191,9 +191,16 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 		this->SetState(SIMON_STATE_DIE);
 		this->StartDieTime();
 	}
-	if ((this->GetHP() <= 0) && (GetTickCount() - dietime_start > SIMON_DIE_TIME))
+	if ((this->GetHP() <= 0) && (GetTickCount() - dietime_start > SIMON_DIE_TIME) && (GetTickCount() - dietime_start < SIMON_DIE_TIME + 200))
 	{
-
+		x = 2000;
+		y = 0;
+		this->SetState(SIMON_STATE_IDLE);
+		this->SetHP(10);
+		nx = 1;
+		visible = true;
+		isdied = false;
+		waitingtimeatt = 0;
 	}
 	else if ((this->GetHP() <= 0) && (GetTickCount() - dietime_start < SIMON_DIE_TIME))
 	{
@@ -316,12 +323,26 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 		y = 500.0f;
 	}*/
 	// simple screen edge collision!!!
-	if (isonstair == true && y > 270 && y < 450)
+	if (isonstair == true && y > 270 && y < 450 && x < 4600 && this->GetState()== SIMON_STATE_WALKING_DOWN_STAIR_RIGHT)
 	{
 		x = 5135;
 		y = 450;
 	}
-	
+	else if (isonstair == true && y > 270 && y < 450 && x >= 4600 && x <=5100 && this->GetState() == SIMON_STATE_WALKING_DOWN_STAIR_RIGHT)
+	{
+		x = 5770;
+		y = 450;
+	}
+	if (isonstair == true && y > 300 && y < 450 && x <= 5750 && x > 5200 && this->GetState()== SIMON_STATE_WALKING_UP_STAIR_LEFT)
+	{
+		x = 4695;
+		y = 295;
+	}
+	else if (isonstair == true && y > 300 && y < 450 && x <= 5100 && this->GetState() == SIMON_STATE_WALKING_UP_STAIR_LEFT)
+	{
+		y = 295;
+		x = 4150;
+	}
 	if (vx < 0 && x > 1280 && x < 1420)
 	{
 		x = 1450;
@@ -359,6 +380,14 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 	if (y < 120 && vx < 0 && x < 4910 && x > 4860)
 	{
 		x = 4910;
+	}
+	if (y > 400 && x >= 5960)
+	{
+		x = 5960;
+	}
+	if (x >= 6170 && y < 300)
+	{
+		x = 6170;
 	}
 	if (vx != 0 && (x < 1280 || x >= 1420 || x >= 4050)) x += dx;
 
