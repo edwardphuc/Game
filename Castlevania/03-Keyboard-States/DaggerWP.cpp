@@ -3,6 +3,7 @@
 #include "Ghost.h"
 #include "Bat.h"
 #include "Fishmen.h"
+#include "Sound.h"
 DaggerWP::DaggerWP(Simon* sm, vector<LPGAMEOBJECT> oj)
 {
 	this->simon = sm;
@@ -81,6 +82,8 @@ void DaggerWP::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOB
 		for (int i = 0; i < enemy.size(); i++)
 		{
 			if (enemy[i]->GetInvisible() == true && this->isfree == true)
+			{
+
 				if (this->CheckCollision(enemy[i]))
 				{
 					this->isallow = true;
@@ -92,11 +95,13 @@ void DaggerWP::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOB
 						if (enemy[i]->GetState() == BAT_STATE_FLY_LEFT) countBat--;
 						if (enemy[i]->GetState() == FISH_STATE_WALKING_LEFT || enemy[i]->GetState() == FISH_STATE_WALKING_RIGHT) countFish--;
 						enemy.erase(enemy.begin() + i);
-						
+
 					}
 					this->isactive = false;
 					this->isfree = false;
 				}
+				Sound::getInstance()->play("hit", false, 1);
+			}
 		}
 	
 }
@@ -107,6 +112,7 @@ void DaggerWP::StartAttack()
 	isallow = false;
 	simon->Setsoluongdao(simon->Getsoluongdao() - 1);
 	animations[36]->reset();
+	Sound::getInstance()->play("usingdagger", false, 1);
 }
 void DaggerWP::Render()
 {

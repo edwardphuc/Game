@@ -5,6 +5,8 @@
 #include "Ghost.h"
 #include "Bat.h"
 #include "Fishmen.h"
+#include <vector>
+#include "Sound.h"
 using namespace std;
 Whip::Whip(Simon *sm, vector<LPGAMEOBJECT> oj)
 {
@@ -77,7 +79,7 @@ void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT
 			}
 			else if (GetTickCount() - attack_start <= 360)
 			{
-				this->SetPosition(x1 - 60, y1 + 15);
+				this->SetPosition(x1 - 50, y1 + 15);
 			}
 		}
 	}
@@ -96,7 +98,7 @@ void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT
 	for (int i = 0; i < this->oj.size(); i++)
 	{
 		
-		if(this->oj[i]->GetHP() > 0 && this->isactive == true)  // xet va cham cho cac vat the hien ra tren man hinh
+		if(this->oj[i]->GetHP() > 0 && this->isactive == true && this->oj[i]->GetInvisible() == true)  // xet va cham cho cac vat the hien ra tren man hinh
 			if (this->CheckCollision(this->oj[i]))
 			{
 				if (i >= 0 && i <= 4)
@@ -107,6 +109,7 @@ void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT
 					this->oj[i]->SetHP(this->oj[i]->GetHP() -1);
 					if(this->oj[i]->GetHP() == 0) this->oj[i + 5]->SetVisible(true);
 				}
+				Sound::getInstance()->play("hit", false, 1);
 			}
 	}
 
@@ -123,6 +126,7 @@ void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT
 					if (enemy[i]->GetState() == BAT_STATE_FLY_LEFT) countBat--;
 					enemy.erase(enemy.begin() + i);
 				}
+				Sound::getInstance()->play("hit", false, 1);
 			}
 	}
 	
@@ -158,6 +162,7 @@ void Whip::StartAttack()
 	this->attack_start = GetTickCount();
 	isactive = true;
 	animations[WHIP]->reset();
+	Sound::getInstance()->play("usingwhip", false, 1);
 }
 void Whip::Render()
 {

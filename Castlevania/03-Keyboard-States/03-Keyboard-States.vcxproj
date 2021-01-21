@@ -141,6 +141,7 @@
     <ClCompile Include="Mario.cpp" />
     <ClCompile Include="Panther.cpp" />
     <ClCompile Include="Simon.cpp" />
+    <ClCompile Include="Sound.cpp" />
     <ClCompile Include="Sprites.cpp" />
     <ClCompile Include="StairOj.cpp" />
     <ClCompile Include="Textures.cpp" />
@@ -166,6 +167,7 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Panther.h" />
     <ClInclude Include="Simon.h" />
+    <ClInclude Include="Sound.h" />
     <ClInclude Include="Sprites.h" />
     <ClInclude Include="StairOj.h" />
     <ClInclude Include="Textures.h" />

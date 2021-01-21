@@ -3,6 +3,7 @@
 #include "GameObject.h"
 #include "Brazier.h"
 #include "StairOj.h"
+#include "Sound.h"
 #define SIMON_WALKING_SPEED		0.05f
 #define SIMON_WALKING_STAIR_SPEED		    0.025f 
 #define SIMON_JUMP_SPEED_Y		0.45f
@@ -53,6 +54,8 @@
 #define SIMON_ANI_DAMAGED_RIGHT			37
 #define SIMON_ANI_DAMAGED_LEFT			38
 #define	SIMON_ANI_DIE					39
+#define SIMON_ANI_UPSTAIR_ATTACK		49
+#define SIMON_ANI_DOWNSTAIR_ATTACK		50
 
 //BBox
 #define SIMON_STAND_BBOX_WIDTH		58
@@ -126,7 +129,7 @@ public:
 	void StartChangeColor() { ischangecolor = true; changecolor_start = GetTickCount(); vx = 0; }
 	void StartIsDamaged() { isdamaged = true; damaged_start = GetTickCount();}
 	void StartUntouchable() { isuntouchable = true; untouchable_start = GetTickCount(); }
-	void StartDieTime() { isdied = true; dietime_start = GetTickCount(); this->SetHP(this->GetHP() - 1); isuntouchable = false; isdamaged = false; }
+	void StartDieTime() { isdied = true; dietime_start = GetTickCount(); this->SetHP(this->GetHP() - 1); isuntouchable = false; isdamaged = false; Sound::getInstance()->play("Life_Lost", false, 2); }
 	void StartSit() { issitting = true; sit_start = GetTickCount(); }
 	void FixPositionStair();
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);

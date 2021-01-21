@@ -46,7 +46,9 @@ public:
 	void Draw(float x, float y, LPDIRECT3DTEXTURE9 texture, int left, int top, int right, int bottom, int alpha, double Scale);
 	int IsKeyDown(int KeyCode);
 	void ProcessKeyboard();
-
+	HWND getHWND() {
+		return hWnd;
+	}
 	static void SweptAABB(
 		float ml,			// move left 
 		float mt,			// move top

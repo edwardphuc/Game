@@ -4,6 +4,8 @@
 #include <iostream>
 #include "debug.h"
 #include "Brick.h"
+#include "Sound.h"
+#include "Boss.h"
 
 using namespace std;
 
@@ -20,7 +22,7 @@ Simon::Simon(vector<LPGAMEOBJECT> oj)
 	}
 	state = SIMON_STATE_IDLE;
 	soluongdao = 3;
-	hp = 2;
+	hp = 5;
 	
 }
 void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT> stairoj, vector<LPGAMEOBJECT> enemy)
@@ -186,13 +188,15 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 				alpha = 150;
 		}
 	}
-	if (this->GetHP() == 0)
+	if (this->GetHP() == 0 || y > 800)
 	{
 		this->SetState(SIMON_STATE_DIE);
 		this->StartDieTime();
 	}
 	if ((this->GetHP() <= 0) && (GetTickCount() - dietime_start > SIMON_DIE_TIME) && (GetTickCount() - dietime_start < SIMON_DIE_TIME + 200))
 	{
+		Sound::getInstance()->stop("backgroundmusic_boss");
+		Sound::getInstance()->play("backgroundmusic", true, 0);
 		x = 2000;
 		y = 0;
 		this->SetState(SIMON_STATE_IDLE);
@@ -204,6 +208,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 	}
 	else if ((this->GetHP() <= 0) && (GetTickCount() - dietime_start < SIMON_DIE_TIME))
 	{
+		Sound::getInstance()->stop("Life_Lost");
 		alpha = 255;
 		waitingtimeatt = 1;
 		this->SetVisible(true);
@@ -279,6 +284,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 				{
 					whiplv++;
 				}
+				Sound::getInstance()->play("collectitem", false, 1);
 			}
 	}
 	
@@ -306,6 +312,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 					this->StartIsDamaged();
 					this->StartUntouchable();
 					this->SetHP(this->GetHP() - 1);
+					Sound::getInstance()->play("hurting", false, 1);
 				}
 				
 				
@@ -462,7 +469,7 @@ void Simon::Render()
 					ani = SIMON_ANI_JUMP;
 					isjumping = false;
 				}
-				else if (isattacking == true)
+				else if (isattacking == true && isonstair == false)
 				{
 					ani = SIMON_ANI_ATTACK;
 				}
@@ -470,19 +477,41 @@ void Simon::Render()
 				{
 					if (stairnx == 1)
 					{
-						if (nx > 0) ani = SIMON_ANI_UP_STAIR_IDLE_RIGHT;
+						if (nx > 0)
+						{
+							if (isattacking == true)
+							{
+								ani = SIMON_ANI_UPSTAIR_ATTACK;
+							}
+							else ani = SIMON_ANI_UP_STAIR_IDLE_RIGHT;
+						}
 						if (nx < 0)
 						{
-							ani = SIMON_ANI_DOWN_STAIR_IDLE_LEFT;
+							if (isattacking == true)
+							{
+								ani = SIMON_ANI_DOWNSTAIR_ATTACK;
+							}
+							else ani = SIMON_ANI_DOWN_STAIR_IDLE_LEFT;
 							scale = -1;
 						}
 					}
 					else if (stairnx == -1)
 					{
-						if (nx > 0) ani = SIMON_ANI_DOWN_STAIR_IDLE_RIGHT;
+						if (nx > 0)
+						{
+							if (isattacking == true)
+							{
+								ani = SIMON_ANI_DOWNSTAIR_ATTACK;
+							}
+							else ani = SIMON_ANI_DOWN_STAIR_IDLE_RIGHT;
+						}
 						if (nx < 0)
 						{
-							ani = SIMON_ANI_UP_STAIR_IDLE_LEFT;
+							if (isattacking == true)
+							{
+								ani = SIMON_ANI_UPSTAIR_ATTACK;
+							}
+							else ani = SIMON_ANI_UP_STAIR_IDLE_LEFT;
 							scale = -1;
 						}
 					}

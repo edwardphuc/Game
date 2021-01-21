@@ -286,6 +286,7 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 */
 void LoadResources()
 {
+	Sound::getInstance()->play("backgroundmusic", true, 0);
 	CTextures * textures = CTextures::GetInstance();
 
 	textures->Add(ID_TEX_SIMON, L"textures\\Simon.png", D3DCOLOR_XRGB(255, 224, 248));
@@ -352,6 +353,13 @@ void LoadResources()
 	sprites->Add(20013, 0, 204, 54, 261, texSimon);
 	sprites->Add(20014, 60, 204, 123, 261, texSimon);
 
+	sprites->Add(20015, 115, 133, 161, 195, texSimon); //stair_attack
+	sprites->Add(20016, 175, 133, 221, 195, texSimon);
+	sprites->Add(20017, 245, 133, 291, 195, texSimon);
+	sprites->Add(20018, 300, 133, 350, 195, texSimon);
+	sprites->Add(20019, 360, 133, 410, 195, texSimon);
+	sprites->Add(20020, 430, 133, 480, 195, texSimon);
+
 	//Sprite whip
 	sprites->Add(10008, 0, 8, 18, 53, texWhip);
 	sprites->Add(10009, 40, 2, 72, 38, texWhip);
@@ -407,7 +415,7 @@ void LoadResources()
 	//Boss
 	sprites->Add(60000, 0, 1, 85, 45, texBoss);
 	sprites->Add(60001, 96, 1, 192, 45, texBoss);
-	sprites->Add(60002, 200, 1, 285, 45, texBoss);
+	sprites->Add(60002, 195, 1, 290, 45, texBoss);
 
 	//Axe
 	sprites->Add(70000, 0, 0, 30, 27, texAxe);
@@ -649,6 +657,11 @@ void LoadResources()
 	animations->Add(6000, ani);
 
 	ani = new CAnimation(100);
+	ani->Add(60002);
+	ani->Add(60001);
+	animations->Add(6001, ani);
+
+	ani = new CAnimation(100);
 	ani->Add(70002);
 	animations->Add(7000, ani);
 
@@ -658,6 +671,18 @@ void LoadResources()
 	ani->Add(70000);
 	ani->Add(70003);
 	animations->Add(7001, ani);
+
+	ani = new CAnimation(100);
+	ani->Add(20015);
+	ani->Add(20016);
+	ani->Add(20017);
+	animations->Add(7002, ani);
+
+	ani = new CAnimation(100);
+	ani->Add(20018);
+	ani->Add(20019);
+	ani->Add(20020);
+	animations->Add(7003, ani);
 
 	Simon::AddAnimation(400);		// idle right
 	Simon::AddAnimation(401);		// idle left
@@ -734,6 +759,9 @@ void LoadResources()
 	Boss::AddAnimation(6000);
 	AxeWP::AddAnimation(7000);
 	AxeWP::AddAnimation(7001);
+	Simon::AddAnimation(7002);
+	Simon::AddAnimation(7003);
+	Boss::AddAnimation(6001);
 	for (int i = 0; i < 48; i++)
 	{
 		Brick* brick = new Brick();
@@ -973,7 +1001,7 @@ void LoadResources()
 	stairoj.push_back(stair22);
 
 	simon = new Simon(oj);
-	simon->SetPosition(2000.0f, 0.0f);
+	simon->SetPosition(5600.0f, 0.0f);
 	/*simon->SetPosition(5000.0f, 500.0f);*/
 	float x, y;
 	simon->GetPosition(x, y);
@@ -1004,7 +1032,7 @@ void LoadResources()
 	axeWP->SetPosition(x, y);
 
 	
-	boss = new Boss();
+	boss = new Boss(simon);
 	boss->SetPosition(5800.0f, 25.0f);
 	enemy.push_back(boss);
 }

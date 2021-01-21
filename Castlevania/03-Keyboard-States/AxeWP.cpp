@@ -2,6 +2,7 @@
 #include "Ghost.h"
 #include "Bat.h"
 #include "Fishmen.h"
+#include "Sound.h"
 
 AxeWP::AxeWP(Simon* sm, vector<LPGAMEOBJECT> oj)
 {
@@ -108,6 +109,7 @@ void AxeWP::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 				}
 				this->isactive = false;
 				this->isfree = false;
+				Sound::getInstance()->play("hit", false, 1);
 			}
 	}
 }
@@ -147,6 +149,7 @@ void AxeWP::StartAttack()
 	vy = -AXE_SPEED_Y;
 	animations[48]->reset();
 	animations[47]->reset();
+	Sound::getInstance()->play("Axe", false, 1);
 }
 void AxeWP::SetState(int state)
 {

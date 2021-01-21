@@ -3,6 +3,7 @@
 #include "Simon.h"
 #include "Game.h"
 #include "Brazier.h"
+#include <vector>
 
 #define WHIP_STATE_ACTIVE 4000
 #define WHIP_STATE_UNACTIVE 4100
