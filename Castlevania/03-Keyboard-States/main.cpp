@@ -40,6 +40,8 @@
 #include "FireBall.h"
 #include "Boss.h"
 #include "AxeWP.h"
+#include "Candle.h"
+#include "Money.h"
 
 #define WINDOW_CLASS_NAME L"SampleWindow"
 #define MAIN_WINDOW_TITLE L"Catslevania"
@@ -66,6 +68,7 @@
 #define ID_TEX_FIREBALL	130
 #define ID_TEX_BOSS		140
 #define ID_TEX_AXE		150
+#define ID_TEX_CANDLE	160
 
 
 CGame *game;
@@ -303,6 +306,7 @@ void LoadResources()
 	textures->Add(ID_TEX_FIREBALL, L"textures\\Fireball.png", D3DCOLOR_XRGB(176, 224, 248));
 	textures->Add(ID_TEX_BOSS, L"textures\\Boss.png", D3DCOLOR_XRGB(255, 0, 255));
 	textures->Add(ID_TEX_AXE, L"textures\\Axe.png", D3DCOLOR_XRGB(255, 224, 248));
+	textures->Add(ID_TEX_CANDLE, L"textures\\Candle.png", D3DCOLOR_XRGB(255, 224, 248));
 	CSprites * sprites = CSprites::GetInstance();
 	CAnimations * animations = CAnimations::GetInstance();
 	
@@ -320,6 +324,7 @@ void LoadResources()
 	LPDIRECT3DTEXTURE9 texFireball = textures->Get(ID_TEX_FIREBALL);
 	LPDIRECT3DTEXTURE9 texBoss = textures->Get(ID_TEX_BOSS);
 	LPDIRECT3DTEXTURE9 texAxe = textures->Get(ID_TEX_AXE);
+	LPDIRECT3DTEXTURE9 texCandle = textures->Get(ID_TEX_CANDLE);
 
 	//Sprite Simon
 	sprites->Add(10001, 0, 3, 50, 63, texSimon); //idle
@@ -387,7 +392,7 @@ void LoadResources()
 	sprites->Add(10300, 0, 0, 15, 15, texItem); //heart
 	sprites->Add(10301, 2, 40, 37, 55, texItem); //dagger
 	sprites->Add(10302, 51, 0, 82, 32, texItem); //whip upgrade
-
+	sprites->Add(10303, 92, 41, 121, 69, texItem); //Money
 	//Ghost
 	sprites->Add(10400, 0, 0, 30, 62, texGhost);
 	sprites->Add(10401, 32, 0, 60, 62, texGhost);
@@ -422,6 +427,11 @@ void LoadResources()
 	sprites->Add(70001, 32, 0, 63, 27, texAxe);
 	sprites->Add(70002, 64, 0, 95, 27, texAxe);
 	sprites->Add(70003, 96, 0, 126, 27, texAxe);
+
+	//Candle
+	sprites->Add(80000, 0, 0, 16, 31, texCandle);
+	sprites->Add(80001, 17, 0, 32, 31, texCandle);
+
 	LPANIMATION ani;
 
 	ani = new CAnimation(100);	
@@ -684,6 +694,15 @@ void LoadResources()
 	ani->Add(20020);
 	animations->Add(7003, ani);
 
+	ani = new CAnimation(100);
+	ani->Add(80000);
+	ani->Add(80001);
+	animations->Add(8000, ani);
+
+	ani = new CAnimation(100);
+	ani->Add(10303);
+	animations->Add(9000, ani);
+
 	Simon::AddAnimation(400);		// idle right
 	Simon::AddAnimation(401);		// idle left
 	Simon::AddAnimation(402);		// walk right
@@ -708,7 +727,17 @@ void LoadResources()
 
 	Heart* heart1 = new Heart();
 	Heart* heart2 = new Heart();
-	
+	Heart* heart3 = new Heart();
+	Heart* heart4 = new Heart();
+	Heart* heart5 = new Heart();
+	Heart* heart6 = new Heart();
+	Heart* heart7 = new Heart();
+
+	Money* money1 = new Money();
+	Money* money2 = new Money();
+	Money* money3 = new Money();
+	Money* money4 = new Money();
+	Money* money5 = new Money();
 	Dagger* dagger = new Dagger();
 
 	WhipUpgrade* upgrade1 = new WhipUpgrade();
@@ -762,6 +791,8 @@ void LoadResources()
 	Simon::AddAnimation(7002);
 	Simon::AddAnimation(7003);
 	Boss::AddAnimation(6001);
+	Candle::AddAnimation(8000);
+	Money::AddAnimation(9000);
 	for (int i = 0; i < 48; i++)
 	{
 		Brick* brick = new Brick();
@@ -781,6 +812,8 @@ void LoadResources()
 	brazier3->SetPosition(506.0f, 235.0f);
 	brazier4->SetPosition(700.0f, 235.0f);
 	brazier5->SetPosition(870.0f, 235.0f);
+
+	
 	
 	oj.push_back(brazier1);
 	oj.push_back(brazier2);
@@ -792,6 +825,30 @@ void LoadResources()
 	oj.push_back(upgrade1);
 	oj.push_back(heart2);
 	oj.push_back(upgrade2);
+	for (int i = 0; i < 10; i++)
+	{
+		Candle* candle = new Candle();
+		oj.push_back(candle);
+	}
+	oj[58]->SetPosition(1600.0f, 240.0f);
+	oj[59]->SetPosition(1820.0f, 240.0f);
+	oj[60]->SetPosition(2040.0f, 240.0f);
+	oj[61]->SetPosition(2260.0f, 240.0f);
+	oj[62]->SetPosition(2600.0f, 100.0f);
+	oj[63]->SetPosition(2850.0f, 60.0f);
+	oj[64]->SetPosition(3230.0f, 240.0f);
+	oj[65]->SetPosition(3340.0f, 240.0f);
+	oj[66]->SetPosition(3450.0f, 240.0f);
+	oj.push_back(heart3);
+	oj.push_back(money1);
+	oj.push_back(heart4);
+	oj.push_back(money2);
+	oj.push_back(heart5);
+	oj.push_back(money3);
+	oj.push_back(heart6);
+	oj.push_back(money4);
+	oj.push_back(heart7);
+		
 	for (int i = 0; i < 94; i++)
 	{
 		Brick* brick = new Brick();
@@ -929,7 +986,7 @@ void LoadResources()
 	stairoj.push_back(stair4);
 
 	StairOj* stair5 = new StairOj();
-	stair5->SetPosition(2975.0f, 70.0f);
+	stair5->SetPosition(2975.0f, 68.0f);
 	stairoj.push_back(stair5);
 
 	StairOj* stair6 = new StairOj();
@@ -1001,7 +1058,7 @@ void LoadResources()
 	stairoj.push_back(stair22);
 
 	simon = new Simon(oj);
-	simon->SetPosition(5600.0f, 0.0f);
+	simon->SetPosition(1500.0f, 0.0f);
 	/*simon->SetPosition(5000.0f, 500.0f);*/
 	float x, y;
 	simon->GetPosition(x, y);

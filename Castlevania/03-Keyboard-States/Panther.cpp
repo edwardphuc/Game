@@ -157,16 +157,8 @@ void Panther::GetBoundingBox(float& left, float& top, float& right, float& botto
 {
 	left = x;
 	top = y;
-	if (state == PANTHER_STATE_SIT)
-	{
-		right = x + 60;
-		bottom = y + 35;
-	}
-	else
-	{
-		right = x + 60;
-		bottom = y + 35;
-	}
+	right = left + PANTHER_BBOX_WIDTH;
+	bottom = top + PANTHER_BBOX_HEIGHT;
 
 }
 void Panther::SetState(int state)

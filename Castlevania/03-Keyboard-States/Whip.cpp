@@ -14,7 +14,7 @@ Whip::Whip(Simon *sm, vector<LPGAMEOBJECT> oj)
 	lv = 1;
 	for (int i = 0; i < oj.size(); i++)
 	{
-		if ((i >= 48 && i <= 57))
+		if ((i >= 48 && i <= 75))
 		{
 			this->oj.push_back(oj[i]);
 		}
@@ -108,6 +108,14 @@ void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT
 					this->oj[i + 5]->SetPosition(x2, y2);
 					this->oj[i]->SetHP(this->oj[i]->GetHP() -1);
 					if(this->oj[i]->GetHP() == 0) this->oj[i + 5]->SetVisible(true);
+				}
+				if (i >= 10 && i <= 18)
+				{
+					float x2, y2;
+					this->oj[i]->GetPosition(x2, y2);           // danh vao den thi den mat, item hien ra
+					this->oj[i + 10]->SetPosition(x2, y2);
+					this->oj[i]->SetHP(this->oj[i]->GetHP() - 1);
+					if (this->oj[i]->GetHP() == 0) this->oj[i + 10]->SetVisible(true);
 				}
 				Sound::getInstance()->play("hit", false, 1);
 			}

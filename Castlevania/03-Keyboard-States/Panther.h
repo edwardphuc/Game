@@ -13,6 +13,9 @@
 #define PANTHER_STATE_IDLE	6001
 #define PANTHER_STATE_RUN_RIGHT 6002
 #define PANTHER_STATE_RUN_LEFT	6003
+
+#define PANTHER_BBOX_WIDTH    60	
+#define PANTHER_BBOX_HEIGHT   35
 class Panther: public CGameObject
 {
 private:

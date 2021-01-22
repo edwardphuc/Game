@@ -19,6 +19,9 @@
 #define FISH_WALKING_SPEED		0.05f
 #define FISH_FLY_SPEED			0.4f
 #define FISH_GRAVITY			0.002f
+
+#define FISH_BBOX_WIDTH         30
+#define FISH_BBOX_HEIGHT		70
 class Fishmen :
     public CGameObject
 {

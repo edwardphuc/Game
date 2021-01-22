@@ -183,8 +183,8 @@ void Fishmen::GetBoundingBox(float& left, float& top, float& right, float& botto
 {
 	left = x;
 	top = y;
-	right = x + 30;
-	bottom = y + 70;
+	right = x + FISH_BBOX_WIDTH;
+	bottom = y + FISH_BBOX_HEIGHT;
 }
 void Fishmen::SetState(int state)
 {

@@ -6,6 +6,10 @@
 #include "Brick.h"
 #include "Sound.h"
 #include "Boss.h"
+#include "Candle.h"
+#include "Heart.h"
+#include "WhipUpgrade.h"
+#include "Dagger.h"
 
 using namespace std;
 
@@ -19,6 +23,7 @@ Simon::Simon(vector<LPGAMEOBJECT> oj)
 		{
 			this->oj.push_back(oj[i]);
 		}
+		if(i>= 68 && i<=75) this->oj.push_back(oj[i]);
 	}
 	state = SIMON_STATE_IDLE;
 	soluongdao = 3;
@@ -248,13 +253,16 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 					y += dy;
 					x += dx;
 				}
+				if (dynamic_cast<Candle*>(e->obj))
+				{
+
+					y += dy;
+					x += dx;
+				}
+				
 				
 			}
 
-
-
-
-			
 
 		}
 	}
@@ -271,7 +279,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 		if (this->oj[i]->GetInvisible() == true)  // xet va cham cho cac vat the hien ra tren man hinh
 			if (this->CheckCollision(this->oj[i]))
 			{
-				if (i >= 0 && i <= 4)
+				if (i >= 0 && i <= 13)
 				{
 					this->oj[i]->SetVisible(false);
 					this->StartChangeColor();
