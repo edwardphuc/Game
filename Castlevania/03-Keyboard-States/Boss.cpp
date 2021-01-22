@@ -3,7 +3,7 @@
 Boss::Boss(Simon *sm)
 {
 	this->simon = sm;
-	hp = 12;
+	hp = 8;
 	isstarting = false;
 	iscurving = false;
 	isOP = false;
@@ -112,7 +112,7 @@ void Boss::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	this->simon->GetPosition(x1, y1);
 	if (x1 > x) nx = 1;
 	else nx = -1;
-	if (x < x1 - 200 && allowstart == true)
+	if (x < x1 - 200 && allowstart == true && x1 < 10000)
 	{
 		Start();
 		this->SetState(BOSS_STATE_WAKE);

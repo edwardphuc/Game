@@ -42,11 +42,11 @@ void Panther::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	}
 	float x1, y1;
 	simon->GetPosition(x1, y1);
-	if (x - x1 > 300 && x - x1 < 360)
+	if (x - x1 > 300 && x - x1 < 360 && y1 < 300)
 	{
 		this->StandUp();
 	}
-	else if (x - x1 < 300 && isrunparabol == false)
+	else if (x - x1 < 300 && isrunparabol == false && y1 < 300)
 	{
 		runtosimon = true;
 	}

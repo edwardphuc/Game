@@ -10,6 +10,7 @@
 #include "Heart.h"
 #include "WhipUpgrade.h"
 #include "Dagger.h"
+#include "Fishmen.h"
 
 using namespace std;
 
@@ -23,9 +24,9 @@ Simon::Simon(vector<LPGAMEOBJECT> oj)
 		{
 			this->oj.push_back(oj[i]);
 		}
-		if(i>= 68 && i<=75) this->oj.push_back(oj[i]);
+		if(i>= 66 && i<=73) this->oj.push_back(oj[i]);
 	}
-	state = SIMON_STATE_IDLE;
+	this->SetState(SIMON_STATE_INTRO);
 	soluongdao = 3;
 	hp = 5;
 	
@@ -33,6 +34,7 @@ Simon::Simon(vector<LPGAMEOBJECT> oj)
 void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT> stairoj, vector<LPGAMEOBJECT> enemy)
 {
 	CGameObject::Update(dt);
+	if (y >= 700) y = 700;
 	// simple fall down
 	/*if(isonStair == false)*/
 	vector<LPCOLLISIONEVENT> coEvents;
@@ -115,6 +117,39 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 			
 		}
 	}
+	if (GetTickCount() - intro_start > SIMON_INTRO_TIME && isintro == true)
+	{
+		intro_start = 0;
+		isintro = false;
+		allowback = true;
+	}
+	else if (GetTickCount() - intro_start < SIMON_INTRO_TIME)
+	{
+		allowintro = false;
+	}
+	if (allowintro == true)
+	{
+		Startintro();
+		Sound::getInstance()->play("Game_Start_Prologue", false, 1);
+	}
+	if (GetTickCount() - back_start > SIMON_BACK_TIME && isback == true)
+	{
+		back_start = 0;
+		isback = false;
+		x = 0;
+		y = 238;
+		Sound::getInstance()->stop("Game_Start_Prologue");
+		Sound::getInstance()->play("backgroundmusic", true, 0);
+	}
+	else if (GetTickCount() - back_start < SIMON_BACK_TIME)
+	{
+		allowback = false;
+
+	}
+	if (allowback == true)
+	{
+		Startback();
+	}
 	if (GetTickCount() - jump_start > SIMON_JUMP_TIME)
 	{
 		jump_start = 0;
@@ -193,16 +228,16 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 				alpha = 150;
 		}
 	}
-	if (this->GetHP() == 0 || y > 800)
+	if (this->GetHP() == 0 || y>800)
 	{
 		this->SetState(SIMON_STATE_DIE);
 		this->StartDieTime();
 	}
-	if ((this->GetHP() <= 0) && (GetTickCount() - dietime_start > SIMON_DIE_TIME) && (GetTickCount() - dietime_start < SIMON_DIE_TIME + 200))
+	if (y> 800 || ((this->GetHP() <= 0 ) && (GetTickCount() - dietime_start > SIMON_DIE_TIME) && (GetTickCount() - dietime_start < SIMON_DIE_TIME + 200)))
 	{
 		Sound::getInstance()->stop("backgroundmusic_boss");
 		Sound::getInstance()->play("backgroundmusic", true, 0);
-		x = 2000;
+		x = 1500;
 		y = 0;
 		this->SetState(SIMON_STATE_IDLE);
 		this->SetHP(10);
@@ -211,16 +246,17 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 		isdied = false;
 		waitingtimeatt = 0;
 	}
-	else if ((this->GetHP() <= 0) && (GetTickCount() - dietime_start < SIMON_DIE_TIME))
+	else if (y > 750 || ((this->GetHP() <= 0 ) && (GetTickCount() - dietime_start < SIMON_DIE_TIME)))
 	{
-		Sound::getInstance()->stop("Life_Lost");
+		Sound::getInstance()->play("Life_Lost", false, 2);
 		alpha = 255;
 		waitingtimeatt = 1;
 		this->SetVisible(true);
 	}
 	if (isonstair == false)
 	{
-		vy = vy + SIMON_GRAVITY * dt;
+		if (x >= 10000) vy = vy + 0 * dt;
+		else vy = vy + SIMON_GRAVITY * dt;
 		
 
 
@@ -259,6 +295,12 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 					y += dy;
 					x += dx;
 				}
+				if (dynamic_cast<Fishmen*>(e->obj))
+				{
+
+					y += dy;
+					x += dx;
+				}
 				
 				
 			}
@@ -279,7 +321,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 		if (this->oj[i]->GetInvisible() == true)  // xet va cham cho cac vat the hien ra tren man hinh
 			if (this->CheckCollision(this->oj[i]))
 			{
-				if (i >= 0 && i <= 13)
+				if (i >= 0 && i <= 12)
 				{
 					this->oj[i]->SetVisible(false);
 					this->StartChangeColor();
@@ -292,6 +334,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 				{
 					whiplv++;
 				}
+				if (oj[i]->GetState() == HEART_STATE_ACTIVE) this->SetHP(this->GetHP() + 1);
 				Sound::getInstance()->play("collectitem", false, 1);
 			}
 	}
@@ -396,7 +439,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJEC
 	{
 		x = 4910;
 	}
-	if (y > 400 && x >= 5960)
+	if (y > 400 && x >= 5960 && x < 10000)
 	{
 		x = 5960;
 	}
@@ -447,7 +490,8 @@ void Simon::Render()
 			}
 			else if (vx == 0)
 			{
-				if (ischangecolor == true)
+				if (isback == true) ani = SIMON_ANI_BACK;
+				else if (ischangecolor == true)
 				{
 					if (nx > 0)
 					{
@@ -586,6 +630,9 @@ void Simon::SetState(int state)
 		break;
 	case SIMON_STATE_IDLE:
 		vx = 0;
+		break;
+	case SIMON_STATE_INTRO:
+		vx = 0.05;
 		break;
 	case SIMON_STATE_ONSTAIR_IDLE:
 		vx = 0;

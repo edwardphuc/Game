@@ -49,9 +49,19 @@ void Ghost::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		x = 1420;
 		this->SetState(GHOST_STATE_WALKING_RIGHT);
 	}
-	else if (x > 4000 )
+	else if (x > 4000  && x < 5000)
 	{
 		x = 4000;
+		this->SetState(GHOST_STATE_WALKING_LEFT);
+	}
+	else if (x >= 5000 && x < 5001)
+	{
+		x = 5001;
+		this->SetState(GHOST_STATE_WALKING_RIGHT);
+	}
+	else  if (x > 6000)
+	{
+		x = 6000;
 		this->SetState(GHOST_STATE_WALKING_LEFT);
 	}
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];

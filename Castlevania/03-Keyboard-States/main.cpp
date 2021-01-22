@@ -69,6 +69,7 @@
 #define ID_TEX_BOSS		140
 #define ID_TEX_AXE		150
 #define ID_TEX_CANDLE	160
+#define ID_TEX_INTRO	170
 
 
 CGame *game;
@@ -78,6 +79,7 @@ Map  *map2;
 Map* map3;
 Map* map4;
 Map* map5;
+Map* intro;
 Whip* whip;
 Panther* panther;
 Panther* panther1;
@@ -93,11 +95,7 @@ int countFish = 0;
 DWORD timecreateGhost;
 DWORD timecreateBat;
 DWORD timecreateFish;
-//Brazier* brazier1;
-//Brazier* brazier2;
-//Brazier* brazier3;
-//Brazier* brazier4;
-//Brazier* brazier5;
+vector<int> currentGrids;
 vector<LPGAMEOBJECT> oj; 
 vector<LPGAMEOBJECT> enemy;
 vector<LPGAMEOBJECT> stairoj;
@@ -228,7 +226,7 @@ void CSampleKeyHander::KeyState(BYTE *states)
 			simon->Setonstair(true);
 			simon->SetState(SIMON_STATE_WALKING_UP_STAIR_LEFT);
 		}
-		
+
 	}
 	else if (game->IsKeyDown(DIK_DOWN) && simon->GetDamaged() == false)
 	{
@@ -267,6 +265,7 @@ void CSampleKeyHander::KeyState(BYTE *states)
 		}
 	}
 	else if (simon->Getallowstair() == 1 && simon->GetDamaged() == false) simon->SetState(SIMON_STATE_ONSTAIR_IDLE);
+	else if (simon->GetIntro() == true) simon->SetState(SIMON_STATE_INTRO);
 	else simon->SetState(SIMON_STATE_IDLE);
 }
 
@@ -289,7 +288,6 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 */
 void LoadResources()
 {
-	Sound::getInstance()->play("backgroundmusic", true, 0);
 	CTextures * textures = CTextures::GetInstance();
 
 	textures->Add(ID_TEX_SIMON, L"textures\\Simon.png", D3DCOLOR_XRGB(255, 224, 248));
@@ -307,6 +305,7 @@ void LoadResources()
 	textures->Add(ID_TEX_BOSS, L"textures\\Boss.png", D3DCOLOR_XRGB(255, 0, 255));
 	textures->Add(ID_TEX_AXE, L"textures\\Axe.png", D3DCOLOR_XRGB(255, 224, 248));
 	textures->Add(ID_TEX_CANDLE, L"textures\\Candle.png", D3DCOLOR_XRGB(255, 224, 248));
+	textures->Add(ID_TEX_INTRO, L"textures\\Intro_Scene.png", D3DCOLOR_XRGB(255, 224, 248));
 	CSprites * sprites = CSprites::GetInstance();
 	CAnimations * animations = CAnimations::GetInstance();
 	
@@ -325,6 +324,7 @@ void LoadResources()
 	LPDIRECT3DTEXTURE9 texBoss = textures->Get(ID_TEX_BOSS);
 	LPDIRECT3DTEXTURE9 texAxe = textures->Get(ID_TEX_AXE);
 	LPDIRECT3DTEXTURE9 texCandle = textures->Get(ID_TEX_CANDLE);
+	LPDIRECT3DTEXTURE9 texIntro = textures->Get(ID_TEX_INTRO);
 
 	//Sprite Simon
 	sprites->Add(10001, 0, 3, 50, 63, texSimon); //idle
@@ -365,6 +365,8 @@ void LoadResources()
 	sprites->Add(20019, 360, 133, 410, 195, texSimon);
 	sprites->Add(20020, 430, 133, 480, 195, texSimon);
 
+	sprites->Add(20021, 13, 68, 45, 128, texSimon);   // Quay lung
+
 	//Sprite whip
 	sprites->Add(10008, 0, 8, 18, 53, texWhip);
 	sprites->Add(10009, 40, 2, 72, 38, texWhip);
@@ -382,6 +384,7 @@ void LoadResources()
 	sprites->Add(10103, 3078, 0, 4094, 376, texMap2);
 	sprites->Add(10104, 4094, 0, 5630, 376, texMap2);
 	sprites->Add(10105, 3078, 376, 4094, 767, texMap2);
+	sprites->Add(10106, 0, 0, 511, 365, texIntro);
 
 
 	//Brazier
@@ -703,6 +706,14 @@ void LoadResources()
 	ani->Add(10303);
 	animations->Add(9000, ani);
 
+	ani = new CAnimation(100);
+	ani->Add(10106);
+	animations->Add(9001, ani);
+
+	ani = new CAnimation(100);
+	ani->Add(20021);
+	animations->Add(9002, ani);
+
 	Simon::AddAnimation(400);		// idle right
 	Simon::AddAnimation(401);		// idle left
 	Simon::AddAnimation(402);		// walk right
@@ -717,6 +728,7 @@ void LoadResources()
 	map3 = new Map();
 	map4 = new Map();
 	map5 = new Map();
+	intro = new Map();
 	Whip::AddAnimation(801);
 
 	Brazier *brazier1 = new Brazier(); // Khoi tao brazier
@@ -793,6 +805,8 @@ void LoadResources()
 	Boss::AddAnimation(6001);
 	Candle::AddAnimation(8000);
 	Money::AddAnimation(9000);
+	Map::AddAnimation(9001);
+	Simon::AddAnimation(9002);
 	for (int i = 0; i < 48; i++)
 	{
 		Brick* brick = new Brick();
@@ -805,6 +819,7 @@ void LoadResources()
 	map3->SetPosition(3980.0f, -28.0f);
 	map4->SetPosition(4804.0f, -28.0f);
 	map5->SetPosition(5000.0f, 400.0f);
+	intro->SetPosition(10050.0f, 400.0f);
 	
 
 	brazier1->SetPosition(253.0f, 235.0f);
@@ -825,7 +840,7 @@ void LoadResources()
 	oj.push_back(upgrade1);
 	oj.push_back(heart2);
 	oj.push_back(upgrade2);
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 8; i++)
 	{
 		Candle* candle = new Candle();
 		oj.push_back(candle);
@@ -835,10 +850,9 @@ void LoadResources()
 	oj[60]->SetPosition(2040.0f, 240.0f);
 	oj[61]->SetPosition(2260.0f, 240.0f);
 	oj[62]->SetPosition(2600.0f, 100.0f);
-	oj[63]->SetPosition(2850.0f, 60.0f);
-	oj[64]->SetPosition(3230.0f, 240.0f);
-	oj[65]->SetPosition(3340.0f, 240.0f);
-	oj[66]->SetPosition(3450.0f, 240.0f);
+	oj[63]->SetPosition(3230.0f, 240.0f);
+	oj[64]->SetPosition(3340.0f, 240.0f);
+	oj[65]->SetPosition(3450.0f, 240.0f);
 	oj.push_back(heart3);
 	oj.push_back(money1);
 	oj.push_back(heart4);
@@ -847,7 +861,6 @@ void LoadResources()
 	oj.push_back(money3);
 	oj.push_back(heart6);
 	oj.push_back(money4);
-	oj.push_back(heart7);
 		
 	for (int i = 0; i < 94; i++)
 	{
@@ -1058,7 +1071,7 @@ void LoadResources()
 	stairoj.push_back(stair22);
 
 	simon = new Simon(oj);
-	simon->SetPosition(1500.0f, 0.0f);
+	simon->SetPosition(10000.0f, 690.0f);
 	/*simon->SetPosition(5000.0f, 500.0f);*/
 	float x, y;
 	simon->GetPosition(x, y);
@@ -1108,54 +1121,57 @@ void Update(DWORD dt)
 	float x, y;
 	simon->GetPosition(x, y);
 
-
 	if ((x == 0 || x < SCREEN_WIDTH / 10) && y < 400)
 	{
 		CGame::GetInstance()->SetCamPos(0.0f, 0.0f);
 	}
-	else if (x > 1533 - 640 - 64 && x < 1280 && y < 400)
+	else if (x > 1533 - SCREEN_WIDTH  - SCREEN_WIDTH / 10 && x < 1280 && y < 400)
 	{
-		CGame::GetInstance()->SetCamPos(1533 - 640 - 64 - 64, 0.0f);
+		CGame::GetInstance()->SetCamPos(1533 - SCREEN_WIDTH - SCREEN_WIDTH/10 - SCREEN_WIDTH/10, 0.0f);
 	}
-	else if ((x == 1280 || (x < 1445 + 64 && x > 1280)) && y < 400)
+	else if ((x == 1280 || (x < 1445 + SCREEN_WIDTH / 10 && x > 1280)) && y < 400)
 	{
 		CGame::GetInstance()->SetCamPos(1445, 0.0f);
 	}
-	else if (x > 4200 - 640 - 64 && x < 4000 && y < 400)
+	else if (x > 4200 - SCREEN_WIDTH  - SCREEN_WIDTH / 10 && x < 4000 && y < 400)
 	{
-		CGame::GetInstance()->SetCamPos(4200 - 640 - 64 - 64, 0.0f);
+		CGame::GetInstance()->SetCamPos(4200 - SCREEN_WIDTH - SCREEN_WIDTH / 10 - SCREEN_WIDTH / 10, 0.0f);
 	}
-	else if ((x == 4050 || (x > 4050 && x < 4050 + 64)) && y < 400)
+	else if ((x == 4050 || (x > 4050 && x < 4050 + SCREEN_WIDTH / 10)) && y < 400)
 	{
 		CGame::GetInstance()->SetCamPos(4050, 0.0f);
 	}
 	else if (y < 400 && x >= 4360 && x <= 4865)
 	{
-		CGame::GetInstance()->SetCamPos(4360-64, 0.0f);
+		CGame::GetInstance()->SetCamPos(4360- SCREEN_WIDTH / 10, 0.0f);
 	}
 	else if (y < 400 && x > 4865 && x < 4910)
 	{
 		CGame::GetInstance()->SetCamPos(4918, 0.0f);
 	}
-	else if (y < 400 && x > 4910 && x <= 4918 + 64)
+	else if (y < 400 && x > 4910 && x <= 4918 + SCREEN_WIDTH / 10)
 	{
 		CGame::GetInstance()->SetCamPos(4918, 0.0f);
 	}
 	else if (y < 400 && x >= 5660 && x <= 6300)
 	{
-		CGame::GetInstance()->SetCamPos(5660 - 64, 0.0f);
+		CGame::GetInstance()->SetCamPos(5660 - SCREEN_WIDTH / 10, 0.0f);
 	}
 	else if ( y > 400 && x >= 5000 && x <= 5064)
 	{
 		CGame::GetInstance()->SetCamPos(5000, 460.0f);
 	}
-	else if (y > 400 && x >= 5390 + 64)
+	else if (y > 400 && x >= 5390 + SCREEN_WIDTH / 10 && x < 10000)
 	{
 		CGame::GetInstance()->SetCamPos(5390, 460.0f);
 	}
-	else if (y > 400 && x > 5064 && x < 5390 + 64)
+	else if (y > 400 && x > 5064 && x < 5390 + SCREEN_WIDTH / 10)
 	{
 		CGame::GetInstance()->SetCamPos(cx, 460.0f);
+	}
+	else if (y > 400 && x >= 10000)
+	{
+		CGame::GetInstance()->SetCamPos(10000, 460.0f);
 	}
 	else CGame::GetInstance()->SetCamPos(cx, 0.0f);
 	vector<LPGAMEOBJECT> coObjects;
@@ -1199,8 +1215,33 @@ void Update(DWORD dt)
 				enemy.push_back(ghost);
 			}
 		}
+	    if (x >= 5000 && x < 5500 && y < 350)
+		{
+			DWORD now = GetTickCount();
+			timecreateGhost = now;
+			if (countGhost < 3)
+			{
+				timecreateGhost = GetTickCount();
+				Ghost* ghost = new Ghost();
+				int z;
+				simon->GetDirect(z);
+				if (z == 1)
+				{
+					countGhost++;
+					ghost->SetState(GHOST_STATE_WALKING_LEFT);
+					ghost->SetPosition(6000, 240);
+				}
+				else if (z == -1)
+				{
+					countGhost++;
+					ghost->SetState(GHOST_STATE_WALKING_RIGHT);
+					ghost->SetPosition(5000, 240);
+				}
+				enemy.push_back(ghost);
+			}
+		}
 	}
-	
+	if (x > 4000 && x < 5000 && y < 350) countGhost = 0;
 	if (GetTickCount() - timecreateBat > 1000)
 	{
 		if (x >= 4100 && x < 5000)
@@ -1216,7 +1257,7 @@ void Update(DWORD dt)
 				countBat++;
 				bat->SetState(BAT_STATE_FLY_LEFT);
 				bat->Setybackup(r);
-				bat->SetPosition(5000, r);
+				bat->SetPosition(4800, r);
 				enemy.push_back(bat);
 			}
 		}
@@ -1224,12 +1265,12 @@ void Update(DWORD dt)
 
 	if (GetTickCount() - timecreateFish > 2000)
 	{
-		if (x >= 5000 && x < 6500)
+		if (x >= 5000 && x < 6500 && y > 350)
 		{
 			Fishmen* fish;
 			DWORD now = GetTickCount();
 			timecreateFish = now;
-			if (countFish < 3)
+			if (countFish < 1)
 			{
 				timecreateFish = GetTickCount();
 				int z;
@@ -1292,6 +1333,7 @@ void Render()
 		map5->render(1004);
 		map3->render(1002);
 		map4->render(1003);
+		intro->render(1005);
 		
 
 		for (int i = 0; i < stairoj.size(); i++)

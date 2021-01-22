@@ -19,6 +19,8 @@
 #define SIMON_UNTOUCHABLE_TIME	2800
 #define SIMON_DIE_DEFLECT_SPEED	0.5f
 #define SIMON_DIE_TIME			2000
+#define SIMON_INTRO_TIME		2800
+#define SIMON_BACK_TIME			3000
 
 #define SIMON_STATE_IDLE			0
 #define SIMON_STATE_WALKING_RIGHT	100
@@ -32,6 +34,7 @@
 #define SIMON_STATE_WALKING_DOWN_STAIR_RIGHT	900
 #define SIMON_STATE_WALKING_DOWN_STAIR_LEFT     1000
 #define SIMON_STATE_DIE							1100
+#define SIMON_STATE_INTRO						1200
 
 #define SIMON_ANI_IDLE_RIGHT		0
 #define SIMON_ANI_IDLE_LEFT			1
@@ -56,6 +59,7 @@
 #define	SIMON_ANI_DIE					39
 #define SIMON_ANI_UPSTAIR_ATTACK		49
 #define SIMON_ANI_DOWNSTAIR_ATTACK		50
+#define SIMON_ANI_BACK					55
 
 //BBox
 #define SIMON_STAND_BBOX_WIDTH		58
@@ -77,6 +81,8 @@ private:
 	bool isdamaged = false;
 	bool isuntouchable = false;
 	bool isdied = false;
+	bool isintro = false;
+	bool isback = false;
 	bool enable_reset = true;
 	bool getpullup = false;
 	int soluongdao;
@@ -92,12 +98,16 @@ private:
 	DWORD dietime_start;
 	DWORD jump_start;
 	DWORD sit_start;
+	DWORD intro_start;
+	DWORD back_start;
 	vector<LPGAMEOBJECT> oj;
 	int whiplv;
 	int stairnx;
 	int allowstair = 0;
 	int dem = 0;
 	bool allowsit;
+	bool allowintro = true;
+	bool allowback = false;
 public:
 	Simon(vector<LPGAMEOBJECT> oj);
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT> stairoj, vector<LPGAMEOBJECT> enemy);
@@ -122,6 +132,7 @@ public:
 	void SetPullUp(bool a) { this->getpullup = a; }
 	void GetWhiplv(int& x) { x = this->whiplv; }
 	bool GetUntouchable() { return this->isuntouchable; }
+	bool GetIntro() { return this->isintro; }
 	void Setsoluongdao(int x) { this->soluongdao = x; }
 	void StartAttack();
 	void StartSitAttack();
@@ -131,6 +142,8 @@ public:
 	void StartUntouchable() { isuntouchable = true; untouchable_start = GetTickCount(); }
 	void StartDieTime() { isdied = true; dietime_start = GetTickCount(); this->SetHP(this->GetHP() - 1); isuntouchable = false; isdamaged = false; Sound::getInstance()->play("Life_Lost", false, 2); }
 	void StartSit() { issitting = true; sit_start = GetTickCount(); }
+	void Startintro() { isintro = true; intro_start = GetTickCount(); }
+	void Startback() { isback = true; back_start = GetTickCount(); }
 	void FixPositionStair();
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 	void resettodefault();

@@ -49,7 +49,7 @@ protected:
 	int alpha = 255;
 
 	DWORD dt;
-
+	vector<int> listGrid;
 	static vector<LPANIMATION> animations;
 
 public: 
@@ -66,6 +66,8 @@ public:
 	float GetHP() { return this->hp; }
 	void SetHP(float hp) { this->hp = hp; }
 	bool CheckCollision(CGameObject* object);
+	void setlistgrid(vector<int> lis) { listGrid = lis; }
+	vector<int> getlistgrid() { return listGrid; }
 	RECT CGameObject::GetBound()
 	{
 		RECT rect;

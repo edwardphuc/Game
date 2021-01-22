@@ -31,7 +31,11 @@ void Map::render(int id)
 		ani = MAP5;
 		animations[ani]->Render(x, y, alpha, 1);
 	}
-	
+	else if (id == 1005)
+	{
+		ani = INTRO;
+		animations[ani]->Render(x, y, alpha, 1.25);
+	}
 }
 void Map::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {

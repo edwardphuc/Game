@@ -6,12 +6,13 @@ Fishmen::Fishmen(float X, float Y, FireBall *fire, Simon* simon)
 	y = Y;
 	originalX = x;
 	originalY = y;
-	hp = 12;
+	hp = 5;
 	vy = -FISH_FLY_SPEED;
 	isfly = true;
 	isattacking = false;
 	this->fire = fire;
 	this->simon = simon;
+	Sound::getInstance()->play("splashwater", false, 1);
 }
 void Fishmen::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
@@ -82,11 +83,11 @@ void Fishmen::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		{
 			if (nx > 0)
 			{
-				this->fire->SetPosition(x + 40, y + 15);
+				this->fire->SetPosition(x + 40, y + 5);
 			}
 			if (nx < 0)
 			{
-				this->fire->SetPosition(x - 15, y + 15);
+				this->fire->SetPosition(x - 15, y + 5);
 			}
 		}
 		if (abs(x - x1) <= 500 && isattacking == false && this->fire->Getfree() == false && this->GetInvisible() == true && untouch == false)

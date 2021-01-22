@@ -2,6 +2,7 @@
 
 Heart::Heart()
 {
+	state = HEART_STATE_ACTIVE;
 	visible = false;
 	scale = 1.8;
 	hp = 10;
