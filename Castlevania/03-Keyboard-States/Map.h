@@ -6,6 +6,8 @@
 #define MAP3		11
 #define MAP4        12
 #define MAP5		13
+#define INTRO		53
+
 
 class Map: public CGameObject
 {

@@ -136,12 +136,14 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Ghost.cpp" />
+    <ClCompile Include="Grid.cpp" />
     <ClCompile Include="Heart.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Mario.cpp" />
     <ClCompile Include="Money.cpp" />
     <ClCompile Include="Panther.cpp" />
+    <ClCompile Include="QuadTree.cpp" />
     <ClCompile Include="Simon.cpp" />
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="Sprites.cpp" />
@@ -162,6 +164,7 @@
     <ClInclude Include="FireBall.h" />
     <ClInclude Include="Fishmen.h" />
     <ClInclude Include="Ghost.h" />
+    <ClInclude Include="Grid.h" />
     <ClInclude Include="Heart.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="Mario.h" />
@@ -170,6 +173,7 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Money.h" />
     <ClInclude Include="Panther.h" />
+    <ClInclude Include="QuadTree.h" />
     <ClInclude Include="Simon.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="Sprites.h" />

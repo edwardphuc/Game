@@ -69,6 +69,7 @@
 #define ID_TEX_BOSS		140
 #define ID_TEX_AXE		150
 #define ID_TEX_CANDLE	160
+#define ID_TEX_INTRO	170
 
 
 CGame *game;
@@ -93,11 +94,6 @@ int countFish = 0;
 DWORD timecreateGhost;
 DWORD timecreateBat;
 DWORD timecreateFish;
-//Brazier* brazier1;
-//Brazier* brazier2;
-//Brazier* brazier3;
-//Brazier* brazier4;
-//Brazier* brazier5;
 vector<LPGAMEOBJECT> oj; 
 vector<LPGAMEOBJECT> enemy;
 vector<LPGAMEOBJECT> stairoj;
@@ -1058,7 +1054,7 @@ void LoadResources()
 	stairoj.push_back(stair22);
 
 	simon = new Simon(oj);
-	simon->SetPosition(1500.0f, 0.0f);
+	simon->SetPosition(0.0f, 0.0f);
 	/*simon->SetPosition(5000.0f, 500.0f);*/
 	float x, y;
 	simon->GetPosition(x, y);
@@ -1266,7 +1262,6 @@ void Update(DWORD dt)
 		enemy[i]->Update(dt, &coObjects);
 	}
 	
-
 	daggerWP->Update(dt, &coObjects, enemy, countGhost, countBat, countFish);
 	axeWP->Update(dt, &coObjects, enemy, countGhost, countBat, countFish);
 	whip->Update(dt, &coObjects, enemy, countGhost, countBat, countFish);
